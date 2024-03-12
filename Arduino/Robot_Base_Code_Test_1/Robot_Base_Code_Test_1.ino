@@ -5,6 +5,7 @@
 
 #define CAN0_INT 2    // Set INT to pin 2 (This is the Interupt pin)
 MCP_CAN CAN0(10);   // Set CS to pin 10
+// add definitions for LED's, IMU, etc.
 
 void setup()
 {
@@ -15,10 +16,10 @@ void setup()
 
   // Add initialization for LED's, IMU, etc.
 
-  //Initalizes MCP CAN chip with clock of 8MHz and data transfer speed is 500KB/second
+  // Continuously tries to establish connection to MCP chip until it does
   while(1)
   {
-    // Checks to see if CAN Bus is initialized
+    // Tries to initalizes MCP CAN chip with clock of 8MHz and data transfer speed is 500KB/second
     if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK)
     {
       // CAN BUS is initalized, then break out of while loop
