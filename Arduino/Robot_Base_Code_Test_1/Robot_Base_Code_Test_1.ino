@@ -42,9 +42,9 @@ void setup()
   
 }
 
+// In this, take the inputs from each button / stick on the controller and assign it a variable (EStop, State, Movement, etc)
 void loop()
 {
-  // In this, take the inputs from each button / stick on the controller and assign it a variable (EStop, State, Movement, etc)
 
   if(PS4.isConnected())
   {
