@@ -7,6 +7,12 @@
 MCP_CAN CAN0(10);   // Set CS to pin 10
 // add definitions for LED's, IMU, etc.
 
+double verticalMov = 0;
+double horizontalMov = 0;
+bool EStop = 1;
+
+
+// Add more flags for initalization of CAN Bus (TX/RX buffer errors, etc.)
 void setup()
 {
   pinMode(CAN0_INT, INPUT);
@@ -40,4 +46,30 @@ void loop()
 {
   // In this, take the inputs from each button / stick on the controller and assign it a variable (EStop, State, Movement, etc)
 
+  if(PS4.isConnected())
+  {
+    verticalMov = PS4.LStickY();
+    horizontalMov = PS4.LStickX();
+    EStop = PS4.R1();
+
+  }
+  else
+  {
+    verticalMov = 0;
+    horizontalMov = 0;
+  }
+
+  if(EStop != 0) // check what output of function is when pressed 1 is just assumed.
+  {
+    // Stops all movement and sends out EStop command to ODrive
+    verticalMov = 0;
+    horizontalMov = 0;
+    break;
+  }
+  else
+  {
+    // Set values of joysticks to velocity using CAN commands. 
+
+    // Might need to see limit of velocity functions and constrain vertical and horizontal move if needed. 
+  }
 }
