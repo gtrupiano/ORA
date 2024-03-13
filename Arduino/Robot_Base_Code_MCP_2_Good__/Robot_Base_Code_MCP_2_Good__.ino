@@ -72,7 +72,8 @@ void loop()
 }
 
 // Function to send commands to ODrive via CAN bus
-void ODriveMovement(double verticalVelocity, double horizontalVelocity) {
+void ODriveMovement(double verticalVelocity, double horizontalVelocity)
+{
     // Scales inputs
     verticalVelocity = constrain(verticalVelocity, -1.0, 1.0);
     horizontalVelocity = constrain(horizontalVelocity, -1.0, 1.0);
