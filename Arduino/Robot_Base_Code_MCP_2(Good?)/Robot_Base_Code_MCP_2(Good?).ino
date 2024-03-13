@@ -38,8 +38,9 @@ void setup()
   }
 }
 
-void loop() {
-  if(PS4.isConnected()) 
+void loop() 
+{
+  if(PS4.isConnected()) // could combine with estop if not sure if it's easier to read this way or not. Might be easier for them to be seperate
   {
     verticalMov = PS4.LStickY();
     horizontalMov = PS4.LStickX();
@@ -49,35 +50,49 @@ void loop() {
   {
     verticalMov = 0;
     horizontalMov = 0;
-    EStop = false; // Ensure EStop is false when PS4 is not connected
+    EStop = false;
   }
 
   if(EStop)
   {
     // Send EStop command to ODrive
     ODriveEStop();
+    Serial.Println("EStop Activated");
   }
   else
   {
+    // Send CAN command to put axis into closed loop control state
+    CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x07), 0, 4, (byte*)"\x08");
+    CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x07), 0, 4, (byte*)"\x08");
+    Serial.println("Put into closed loop control state");
+
     // Set values of joysticks to velocity using CAN commands
     ODriveMovement(verticalMov, horizontalMov);
   }
 }
 
 // Function to send commands to ODrive via CAN bus
-void ODriveMovement(double verticalVelocity)
-{
-  // Construct CAN message and send it
-  float torque_feedforward = 0.1;
-  byte velData[] = {verticalVelocity, torque_feedforward};
-  CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x0D), 0, 2, velData);
+void ODriveMovement(double verticalVelocity, double horizontalVelocity) {
+    // Scales inputs
+    verticalVelocity = constrain(verticalVelocity, -1.0, 1.0);
+    horizontalVelocity = constrain(horizontalVelocity, -1.0, 1.0);
+
+    double leftMotorVel = verticalVelocity - horizontalVelocity;
+    double rightMotorVel = verticalVelocity + horizontalVelocity;
+    
+    int maxRPM = 4600; // Change later if we need
+    int maxVelocity = 5 // IGVC rules, should be m/s units but not sure
+    int leftMotorRPM = leftMotorVel * maxVelocity * maxRPM; // possibly change to double but not sure if data length can handle that precision
+    int rightMotorRPM = rightMotorVel * maxVelocity * maxRPM;
+
+    // Send velocity commands to left and right motors
+    CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&leftMotorRPM);
+    CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&rightMotorRPM);
 }
 
 
-
-void ODriveEStop()
+void ODriveEStop() 
 {
   CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x02), 0, 0, nullptr);
   CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x02), 0, 0, nullptr);
 }
-
