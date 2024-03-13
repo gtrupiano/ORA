@@ -77,6 +77,7 @@ void ODriveMovement(double verticalVelocity, double horizontalVelocity) {
     verticalVelocity = constrain(verticalVelocity, -1.0, 1.0);
     horizontalVelocity = constrain(horizontalVelocity, -1.0, 1.0);
 
+    // Standard for differential drive control
     double leftMotorVel = verticalVelocity - horizontalVelocity;
     double rightMotorVel = verticalVelocity + horizontalVelocity;
     
@@ -86,7 +87,7 @@ void ODriveMovement(double verticalVelocity, double horizontalVelocity) {
     int rightMotorRPM = rightMotorVel * maxVelocity * maxRPM;
 
     // Send velocity commands to left and right motors
-    CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&leftMotorRPM);
+    CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&leftMotorRPM); // check 4
     CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&rightMotorRPM);
 }
 
