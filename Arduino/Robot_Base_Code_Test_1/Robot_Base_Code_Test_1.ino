@@ -4,7 +4,16 @@
 
 
 #define CAN0_INT 2    // Set INT to pin 2 (This is the Interupt pin)
-MCP_CAN CAN0(10);   // Set CS to pin 10
+MCP_CAN CAN0(10);   // Set CS to pin 10 (This is the Chip select)
+
+// ODrive & Can Definitions
+#define CAN_BAUDRATE 500000
+#define ODRV0_NODE_ID 0
+
+// Allows us to refer to can_intf as "CAN"
+MCP2515Class& can_intf = CAN;
+
+
 // add definitions for LED's, IMU, etc.
 
 double verticalMov = 0;
@@ -39,8 +48,11 @@ void setup()
       delay(20);
     }
   }
+
+
   
 }
+
 
 // In this, take the inputs from each button / stick on the controller and assign it a variable (EStop, State, Movement, etc)
 void loop()
