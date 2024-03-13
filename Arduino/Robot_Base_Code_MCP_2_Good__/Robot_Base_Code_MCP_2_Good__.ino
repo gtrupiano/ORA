@@ -5,24 +5,26 @@
 #define CAN0_INT 2    // Set INT to pin 2 (This is the Interupt pin)
 MCP_CAN CAN0(10);   // Set CS to pin 10 (This is the Chip select)
 
-// ODrive & Can Definitions
 #define CAN_BAUDRATE 500000
 #define ODRV0_NODE_ID 0
 #define ODRV1_NODE_ID 1
 
+// Add pin definitions for LED,IMU,etc.
+
 double verticalMov = 0;
 double horizontalMov = 0;
-bool EStop = false; // Change to false initially
+bool EStop = false;
 
 void setup()
 {
   pinMode(CAN0_INT, INPUT);
+  // Assign pin modes for LED,IMU,etc.
   Serial.begin(115200);
   PS4.begin();
   Serial.println("Ready");
 
   // Continuously tries to establish connection to MCP chip until it does
-  while(1)
+  while(1) // Fix?
   {
     // Tries to initialize MCP CAN chip with clock of 8MHz and data transfer speed is 500KB/second
     if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK)
@@ -45,6 +47,11 @@ void loop()
     verticalMov = PS4.LStickY();
     horizontalMov = PS4.LStickX();
     EStop = PS4.R1();
+
+    Serial.Print("X: ");
+    Serial.Print(verticalMov);
+    Serial.Print("  Y: ");
+    Serial.Println(horizontalMov);
   }
   else
   {
@@ -62,8 +69,7 @@ void loop()
   else
   {
     // Send CAN command to put axis into closed loop control state
-    CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x07), 0, 4, (byte*)"\x08");
-    CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x07), 0, 4, (byte*)"\x08");
+    ODriveControlState()
     Serial.println("Put into closed loop control state");
 
     // Set values of joysticks to velocity using CAN commands
@@ -97,4 +103,11 @@ void ODriveEStop()
 {
   CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x02), 0, 0, nullptr);
   CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x02), 0, 0, nullptr);
+}
+
+void ODriveControlState()
+{
+  // Send CAN command to put axis into closed loop control state
+    CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x07), 0, 4, (byte*)"\x08");
+    CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x07), 0, 4, (byte*)"\x08");
 }
