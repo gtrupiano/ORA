@@ -20,7 +20,8 @@ void setup()
   pinMode(CAN0_INT, INPUT);
   // Assign pin modes for LED,IMU,etc.
   Serial.begin(115200);
-  PS4.begin();
+  // MAC Address for my controller
+  PS4.begin("bc:03:58:28:67:42");
   Serial.println("Ready");
 
   // Continuously tries to establish connection to MCP chip until it does
