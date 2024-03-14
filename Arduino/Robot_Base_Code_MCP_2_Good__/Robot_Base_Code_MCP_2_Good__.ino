@@ -3,7 +3,7 @@
 #include <SPI.h>
 
 #define CAN0_INT 2    // Set INT to pin 2 (This is the Interupt pin)
-MCP_CAN CAN0(10);   // Set CS to pin 10 (This is the Chip select)
+MCP_CAN CAN0(8);   // Set CS to pin 10 (This is the Chip select)
 
 #define CAN_BAUDRATE 500000
 #define ODRV0_NODE_ID 0
