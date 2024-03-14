@@ -45,14 +45,14 @@ void loop()
 {
   if(PS4.isConnected()) // could combine with estop if not sure if it's easier to read this way or not. Might be easier for them to be seperate
   {
-    verticalMov = PS4.LStickY();
+    verticalMov = PS4.LStickY(); // Possibly add some error detection (debounce)?
     horizontalMov = PS4.LStickX();
     EStop = PS4.R1();
 
-    Serial.Print("X: ");
-    Serial.Print(verticalMov);
-    Serial.Print("  Y: ");
-    Serial.Println(horizontalMov);
+    Serial.print("X: ");
+    Serial.print(verticalMov);
+    Serial.print("  Y: ");
+    Serial.println(horizontalMov);
   }
   else
   {
@@ -65,7 +65,7 @@ void loop()
   {
     // Send EStop command to ODrive
     ODriveEStop();
-    Serial.Println("EStop Activated");
+    Serial.println("EStop Activated");
   }
   else
   {
@@ -75,6 +75,13 @@ void loop()
 
     // Set values of joysticks to velocity using CAN commands
     ODriveMovement(verticalMov, horizontalMov);
+    /*
+    Serial.println("Moving at: ");
+    Serial.print("X: ");
+    Serial.print(horizontalMov);
+    Serial.print("  Y: ");
+    Serial.print(verticalMov);
+    */
   }
 }
 
