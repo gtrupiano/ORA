@@ -3,13 +3,13 @@
 #include <SPI.h>
 
 #define CAN0_INT 2    // Set INT to pin 2 (This is the Interupt pin)
-MCP_CAN CAN0(8);   // Set CS to pin 10 (This is the Chip select)
+MCP_CAN CAN0(17);   // Set CS to pin 10 (This is the Chip select)
 
 #define CAN_BAUDRATE 500000
 #define ODRV0_NODE_ID 0
 #define ODRV1_NODE_ID 1
 
-// Add pin definitions for LED,IMU,etc.
+// Add pin definitions for LED, IMU, etc.
 
 double verticalMov = 0;
 double horizontalMov = 0;
@@ -43,6 +43,7 @@ void setup()
 
 void loop() 
 {
+  // For obtaining values, have arduino and esp work seperatly.
   if(PS4.isConnected()) // could combine with estop if not sure if it's easier to read this way or not. Might be easier for them to be seperate
   {
     verticalMov = PS4.LStickY(); // Possibly add some error detection (debounce)?
@@ -70,7 +71,7 @@ void loop()
   else
   {
     // Send CAN command to put axis into closed loop control state
-    ODriveControlState()
+    ODriveControlState();
     Serial.println("Put into closed loop control state");
 
     // Set values of joysticks to velocity using CAN commands
@@ -86,28 +87,28 @@ void loop()
 }
 
 // Function to send commands to ODrive via CAN bus
-void ODriveMovement(double verticalVelocity, double horizontalVelocity)
+void ODriveMovement(double verticalVelocity, double horizontalVelocity) // redo math for turns/second
 {
-    // Scales inputs
-    verticalVelocity = constrain(verticalVelocity, -1.0, 1.0);
-    horizontalVelocity = constrain(horizontalVelocity, -1.0, 1.0);
+  // Scales inputs
+  verticalVelocity = constrain(verticalVelocity, -1.0, 1.0);
+  horizontalVelocity = constrain(horizontalVelocity, -1.0, 1.0);
 
-    // Standard for differential drive control
-    double leftMotorVel = verticalVelocity - horizontalVelocity;
-    double rightMotorVel = verticalVelocity + horizontalVelocity;
-    
-    int maxRPM = 4600; // Change later if we need
-    int maxVelocity = 5 // IGVC rules, should be m/s units but not sure
-    int leftMotorRPM = leftMotorVel * maxVelocity * maxRPM; // possibly change to double but not sure if data length can handle that precision
-    int rightMotorRPM = rightMotorVel * maxVelocity * maxRPM;
+  // Standard for differential drive control
+  double leftMotorVel = verticalVelocity - horizontalVelocity;
+  double rightMotorVel = verticalVelocity + horizontalVelocity;
+  
+  int maxRPM = 4600; // Change later if we need
+  int maxVelocity = 5 // IGVC rules, should be turns/second units but not sure
+  int leftMotorRPM = leftMotorVel * maxVelocity * maxRPM; // possibly change to double but not sure if data length can handle that precision
+  int rightMotorRPM = rightMotorVel * maxVelocity * maxRPM;
 
-    // Send velocity commands to left and right motors
-    CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&leftMotorRPM); // check 4
-    CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&rightMotorRPM);
+  // Send velocity commands to left and right motors
+  CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&leftMotorRPM); // check 4
+  CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&rightMotorRPM);
 }
 
 
-void ODriveEStop() 
+void ODriveEStop() // change to make it a toggle for the button
 {
   CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x02), 0, 0, nullptr);
   CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x02), 0, 0, nullptr);
@@ -116,6 +117,6 @@ void ODriveEStop()
 void ODriveControlState()
 {
   // Send CAN command to put axis into closed loop control state
-    CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x07), 0, 4, (byte*)"\x08");
-    CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x07), 0, 4, (byte*)"\x08");
+  CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x07), 0, 4, (byte*)"\x08");
+  CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x07), 0, 4, (byte*)"\x08");
 }
