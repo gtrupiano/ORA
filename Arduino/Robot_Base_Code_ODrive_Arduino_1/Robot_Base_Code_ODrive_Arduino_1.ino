@@ -76,6 +76,7 @@ void loop()
     // Stops all movement and sends out EStop command to ODrive
     verticalMov = 0;
     horizontalMov = 0;
+    int test = 0;
     break;
   }
   else
