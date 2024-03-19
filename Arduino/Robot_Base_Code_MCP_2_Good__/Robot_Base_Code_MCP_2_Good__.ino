@@ -2,30 +2,55 @@
 #include <mcp_can.h>
 #include <SPI.h>
 
-#define CAN0_INT 2    // Set INT to pin 2 (This is the Interupt pin)
-MCP_CAN CAN0(17);   // Set CS to pin 10 (This is the Chip select)
+// digital pins available on control board: 0, 1, 10, 5, 13
+// analog pins available on control board: 0, 1, 2, 3, 4
 
+// CAN / ODrive Declarations
+#define ODRV0_NODE_ID 0 // Left Motor
+#define ODRV1_NODE_ID 1 // Right Motor
+#define CAN0_INT 2    // Set INT to pin 2 (This is the Interrupt pin)
 #define CAN_BAUDRATE 500000
-#define ODRV0_NODE_ID 0
-#define ODRV1_NODE_ID 1
+MCP_CAN CAN0(17);   // Set CS to pin 17 (This is the Chip select)
 
-// Add pin definitions for LED, IMU, etc.
+#define EStop 0         // Hardware EStop
+
+// IMU Declarations
+#define IMU_SCL 3 // On AtMega32U4 Connected to Pin 18 (PD0)
+#define IMU_SDA 2 // On AtMega32U4 Connected to Pin 19 (PD1)
+
+// LED Declarations
+#define LEDPWR_R 4 // On AtMega32U4 Connected to Pin 25 (PD4)
+#define LEDPWR_G 12 // On AtMega32U4 Connected to Pin 26 (PD6)
+#define LEDPWR_B 6 // On AtMega32U4 Connected to Pin 27 (PD7)
+
+// Battery Voltage Detection Declaration
+#define Battery_Voltage A0 // On AtMega32U4 Connected to Pin 27 (PF0)
+
 
 double verticalMov = 0;
 double horizontalMov = 0;
-bool EStop = false;
+bool EStopButton = false;
+bool EStopState = false;
 
 void setup()
 {
   pinMode(CAN0_INT, INPUT);
-  // Assign pin modes for LED,IMU,etc.
+
+  pinMode(IMU_SCL, INPUT);
+  pinMode(IMU_SDA, INPUT);
+
+  pinMode(LEDPWR_R, INPUT);
+  pinMode(LEDPWR_G, INPUT);
+  pinMode(LEDPWR_B, INPUT);
+
   Serial.begin(115200);
+
   // MAC Address for my controller
   PS4.begin("bc:03:58:28:67:42");
   Serial.println("Ready");
 
   // Continuously tries to establish connection to MCP chip until it does
-  while(1) // Fix?
+  while(1)
   {
     // Tries to initialize MCP CAN chip with clock of 8MHz and data transfer speed is 500KB/second
     if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK)
@@ -43,12 +68,12 @@ void setup()
 
 void loop() 
 {
-  // For obtaining values, have arduino and esp work seperatly.
-  if(PS4.isConnected()) // could combine with estop if not sure if it's easier to read this way or not. Might be easier for them to be seperate
+  // For obtaining values, have arduino and esp work seperatly. Use I2C for communicating between the two
+  if(PS4.isConnected()) // could combine with If statement below but this is easier to read for now
   {
     verticalMov = PS4.LStickY(); // Possibly add some error detection (debounce)?
     horizontalMov = PS4.LStickX();
-    EStop = PS4.R1();
+    EStopButton = PS4.R1();
 
     Serial.print("X: ");
     Serial.print(verticalMov);
@@ -59,34 +84,24 @@ void loop()
   {
     verticalMov = 0;
     horizontalMov = 0;
-    EStop = false;
   }
 
-  if(EStop)
+  // Allows EStop to be toggled
+  if(EStopButton && !EStopState)
   {
     // Send EStop command to ODrive
     ODriveEStop();
-    Serial.println("EStop Activated");
+    EStopState = true;
   }
-  else
+  else if(EStopButton && EStopState)
   {
-    // Send CAN command to put axis into closed loop control state
     ODriveControlState();
-    Serial.println("Put into closed loop control state");
-
-    // Set values of joysticks to velocity using CAN commands
     ODriveMovement(verticalMov, horizontalMov);
-    /*
-    Serial.println("Moving at: ");
-    Serial.print("X: ");
-    Serial.print(horizontalMov);
-    Serial.print("  Y: ");
-    Serial.print(verticalMov);
-    */
+    EStopState = false;
   }
 }
 
-// Function to send commands to ODrive via CAN bus
+// Converts Joystick values into Revolutions/Second and sends data to ODrive over CAN
 void ODriveMovement(double verticalVelocity, double horizontalVelocity) // redo math for turns/second
 {
   // Scales inputs
@@ -96,27 +111,32 @@ void ODriveMovement(double verticalVelocity, double horizontalVelocity) // redo 
   // Standard for differential drive control
   double leftMotorVel = verticalVelocity - horizontalVelocity;
   double rightMotorVel = verticalVelocity + horizontalVelocity;
-  
-  int maxRPM = 4600; // Change later if we need
-  int maxVelocity = 5 // IGVC rules, should be turns/second units but not sure
-  int leftMotorRPM = leftMotorVel * maxVelocity * maxRPM; // possibly change to double but not sure if data length can handle that precision
-  int rightMotorRPM = rightMotorVel * maxVelocity * maxRPM;
 
-  // Send velocity commands to left and right motors
-  CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&leftMotorRPM); // check 4
-  CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&rightMotorRPM);
+
+  // Converts the velocity requested into Revolutions / second
+  const int maxVelocity = 5; // IGVC rules, should be meters/second units but not sure
+  const double wheelCircumference = 2 * M_PI * 0.1524; // Circumference of the wheel in meters
+  double leftMotorRPS= (leftMotorVel * maxVelocity) / wheelCircumference; // Turns/second
+  double rightMotorRPS = (rightMotorVel * maxVelocity) / wheelCircumference; // Turns/second
+
+
+  // Send velocity CAN commands to left and right motors
+  CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&leftMotorRPS); // check 4
+  CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&rightMotorRPS);
 }
 
-
-void ODriveEStop() // change to make it a toggle for the button
+// Send CAN command to ODrive to initate EStop
+void ODriveEStop()
 {
   CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x02), 0, 0, nullptr);
   CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x02), 0, 0, nullptr);
+  Serial.println("EStop Activated");
 }
 
-void ODriveControlState()
+// Send CAN command to put axis into closed loop control state
+void ODriveControlState() // Could combine with estop function but meh
 {
-  // Send CAN command to put axis into closed loop control state
   CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x07), 0, 4, (byte*)"\x08");
   CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x07), 0, 4, (byte*)"\x08");
+  Serial.println("Put into closed loop control state");
 }
