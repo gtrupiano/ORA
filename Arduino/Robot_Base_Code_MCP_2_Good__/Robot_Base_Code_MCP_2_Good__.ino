@@ -26,7 +26,6 @@ MCP_CAN CAN0(17);   // Set CS to pin 17 (This is the Chip select)
 // Battery Voltage Detection Declaration
 #define Battery_Voltage A0 // On AtMega32U4 Connected to Pin 27 (PF0)
 
-
 double verticalMov = 0;
 double horizontalMov = 0;
 bool EStopButton = false;
@@ -112,13 +111,11 @@ void ODriveMovement(double verticalVelocity, double horizontalVelocity) // redo 
   double leftMotorVel = verticalVelocity - horizontalVelocity;
   double rightMotorVel = verticalVelocity + horizontalVelocity;
 
-
   // Converts the velocity requested into Revolutions / second
   const int maxVelocity = 5; // IGVC rules, should be meters/second units but not sure
   const double wheelCircumference = 2 * M_PI * 0.1524; // Circumference of the wheel in meters
   double leftMotorRPS= (leftMotorVel * maxVelocity) / wheelCircumference; // Turns/second
   double rightMotorRPS = (rightMotorVel * maxVelocity) / wheelCircumference; // Turns/second
-
 
   // Send velocity CAN commands to left and right motors
   CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&leftMotorRPS); // check 4
