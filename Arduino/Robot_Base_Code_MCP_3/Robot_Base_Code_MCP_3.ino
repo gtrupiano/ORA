@@ -34,14 +34,18 @@ bool EStopState = false;
 
 void setup()
 {
+  pinMode(EStop, INPUT);
+
   pinMode(CAN0_INT, INPUT);
 
-  pinMode(IMU_SCL, INPUT);
-  pinMode(IMU_SDA, INPUT);
+  pinMode(IMU_SCL, INPUT); // Work on later
+  pinMode(IMU_SDA, INPUT); // Work on later
 
   pinMode(LEDPWR_R, INPUT);
   pinMode(LEDPWR_G, INPUT);
   pinMode(LEDPWR_B, INPUT);
+
+  pinMode(Battery_Voltage, INPUT);
 
   Serial.begin(115200);
 
@@ -67,9 +71,9 @@ void loop()
   // Checks to see if data is recieved over I2C. If so sets values from controller to predefined variables
   if(Wire.onRecieve) // could combine with If statement below but this is easier to read for now
   {
-    int verticalMov = (Wire.read() << 8) | Wire.read();       // Combine two bytes into an integer
-    int horizontalMov = (Wire.read() << 8) | Wire.read();     // Combine two bytes into an integer
-    int EStopButton = Wire.read();                            // Read the third byte (R1 button state)
+    int verticalMov = (Wire.read() << 8) | Wire.read(); // Combine two bytes into an integer (Might be backwards?)
+    int horizontalMov = (Wire.read() << 8) | Wire.read(); // Combine two bytes into an integer
+    int EStopButton = Wire.read(); // Read the third byte (R1 button state)
     
     // Print received values
     Serial.print("Received from ESP32 - Vertical Movement: ");
