@@ -15,6 +15,7 @@ void loop()
   int verticalMov = PS4.LStickY();
   int horizontalMov = PS4.LStickX();
   int EStopButton = PS4.R1();
+  Serial.println(verticalMov);
 
   // Byte array Approch
   byte controllerValues[6];
@@ -22,7 +23,9 @@ void loop()
   controllerValues[1] = lowByte(verticalMov);
   controllerValues[2] = highByte(horizontalMov);
   controllerValues[3] = lowByte(horizontalMov);
-  controllerValues[4] = lowByte(EStopButton);
+  controllerValues[4] = EStopButton;
+  controllerValues[5] = 0;
+
 
   Wire.beginTransmission(8); // Address of the slave device
   Wire.write(controllerValues, sizeof(controllerValues)); // Send the byte array
@@ -37,5 +40,5 @@ void loop()
   {
     Serial.println("Error in transmission");
   }
-  delay(10);
+  delay(80);
 }

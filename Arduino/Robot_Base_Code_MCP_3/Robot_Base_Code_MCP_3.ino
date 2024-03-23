@@ -1,4 +1,3 @@
-#include <PS4Controller.h>
 #include <mcp_can.h>
 #include <SPI.h>
 #include <Wire.h>
@@ -16,7 +15,7 @@ MCP_CAN CAN0(17);   // Set CS to pin 17 (This is the Chip select)
 #define EStop 0         // Hardware EStop
 
 // IMU Declarations
-#define IMU_SCL 3 // On AtMega32U4 Connected to Pin 18 (PD0)
+#define IMU_SCL 3 // On AtMega32U4 Connected to Pin 18 (PD0) // CHECK
 #define IMU_SDA 2 // On AtMega32U4 Connected to Pin 19 (PD1)
 
 // LED Declarations
@@ -34,6 +33,7 @@ bool EStopState = false;
 
 void setup()
 {
+  Wire.begin(8);
   pinMode(EStop, INPUT);
 
   pinMode(CAN0_INT, INPUT);
@@ -69,7 +69,8 @@ void setup()
 void loop() 
 {
   // Checks to see if data is recieved over I2C. If so sets values from controller to predefined variables
-  if(Wire.onRecieve) // could combine with If statement below but this is easier to read for now
+  //Wire.onReceive()
+  if(Wire.available()) // could combine with If statement below but this is easier to read for now
   {
     int verticalMov = (Wire.read() << 8) | Wire.read(); // Combine two bytes into an integer (Might be backwards?)
     int horizontalMov = (Wire.read() << 8) | Wire.read(); // Combine two bytes into an integer
@@ -126,8 +127,8 @@ void ODriveMovement(double verticalVelocity, double horizontalVelocity) // redo 
   double rightMotorRPS = (rightMotorVel * maxVelocity) / wheelCircumference; // Turns/second
 
   // Send velocity CAN commands to left and right motors
-  CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&leftMotorRPS); // check 4
-  CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x0D), 0, 4, (byte*)&rightMotorRPS);
+  CAN0.sendMsgBuf((ODRV0_NODE_ID << 5 | 0x0D), 0, 8, (byte*)&leftMotorRPS); // check 4
+  CAN0.sendMsgBuf((ODRV1_NODE_ID << 5 | 0x0D), 0, 8, (byte*)&rightMotorRPS);
 }
 
 // Send CAN command to ODrive to initate EStop
