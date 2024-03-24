@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include <PS4Controller.h>
 
-#define ARDUINO_I2C_ADDRESS 9
+#define ARDUINO_I2C_ADDRESS 8
 
 void setup() {
   Wire.begin();

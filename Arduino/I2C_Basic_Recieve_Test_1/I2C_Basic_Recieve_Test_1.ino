@@ -7,7 +7,7 @@ bool EStopState = false;
 
 void setup() 
 {
-  Wire.begin(9);  // Initialize I2C communication with address 8
+  Wire.begin(8);  // Initialize I2C communication with address 8
   Serial.begin(115200);
 }
 
