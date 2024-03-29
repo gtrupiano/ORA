@@ -1,33 +1,40 @@
 #include <Wire.h>
 
-double verticalMov = 0;
-double horizontalMov = 0;
-bool EStopButton = false;
-bool EStopState = false;
+int yPos, xPos;
+bool rBump;
 
 void setup() 
 {
-  Wire.begin(8);  // Initialize I2C communication with address 8
-  Serial.begin(115200);
+  Wire.begin(8);        // join I2C bus (address optional for master)
+  Serial.begin(9600);  // start serial for output
 }
 
 void loop() 
 {
-  // Request 6 bytes from the master device (sender)
+  Wire.requestFrom(8, sizeof(int) + sizeof(int) + sizeof(bool)); // request data from slave device #8
 
-  verticalMov = (Wire.read() << 8) | Wire.read();       // Combine two bytes into an integer (vertical movement)
-  horizontalMov = (Wire.read() << 8) | Wire.read();    // Combine two bytes into an integer (horizontal movement)
-  EStopButton = Wire.read();                           // Read the third byte (EStop button state)
+  if (Wire.available() >= sizeof(int) + sizeof(int) + sizeof(bool))
+  {
+    // Read yPos
+    yPos = Wire.read();
+    yPos |= Wire.read() << 8; // Combine with the next byte
 
-  // Print received values
-  Serial.print("Received from ESP32 - Vertical Movement: ");
-  Serial.println(verticalMov);
+    // Read xPos
+    xPos = Wire.read();
+    xPos |= Wire.read() << 8; // Combine with the next byte
 
-  Serial.print("Received from ESP32 - Horizontal Movement: ");
-  Serial.println(horizontalMov);
+    // Read rBump
+    rBump = Wire.read();
 
-  Serial.print("Received from ESP32 - EStop Button: ");
-  Serial.println(EStopButton);
-} 
+    // Print joystick positions for debugging
+    Serial.print("Y Position: ");
+    Serial.println(yPos);
+    Serial.print("X Position: ");
+    Serial.println(xPos);
+    Serial.print("R1 Button State: ");
+    Serial.println(rBump);
+    Serial.println();
+  }
 
-
+  delay(100);
+}
