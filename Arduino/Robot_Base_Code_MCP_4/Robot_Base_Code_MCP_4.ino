@@ -69,7 +69,7 @@ void setup()
 void loop() 
 {
   
-  Wire.requestFrom(8, sizeof(int) + sizeof(int) + sizeof(bool)); // request data from slave device #8
+  Wire.requestFrom(8, sizeof(int) + sizeof(int) + sizeof(bool)); // request data from slave device #8 (ESP32)
   
   // Checks to see if data is recieved over I2C. If so sets values from controller to predefined variables
   if(Wire.available() >= sizeof(int) + sizeof(int) + sizeof(bool)) // could combine with If statement below but this is easier to read for now
@@ -123,7 +123,7 @@ void loop()
 // Converts Joystick values into Revolutions/Second and sends data to ODrive over CAN
 void ODriveMovement(double verticalVelocity, double horizontalVelocity) // redo math for turns/second
 {
-  // Scales inputs
+  // Scales inputs to directional vector
   verticalVelocity = constrain(verticalVelocity, -1.0, 1.0);
   horizontalVelocity = constrain(horizontalVelocity, -1.0, 1.0);
 
