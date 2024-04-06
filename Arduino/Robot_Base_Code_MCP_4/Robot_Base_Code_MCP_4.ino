@@ -12,7 +12,7 @@
 #define CAN_BAUDRATE 500000
 MCP_CAN CAN0(17);   // Set CS to pin 17 (This is the Chip select)
 
-#define EStop 0         // Hardware EStop
+#define EStop 0 // Hardware EStop
 
 // IMU Declarations
 #define IMU_SCL 3 // On AtMega32U4 Connected to Pin 18 (PD0) // CHECK
