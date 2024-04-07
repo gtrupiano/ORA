@@ -7,7 +7,7 @@ bool rBump;
 void setup() 
 {
   PS4.begin("bc:03:58:28:67:42"); // Initialize PS4 controller with MAC address
-  Serial.begin(115200);
+  Serial.begin(9600);
   Wire.begin(8); // Join I2C bus with address #8
   Wire.onRequest(requestEvent); // Register request event
 }
@@ -36,15 +36,15 @@ void loop()
 void requestEvent() 
 {
   // Convert the integer joystick positions and boolean button state to byte arrays
-  byte yArray[sizeof(yPos)];
-  byte xArray[sizeof(xPos)];
-  byte rBumpArray[sizeof(rBump)];
-  memcpy(yArray, &yPos, sizeof(yPos));
-  memcpy(xArray, &xPos, sizeof(xPos));
-  memcpy(rBumpArray, &rBump, sizeof(rBump));
+  byte yArray[sizeof(int)];
+  byte xArray[sizeof(int)];
+  byte rBumpArray[sizeof(bool)];
+  memcpy(yArray, &yPos, sizeof(int));
+  memcpy(xArray, &xPos, sizeof(int));
+  memcpy(rBumpArray, &rBump, sizeof(bool));
 
   // Send the byte arrays over I2C
-  Wire.write(yArray, sizeof(yArray));
-  Wire.write(xArray, sizeof(xArray));
-  Wire.write(rBumpArray, sizeof(rBumpArray));
+  Wire.write(yArray, sizeof(int));
+  Wire.write(xArray, sizeof(int));
+  Wire.write(rBumpArray, sizeof(bool));
 }
