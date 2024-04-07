@@ -25,8 +25,8 @@ MCP2515Class& can_intf = CAN;
 // Battery Voltage Detection Declaration
 #define Battery_Voltage A0 // On AtMega32U4 Connected to Pin 27 (PF0)
 
-double verticalMov = 0;
-double horizontalMov = 0;
+int verticalMov = 0;
+int horizontalMov = 0;
 bool EStopButton = false;
 bool EStopState = false;
 
@@ -183,15 +183,15 @@ void loop()
   if(Wire.available() >= sizeof(int) + sizeof(int) + sizeof(bool)) // could combine with If statement below but this is easier to read for now
   {
     // Read vertical movement from left joystick
-    int verticalMov = Wire.read();
+    verticalMov = Wire.read();
     verticalMov |= Wire.read() << 8; // Combine with the next byte
 
     // Read horizontal movement from left joystick
-    int horizontalMov = Wire.read();
+    horizontalMov = Wire.read();
     horizontalMov |= Wire.read() << 8; // Combine with the next byte
 
     // Read EStopButton from right bumper
-    int EStopButton = Wire.read();
+    EStopButton = Wire.read();
     
     // Print received values
     Serial.print("Received from ESP32 - Vertical Movement: ");
@@ -251,13 +251,13 @@ void ODriveMovement(double verticalVelocity, double horizontalVelocity) // redo 
   double rightMotorVel = verticalVelocity + horizontalVelocity;
 
   // Converts the velocity requested into Revolutions / second
-  const int maxVelocity = 5; // IGVC rules, should be meters/second units but not sure
+  const double maxVelocity = 5.0; // IGVC rules, should be meters/second units but not sure
   const double wheelCircumference = 2 * M_PI * 0.1524; // Circumference of the wheel in meters
   double leftMotorRPS= (leftMotorVel * maxVelocity) / wheelCircumference; // Turns/second
   double rightMotorRPS = (rightMotorVel * maxVelocity) / wheelCircumference; // Turns/second
 
   // Send velocity CAN commands to left and right motors
-  odrv0.setVelocity(8);
+  odrv0.setVelocity(rightMotorRPS);
 }
 
 // Send CAN command to ODrive to initate EStop
