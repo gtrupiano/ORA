@@ -142,18 +142,19 @@ void setup() {
 void loop() {
   pumpEvents(can_intf); // This is required on some platforms to handle incoming feedback CAN messages
 
-  float SINE_PERIOD = 2.0f; // Period of the position command sine wave in seconds
+  // Check for user input from the serial monitor
+  if (Serial.available() > 0) {
+    // Read the input string
+    String input = Serial.readStringUntil('\n');
 
-  float t = 0.001 * millis();
-  
-  float phase = t * (TWO_PI / SINE_PERIOD);
+    // Parse the input to extract the target velocity
+    double targetVelocity = input.toDouble();
 
-  odrv0.setPosition(
-    sin(phase), // position
-    cos(phase) * (TWO_PI / SINE_PERIOD) // velocity feedforward (optional)
-  );
+    // Set the velocity of the ODrive motor
+    odrv0.setVelocity(targetVelocity);
+  }
 
-  // print position and velocity for Serial Plotter
+  // Print position and velocity for Serial Plotter
   if (odrv0_user_data.received_feedback) {
     Get_Encoder_Estimates_msg_t feedback = odrv0_user_data.last_feedback;
     odrv0_user_data.received_feedback = false;
@@ -164,3 +165,5 @@ void loop() {
     Serial.println(feedback.Vel_Estimate);
   }
 }
+
+
