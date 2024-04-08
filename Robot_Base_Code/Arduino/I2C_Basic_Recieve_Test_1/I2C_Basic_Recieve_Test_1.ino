@@ -3,19 +3,18 @@
 int yPos, xPos;
 bool rBump;
 
-void setup() 
-{
+void setup() {
   Wire.begin(8);        // join I2C bus (address optional for master)
   Serial.begin(9600);  // start serial for output
+  Serial.print(sizeof(int));
 }
 
-void loop() 
-{
-  Wire.requestFrom(8, sizeof(int) + sizeof(int) + sizeof(bool)); // request data from slave device #8
+void loop() {
+  // Request data from slave device #8
+  Wire.requestFrom(8, sizeof(int) * 2 + sizeof(bool));
 
   // Make sure there's enough data available
-  if (Wire.available() >= sizeof(int) * 2 + sizeof(bool))
-  {
+  if (Wire.available() >= sizeof(int) * 2 + sizeof(bool)) {
     // Read yPos
     yPos = Wire.read();
     yPos |= Wire.read() << 8; // Combine with the next byte

@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include <PS4Controller.h>
 
-int yPos, xPos; // Variables to store joystick positions
+uint16_t yPos, xPos; // Variables to store joystick positions
 bool rBump;
 
 void setup() 
@@ -10,6 +10,7 @@ void setup()
   Serial.begin(9600);
   Wire.begin(8); // Join I2C bus with address #8
   Wire.onRequest(requestEvent); // Register request event
+  Serial.print(sizeof(int));
 }
 
 void loop() 
@@ -36,15 +37,15 @@ void loop()
 void requestEvent() 
 {
   // Convert the integer joystick positions and boolean button state to byte arrays
-  byte yArray[sizeof(int)];
-  byte xArray[sizeof(int)];
+  byte yArray[sizeof(uint16_t)];
+  byte xArray[sizeof(uint16_t)];
   byte rBumpArray[sizeof(bool)];
-  memcpy(yArray, &yPos, sizeof(int));
-  memcpy(xArray, &xPos, sizeof(int));
+  memcpy(yArray, &yPos, sizeof(uint16_t));
+  memcpy(xArray, &xPos, sizeof(uint16_t));
   memcpy(rBumpArray, &rBump, sizeof(bool));
 
   // Send the byte arrays over I2C
-  Wire.write(yArray, sizeof(int));
-  Wire.write(xArray, sizeof(int));
+  Wire.write(yArray, sizeof(uint16_t));
+  Wire.write(xArray, sizeof(uint16_t));
   Wire.write(rBumpArray, sizeof(bool));
 }
