@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include <PS4Controller.h>
 
-uint16_t yPos, xPos; // Variables to store joystick positions
+int yPos, xPos; // Variables to store joystick positions
 bool rBump;
 
 void setup() 

@@ -107,16 +107,17 @@ void setup()
   pinMode(IMU_SCL, INPUT); // Work on later
   pinMode(IMU_SDA, INPUT); // Work on later
 
-  pinMode(LEDPWR_R, INPUT);
-  pinMode(LEDPWR_G, INPUT);
-  pinMode(LEDPWR_B, INPUT);
+  pinMode(LEDPWR_R, OUTPUT);
+  pinMode(LEDPWR_G, OUTPUT);
+  pinMode(LEDPWR_B, OUTPUT);
 
   pinMode(Battery_Voltage, INPUT);
 
 
   // Wait for up to 3 seconds for the serial port to be opened on the PC side.
   // If no PC connects, continue anyway.
-  for (int i = 0; i < 30 && !Serial; ++i) {
+  for (int i = 0; i < 30 && !Serial; ++i) 
+  {
     delay(100);
   }
   delay(200);
@@ -192,7 +193,7 @@ void loop()
 
     // Read EStopButton from right bumper
     EStopButton = Wire.read();
-    
+    /*
     // Print received values
     Serial.print("Received from ESP32 - Vertical Movement: ");
     Serial.println(verticalMov);
@@ -202,7 +203,7 @@ void loop()
 
     Serial.print("Received from ESP32 - EStop Button: ");
     Serial.println(EStopButton);
-
+*/
     delay(10);
   } 
   else
@@ -220,14 +221,14 @@ void loop()
     //ODriveEStop();
     EStopState = true;
   }
-  else if(EStopButton && EStopState)
+  else if(!EStopButton && EStopState)
   {
     //ODriveControlState();
     ODriveMovement(verticalMov, horizontalMov);
     EStopState = false;
   }
 
-/*
+
   // print position and velocity for Serial Plotter
   if (odrv0_user_data.received_feedback) 
   {
@@ -236,14 +237,14 @@ void loop()
     Serial.print("ODrive 0 Velocity:");
     Serial.println(feedback.Vel_Estimate);
   }
-  */
+
 }
 
 // Converts Joystick values into Revolutions/Second and sends data to ODrive over CAN
 void ODriveMovement(double verticalVelocity, double horizontalVelocity) // redo math for turns/second
 {
   // Scales inputs to directional vector
-  verticalVelocity = constrain(verticalVelocity, -1.0, 1.0);
+  verticalVelocity = constrain(verticalVelocity, -10, 10);
   horizontalVelocity = constrain(horizontalVelocity, -1.0, 1.0);
 
   // Standard for differential drive control
@@ -257,7 +258,7 @@ void ODriveMovement(double verticalVelocity, double horizontalVelocity) // redo 
   double rightMotorRPS = (rightMotorVel * maxVelocity) / wheelCircumference; // Turns/second
 
   // Send velocity CAN commands to left and right motors
-  odrv0.setVelocity(rightMotorRPS);
+  odrv0.setVelocity(verticalVelocity);
 }
 
 // Send CAN command to ODrive to initate EStop

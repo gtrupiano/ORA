@@ -109,16 +109,17 @@ void setup()
   pinMode(IMU_SCL, INPUT); // Work on later
   pinMode(IMU_SDA, INPUT); // Work on later
 
-  pinMode(LEDPWR_R, INPUT);
-  pinMode(LEDPWR_G, INPUT);
-  pinMode(LEDPWR_B, INPUT);
+  pinMode(LEDPWR_R, OUTPUT);
+  pinMode(LEDPWR_G, OUTPUT);
+  pinMode(LEDPWR_B, OUTPUT);
 
   pinMode(Battery_Voltage, INPUT);
 
 
   // Wait for up to 3 seconds for the serial port to be opened on the PC side.
   // If no PC connects, continue anyway.
-  for (int i = 0; i < 30 && !Serial; ++i) {
+  for (int i = 0; i < 30 && !Serial; ++i) 
+  {
     delay(100);
   }
   delay(200);
