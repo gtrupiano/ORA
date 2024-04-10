@@ -261,7 +261,8 @@ void loop()
   }
 }
 
-void ODriveMovement(double verticalVelocity, double horizontalVelocity) {
+void ODriveMovement(double verticalVelocity, double horizontalVelocity) 
+{
   // Scales inputs to directional vector
   verticalVelocity = constrain(verticalVelocity, -1.0, 1.0);
   horizontalVelocity = constrain(horizontalVelocity, -1.0, 1.0);
@@ -277,7 +278,7 @@ void ODriveMovement(double verticalVelocity, double horizontalVelocity) {
   const double inputRPM = 4400.0;
 
   // Converts the velocity requested into Turns / second
-  const double maxVelocity = 5.0; // IGVC rules, should be meters/second units but not sure
+  const double maxVelocity = 5.0; //  Speed limit according to IGVC rules
   double leftMotorRPS = leftMotorVel * maxVelocity; // Turns/second
   double rightMotorRPS = rightMotorVel * maxVelocity; // Turns/second
 
