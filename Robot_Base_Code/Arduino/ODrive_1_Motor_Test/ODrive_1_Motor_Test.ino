@@ -171,6 +171,7 @@ void setup()
       pumpEvents(can_intf);
     }
   }
+  Serial.println("test");
 
   Serial.println("ODrive running!");
 }
@@ -193,7 +194,8 @@ void loop()
 
     // Read EStopButton from right bumper
     EStopButton = Wire.read();
-    /*
+    
+    
     // Print received values
     Serial.print("Received from ESP32 - Vertical Movement: ");
     Serial.println(verticalMov);
@@ -203,7 +205,7 @@ void loop()
 
     Serial.print("Received from ESP32 - EStop Button: ");
     Serial.println(EStopButton);
-*/
+
     delay(10);
   } 
   else
@@ -215,20 +217,24 @@ void loop()
   }
 
   // Allows EStop to be toggled
-  if(EStopButton && !EStopState)
+
+  // Button was pressed
+  if (EStopButton)
   {
     // Send EStop command to ODrive
-    //ODriveEStop();
+    ODriveEStop();
     EStopState = true;
-  }
-  else if(!EStopButton && EStopState)
+    delay(5); // Delay for debouncing
+  } 
+  else 
   {
-    //ODriveControlState();
+    ODriveControlState();
     ODriveMovement(verticalMov, horizontalMov);
     EStopState = false;
+    delay(5); // Delay for debouncing
   }
-
-
+  
+/*
   // print position and velocity for Serial Plotter
   if (odrv0_user_data.received_feedback) 
   {
@@ -237,14 +243,17 @@ void loop()
     Serial.print("ODrive 0 Velocity:");
     Serial.println(feedback.Vel_Estimate);
   }
-
+*/
+  Serial.print("EStop State: ");
+  Serial.println(EStopState);
+  delay(10);
 }
 
 // Converts Joystick values into Revolutions/Second and sends data to ODrive over CAN
 void ODriveMovement(double verticalVelocity, double horizontalVelocity) // redo math for turns/second
 {
   // Scales inputs to directional vector
-  verticalVelocity = constrain(verticalVelocity, -10, 10);
+  verticalVelocity = constrain(verticalVelocity, -50, 50);
   horizontalVelocity = constrain(horizontalVelocity, -1.0, 1.0);
 
   // Standard for differential drive control
