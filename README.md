@@ -1,6 +1,6 @@
 # Oakland Robotics Association (ORA)
 
-![ORA](Club_Documents/ORA Logo.png)
+![ORA](Club_Documents/ORA_Logo.png)
 
 ## IGVC
 Each year, Robotics Association at Oakland University competes in the International Ground Vehicle
