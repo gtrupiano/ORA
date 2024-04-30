@@ -18425,7 +18425,7 @@
 			(justify left bottom mirror)
 		)
 	)
-	(gr_text "Andrew McGhee, Sivasakthi Muthukumar\n"
+	(gr_text "Andrew McGhee, George Trupiano, Sivasakthi Muthukumar\n"
 		(at 178.6 99.1 0)
 		(layer "B.SilkS")
 		(uuid "c78e3cc2-4f07-4945-ad2b-213c693aef67")
