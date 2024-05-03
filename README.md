@@ -20,6 +20,15 @@ Arduino), power distribution system (including batteries, battery management sys
 etc.), LED display, and safety functions (such as emergency stops, fuses, and light indication). The project
 will also involve detailed documentation and a final report that can be integrated into the IGVC final report.
 
-## Key Components
+## Components and Layout
 
 ### Control Board
+![Control_Board](Club_Documents/Control_Board.png)
+
+(Talk about what board includes, why it was needed, and how to improve it)
+
+
+### Robot Control Layout
+![Drive_Control](Club_Documents/Drive_Control_Layout)
+
+(Talk about main functions of how it works, and how each component is incorperated with each other)
