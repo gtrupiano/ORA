@@ -29,6 +29,6 @@ will also involve detailed documentation and a final report that can be integrat
 
 
 ### Robot Control Layout
-![Drive_Control](Club_Documents/Drive_Control_Layout)
+![Drive_Control](Club_Documents/Drive_Control_Layout.png)
 
 (Talk about main functions of how it works, and how each component is incorperated with each other)
