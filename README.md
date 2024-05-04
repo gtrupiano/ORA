@@ -25,7 +25,7 @@ will also involve detailed documentation and a final report that can be integrat
 ### Control Board
 ![Control_Board](Club_Documents/Control_Board.png)
 
-(Talk about what board includes, why it was needed, and how to improve it)
+In the robot, there were plenty of components that needed to interface together. These include both ODrives over CAN and status light control. Its main purpose is to reduce the amount of wires that need to be going from each component and have every necessary component on a single board.
 
 
 ### Robot Control Layout
