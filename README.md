@@ -30,5 +30,3 @@ In the robot, there were plenty of components that needed to interface together.
 
 ### Robot Control Layout
 ![Drive_Control](Club_Documents/Drive_Control_Layout.png)
-
-(Talk about main functions of how it works, and how each component is incorperated with each other)
