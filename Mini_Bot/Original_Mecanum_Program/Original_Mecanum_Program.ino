@@ -39,7 +39,7 @@ void setup()
 
   pinMode(buzzer, OUTPUT);
 
-  Serial.println("Ready.");
+  Serial.println("Ready");
 }
 
 void loop() 
