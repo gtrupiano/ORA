@@ -22,7 +22,8 @@ int buzzerVal = 0;
 
 int speedY = 0, speedX = 0, rotation = 0;
 
-void setup() {
+void setup() 
+{
   Serial.begin(921600);
   ps5.begin(macAddress);
 
@@ -41,8 +42,10 @@ void setup() {
   Serial.println("Ready.");
 }
 
-void loop() {
-  while (ps5.isConnected() == true) {
+void loop() 
+{
+  while (ps5.isConnected() == true) 
+  {
     int joystickX = ps5.LStickX();
     int joystickY = ps5.LStickY();
     int rotatestick = ps5.RStickX();
@@ -65,21 +68,24 @@ void loop() {
   }
 }
 
-void setMotorSpeedAndDirection(int motorPin, int dirPin, int speed, int direction) {
+void setMotorSpeedAndDirection(int motorPin, int dirPin, int speed, int direction) 
+{
   speed = constrain(speed, 0, 255);
   digitalWrite(dirPin, direction);
   analogWrite(motorPin, speed);
 }
 
-void mecanumDrive(int x, int y, int rotation) {
-  int FL_speed = y - x + rotation;
-  int FR_speed = y + x - rotation;
-  int BL_speed = y + x + rotation;
-  int BR_speed = y - x - rotation;
+void mecanumDrive(int x, int y, int rotation) 
+{
+  int FL_speed = y + x - rotation;
+  int FR_speed = y - x - rotation;
+  int BL_speed = y - x + rotation;
+  int BR_speed = y + x - rotation;
 
   int maxSpeed = max(max(abs(FL_speed), abs(FR_speed)), max(abs(BL_speed), abs(BR_speed)));
 
-  if (maxSpeed > 255) {
+  if (maxSpeed > 255) 
+  {
     FL_speed = map(FL_speed, -maxSpeed, maxSpeed, -255, 255);
     FR_speed = map(FR_speed, -maxSpeed, maxSpeed, -255, 255);
     BL_speed = map(BL_speed, -maxSpeed, maxSpeed, -255, 255);
