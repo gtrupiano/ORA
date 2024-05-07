@@ -26,8 +26,8 @@ MCP2515Class& can_intf = CAN;
 
 // FIX NAME TO ButtonSignal or something like that
 // Robot State Declarations
-#define EStopButtonIndicator 4 // On AtMega32U4 Connected to Pin 25 (PD4)
-#define AutonButtonIndicator 5 // On AtMega32U4 Connected to Pin 26 (PD6)
+#define EStopButtonIndicator 4 // digital signal that goes to control board to illuminate stack light
+#define AutonButtonIndicator 5 // digital signal that goes to control board to illuminate stack light
 
 // Battery Voltage Detection Declaration
 #define Battery_Voltage A0 // On AtMega32U4 Connected to Pin 27 (PF0)
@@ -304,34 +304,20 @@ void loop()
   */
 }
 
+// This function now just scales vertical and horizontal input to -20 to 20 and vertical goes to left motor speed, horizontal goes to right motor speed
 void ODriveMovement(double verticalVelocity, double horizontalVelocity) // Fix later
 {
-  // Scales inputs to directional vector
-  verticalVelocity = constrain(verticalVelocity, -1.0, 1.0);
-  horizontalVelocity = constrain(horizontalVelocity, -1.0, 1.0);
+  // Arbitrarily scales inputs 
+  verticalVelocity = constrain(verticalVelocity, -20, 20);
+  horizontalVelocity = constrain(horizontalVelocity, -20, 20);
 
   // Standard for differential drive control
-  double leftMotorVel = verticalVelocity - horizontalVelocity;
-  double rightMotorVel = verticalVelocity + horizontalVelocity;
-
-  // Gearbox ratio
-  const double gearboxRatio = 21.0;
-
-  // Input RPM
-  const double inputRPM = 4400.0;
-
-  // Converts the velocity requested into Turns / second
-  const double maxVelocity = 5.0; //  Speed limit according to IGVC rules
-  double leftMotorRPS = leftMotorVel * maxVelocity; // Turns/second
-  double rightMotorRPS = rightMotorVel * maxVelocity; // Turns/second
-
-  // Adjust for gearbox ratio and input RPM
-  leftMotorRPS = (leftMotorRPS / gearboxRatio) * (inputRPM / 60.0);
-  rightMotorRPS = (rightMotorRPS / gearboxRatio) * (inputRPM / 60.0);
+  double leftMotorMove = verticalVelocity;
+  double rightMotorMove = horizontalVelocity;
 
   // Send velocity CAN commands to left and right motors
-  odrv0.setVelocity(leftMotorRPS);
-  odrv1.setVelocity(rightMotorRPS);
+  odrv0.setVelocity(leftMotorMove);
+  odrv1.setVelocity(rightMotorMove);
 }
 
 // Send CAN command to ODrive to initate EStop
