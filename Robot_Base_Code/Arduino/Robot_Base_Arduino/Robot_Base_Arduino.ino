@@ -277,7 +277,9 @@ void ODriveMovement(double verticalVelocity, double horizontalVelocity) // Confi
   verticalVelocity = constrain(verticalVelocity, -1.0, 1.0);
   horizontalVelocity = constrain(horizontalVelocity, -1.0, 1.0);
 
+
   // Standard for differential drive control
+    // When one wheel moves faster the other should turn if there is horizontal movement
   double leftMotorVel = verticalVelocity - horizontalVelocity;
   double rightMotorVel = verticalVelocity + horizontalVelocity;
 

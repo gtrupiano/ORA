@@ -17,9 +17,6 @@ const int dirFR = 12;
 const int dirBL = 21;
 const int dirBR = 33;
 
-const int buzzer = 18;
-int buzzerVal = 0;
-
 int speedY = 0, speedX = 0, rotation = 0;
 
 void setup() 
@@ -37,8 +34,6 @@ void setup()
   pinMode(motorBL, OUTPUT);
   pinMode(motorBR, OUTPUT);
 
-  pinMode(buzzer, OUTPUT);
-
   Serial.println("Ready");
 }
 
@@ -49,7 +44,6 @@ void loop()
     int joystickX = ps5.LStickX();
     int joystickY = ps5.LStickY();
     int rotatestick = ps5.RStickX();
-    int buzzerVal = ps5.R2();
 
     Serial.println(joystickX);
     Serial.println(joystickY);
@@ -61,8 +55,6 @@ void loop()
     speedY = (abs(joystickY) > deadband) ? map(joystickY, -128, 127, -255, 255) : 0;
     rotation = (abs(rotatestick) > deadband) ? map(rotatestick, -128, 127, -255, 255) : 0;
     
-    tone(buzzer, buzzerVal ? 1020 : 0);
-
     mecanumDrive(speedX, speedY, rotation);
     delay(10);
   }
