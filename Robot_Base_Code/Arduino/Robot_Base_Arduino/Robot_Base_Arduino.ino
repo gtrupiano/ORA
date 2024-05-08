@@ -231,17 +231,7 @@ void loop()
     // Read Robot State from left bumper
     AutonButton = Wire.read();
     
-    /*
-    // Print received values
-    Serial.print("Received from ESP32 - Vertical Movement: ");
-    Serial.println(verticalMov);
-
-    Serial.print("Received from ESP32 - Horizontal Movement: ");
-    Serial.println(horizontalMov);
-
-    Serial.print("Received from ESP32 - EStop Button: ");
-    Serial.println(EStopButton);
-    */
+    //ControllerData();
 
     delay(10);
   } 
@@ -284,29 +274,12 @@ void loop()
     digitalWrite(AutonButtonIndicator, LOW);
   }
 
-  /*
-  // print position and velocity for Serial Plotter
-  if (odrv0_user_data.received_feedback) 
-  {
-    Get_Encoder_Estimates_msg_t feedback = odrv0_user_data.last_feedback;
-    odrv0_user_data.received_feedback = false;
-    Serial.print("ODrive 0 Velocity:");
-    Serial.println(feedback.Vel_Estimate);
-  }
-
-  if (odrv1_user_data.received_feedback) 
-  {
-    Get_Encoder_Estimates_msg_t feedback = odrv1_user_data.last_feedback;
-    odrv1_user_data.received_feedback = false;
-    Serial.print("ODrive 1 Velocity:");
-    Serial.println(feedback.Vel_Estimate);
-  }
-  */
+  //ODriveEncoderData();
 }
 
-void ODriveMovement(double verticalVelocity, double horizontalVelocity) // Fix later
+void ODriveMovement(double verticalVelocity, double horizontalVelocity) // Confirm if working
 {
-  // Scales inputs to directional vector
+  // Scales inputs to directional velocity vectors
   verticalVelocity = constrain(verticalVelocity, -1.0, 1.0);
   horizontalVelocity = constrain(horizontalVelocity, -1.0, 1.0);
 
@@ -348,17 +321,10 @@ void ODriveEStop()
     delay(1);
     odrv1.setState(ODriveAxisState::AXIS_STATE_IDLE);
 
-    // Pump events for 150ms. This delay is needed for two reasons;
-    // 1. If there is an error condition, such as missing DC power, the ODrive might
-    //    briefly attempt to enter CLOSED_LOOP_CONTROL state, so we can't rely
-    //    on the first heartbeat response, so we want to receive at least two
-    //    heartbeats (100ms default interval).
-    // 2. If the bus is congested, the setState command won't get through
-    //    immediately but can be delayed.
     for (int i = 0; i < 15; ++i) 
     {
       delay(10);
-      pumpEvents(can_intf);
+      pumpEvents(can_intf); // Pump events for 150ms (Look at example for full explaination)
     }
   }
   Serial.println("EStop Activated");
@@ -378,18 +344,51 @@ void ODriveControlState() // Could combine with estop function but meh
     delay(1);
     odrv1.setState(ODriveAxisState::AXIS_STATE_CLOSED_LOOP_CONTROL);
 
-    // Pump events for 150ms. This delay is needed for two reasons;
-    // 1. If there is an error condition, such as missing DC power, the ODrive might
-    //    briefly attempt to enter CLOSED_LOOP_CONTROL state, so we can't rely
-    //    on the first heartbeat response, so we want to receive at least two
-    //    heartbeats (100ms default interval).
-    // 2. If the bus is congested, the setState command won't get through
-    //    immediately but can be delayed.
     for (int i = 0; i < 15; ++i) 
     {
       delay(10);
-      pumpEvents(can_intf);
+      pumpEvents(can_intf);  // Pump events for 150ms (Look at example for full explaination)
     }
   }
   Serial.println("Put into closed loop control state");
+}
+
+// Prints position and velocity from each ODrive (For debugging)
+void ODriveEncoderData()
+{
+  if (odrv0_user_data.received_feedback) 
+  {
+    Get_Encoder_Estimates_msg_t feedback = odrv0_user_data.last_feedback;
+    odrv0_user_data.received_feedback = false;
+    Serial.print("ODrive 0 Velocity:");
+    Serial.println(feedback.Vel_Estimate);
+    Serial.println("------------------------");
+  }
+
+  if (odrv1_user_data.received_feedback) 
+  {
+    Get_Encoder_Estimates_msg_t feedback = odrv1_user_data.last_feedback;
+    odrv1_user_data.received_feedback = false;
+    Serial.print("ODrive 1 Velocity:");
+    Serial.println(feedback.Vel_Estimate);
+    Serial.println("------------------------");
+  }
+}
+
+// Prints received values from controller (For debugging)
+void ControllerData()
+{
+  Serial.print("Received from ESP32 - Vertical Movement: ");
+  Serial.println(verticalMov);
+
+  Serial.print("Received from ESP32 - Horizontal Movement: ");
+  Serial.println(horizontalMov);
+
+  Serial.print("Received from ESP32 - EStop Button: ");
+  Serial.println(EStopButton);
+
+  Serial.print("Received from ESP32 - Autonomous Button: ");
+  Serial.println(AutonButton);
+
+  Serial.println("------------------------");
 }
