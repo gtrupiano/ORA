@@ -231,6 +231,7 @@ void loop()
     // Read Robot State from left bumper
     AutonButton = Wire.read();
     
+    // Reads controller values from ESP-32
     //ControllerData();
 
     delay(10);
@@ -244,8 +245,8 @@ void loop()
     Serial.println("Insufficient bytes received");
   }
 
-  // Allows EStop to be toggled
-
+  // Make toggle instead of push to activate
+  
   // Button was pressed
   if (EStopButton)
   {
@@ -274,6 +275,7 @@ void loop()
     digitalWrite(AutonButtonIndicator, LOW);
   }
 
+  // Prints ODrive Velocities and Position via Encoders
   //ODriveEncoderData();
 }
 
@@ -295,16 +297,16 @@ void ODriveMovement(double verticalVelocity, double horizontalVelocity) // Confi
 
   // Converts the velocity requested into Turns / second
   const double maxVelocity = 5.0; //  Speed limit according to IGVC rules
-  double leftMotorRPS = leftMotorVel * maxVelocity; // Turns/second
-  double rightMotorRPS = rightMotorVel * maxVelocity; // Turns/second
+  double leftMotorTPS = leftMotorVel * maxVelocity; // Turns/second
+  double rightMotorTPS = rightMotorVel * maxVelocity; // Turns/second
 
   // Adjust for gearbox ratio and input RPM
-  leftMotorRPS = (leftMotorRPS / gearboxRatio) * (inputRPM / 60.0);
-  rightMotorRPS = (rightMotorRPS / gearboxRatio) * (inputRPM / 60.0);
+  leftMotorTPS = (leftMotorTPS / gearboxRatio) * (inputRPM / 60.0);
+  rightMotorTPS = (rightMotorTPS / gearboxRatio) * (inputRPM / 60.0);
 
   // Send velocity CAN commands to left and right motors
-  odrv0.setVelocity(leftMotorRPS);
-  odrv1.setVelocity(rightMotorRPS);
+  odrv0.setVelocity(leftMotorTPS);
+  odrv1.setVelocity(rightMotorTPS);
 }
 
 // Send CAN command to ODrive to initate EStop
@@ -375,7 +377,7 @@ void ODriveEncoderData()
   }
 }
 
-// Prints received values from controller (For debugging)
+// Prints received values of controller from ESP-32 (For debugging)
 void ControllerData()
 {
   Serial.print("Received from ESP32 - Vertical Movement: ");
