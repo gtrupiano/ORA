@@ -130,8 +130,7 @@ void setup()
   pinMode(Battery_Voltage, INPUT);
 
 
-  // Wait for up to 3 seconds for the serial port to be opened on the PC side.
-  // If no PC connects, continue anyway.
+  // Wait for up to 3 seconds for the serial port to be opened on the PC side
   for (int i = 0; i < 30 && !Serial; ++i) 
   {
     delay(100);
@@ -149,7 +148,7 @@ void setup()
   if (!setupCan()) 
   {
     Serial.println("CAN failed to initialize: reset required");
-    while (true); // spin indefinitely
+    while (true);
   }
 
   Serial.println("Waiting for ODrive...");
@@ -167,12 +166,12 @@ void setup()
   if (!odrv0.request(vbus, 1)) 
   {
     Serial.println("vbus request failed!");
-    while (true); // spin indefinitely
+    while (true);
   }
   else if (!odrv1.request(vbus, 1))
   {
     Serial.println("vbus request failed!");
-    while (true); // spin indefinitely
+    while (true);
   }
 
   Serial.print("DC voltage [V]: ");
@@ -191,17 +190,10 @@ void setup()
     delay(1);
     odrv1.setState(ODriveAxisState::AXIS_STATE_CLOSED_LOOP_CONTROL);
 
-    // Pump events for 150ms. This delay is needed for two reasons;
-    // 1. If there is an error condition, such as missing DC power, the ODrive might
-    //    briefly attempt to enter CLOSED_LOOP_CONTROL state, so we can't rely
-    //    on the first heartbeat response, so we want to receive at least two
-    //    heartbeats (100ms default interval).
-    // 2. If the bus is congested, the setState command won't get through
-    //    immediately but can be delayed.
     for (int i = 0; i < 15; ++i) 
     {
       delay(10);
-      pumpEvents(can_intf);
+      pumpEvents(can_intf); // Pump events for 150ms (Look at example for full explaination)
     }
   }
 
