@@ -24,7 +24,6 @@ MCP2515Class& can_intf = CAN;
 #define LEDPWR_B 6 // On AtMega32U4 Connected to Pin 27 (PD7)
 */
 
-// FIX NAME TO ButtonSignal or something like that
 // Robot State Declarations
 #define EStopButtonIndicator 4 // On AtMega32U4 Connected to Pin 25 (PD4)
 #define AutonButtonIndicator 5 // On AtMega32U4 Connected to Pin 26 (PD6)
@@ -36,8 +35,10 @@ int verticalMov = 0;
 int horizontalMov = 0;
 bool EStopButton = false;
 bool EStopState = false;
+bool prevEStopButton = false;
 bool AutonButton = false;
 bool AutonState = false;
+bool prevAutonButton = false;
 
 static inline void receiveCallback(int packet_size) 
 {
@@ -64,11 +65,12 @@ bool setupCan()
   return true;
 }
 
-// Instantiate ODrive objects
-ODriveCAN odrv0(wrap_can_intf(can_intf), ODRV0_NODE_ID); // Standard CAN message ID
-ODriveCAN odrv1(wrap_can_intf(can_intf), ODRV1_NODE_ID); // Standard CAN message ID
+// Initialize ODrive objects
+ODriveCAN odrv0(wrap_can_intf(can_intf), ODRV0_NODE_ID); // Initalize odrv0 as ODriveCAN object with respective node ID
+ODriveCAN odrv1(wrap_can_intf(can_intf), ODRV1_NODE_ID); // Initalize odrv1 as ODriveCAN object with respective node ID
 ODriveCAN* odrives[] = {&odrv0, &odrv1}; // Make sure all ODriveCAN instances are accounted for here
 
+// Data type created for ODrive (Consists of last heartbeat, if heartbeat was received, encoder feedback, and if there is feedback)
 struct ODriveUserData 
 {
   Heartbeat_msg_t last_heartbeat;
@@ -77,7 +79,7 @@ struct ODriveUserData
   bool received_feedback = false;
 };
 
-// Keep some application-specific user data for every ODrive.
+// Initalizes variables to hold ODrive configuation data
 ODriveUserData odrv0_user_data;
 ODriveUserData odrv1_user_data;
 
@@ -122,11 +124,6 @@ void setup()
   pinMode(EStopButtonIndicator, OUTPUT);
   pinMode(AutonButtonIndicator, OUTPUT);
 
-  /*
-  pinMode(LEDPWR_R, OUTPUT);
-  pinMode(LEDPWR_G, OUTPUT);
-  pinMode(LEDPWR_B, OUTPUT);
-  */
   pinMode(Battery_Voltage, INPUT);
 
 
@@ -237,38 +234,50 @@ void loop()
     Serial.println("Insufficient bytes received");
   }
 
-  // Make toggle instead of push to activate
-  
-  // Button was pressed
-  if (EStopButton)
+  // Falling Edge Detection (Goes from High to Low)
+  // EStop (If statement) only activates when button is pressed
+  if (prevEStopButton == HIGH && EStopButton == LOW && )
   {
-    // Send EStop command to ODrive
-    ODriveEStop();
-    EStopState = true;
-    digitalWrite(EStopButtonIndicator, HIGH);
-  } 
-  else 
-  {
-    ODriveControlState();
-    ODriveMovement(verticalMov, horizontalMov);
-    EStopState = false;
-    digitalWrite(EStopButtonIndicator, LOW);
-  }
+    // Toggles EStop State
+    if(!EStopState)
+    {
+      ODriveEStop();
+      EStopState = true;
+      digitalWrite(EStopButtonIndicator, HIGH);
+    }
 
-  if (AutonButton)
-  {
-    AutonState = true;
-    ODriveEStop();
-    digitalWrite(AutonButtonIndicator, HIGH);
+    else
+    {
+      ODriveControlState();
+      ODriveMovement(verticalMov, horizontalMov);
+      EStopState = false;
+      digitalWrite(EStopButtonIndicator, LOW);
+    }
   } 
-  else 
+  prevEStopButton = EStopButton;
+
+
+  if (AutonButton == LOW && prevAutonButton == HIGH) // I may have to change what ID the ODrives are listening to?
   {
-    AutonState = false;
-    digitalWrite(AutonButtonIndicator, LOW);
-  }
+    if(!AutonState)
+    {
+      AutonState = true;
+      digitalWrite(AutonButtonIndicator, HIGH);
+    }
+    
+    else 
+    {
+      AutonState = false;
+      digitalWrite(AutonButtonIndicator, LOW);
+    }
+  } 
+  
+  prevAutonButton = AutonButton;
 
   // Prints ODrive Velocities and Position via Encoders
   //ODriveEncoderData();
+
+  delay(10);
 }
 
 void ODriveMovement(double verticalVelocity, double horizontalVelocity) // Confirm if working
