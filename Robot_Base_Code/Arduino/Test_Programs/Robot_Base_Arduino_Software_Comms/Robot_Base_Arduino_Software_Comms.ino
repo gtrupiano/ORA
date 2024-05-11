@@ -194,9 +194,6 @@ void loop()
 {
   // This is required on some platforms to handle incoming feedback CAN messages
   pumpEvents(can_intf);
-  
-  // Fetches values from controller that are sent over I2C
-  fetchControllerData();
 
   // Falling Edge Detection (Goes from High to Low)
   // EStop (If statement) only activates when button is pressed
@@ -218,6 +215,8 @@ void loop()
       digitalWrite(EStopButtonIndicator, LOW);
     }
   } 
+
+
   prevEStopButton = EStopButton;
 
 
@@ -225,12 +224,15 @@ void loop()
   {
     if(!AutonState)
     {
+      autonMovementData(); // Receive data from path planner and send motor speeds to ODrives
       AutonState = true;
       digitalWrite(AutonButtonIndicator, HIGH);
     }
     
     else 
     {
+      // Fetches values from controller that are sent over I2C
+      fetchControllerData();
       AutonState = false;
       digitalWrite(AutonButtonIndicator, LOW);
     }
@@ -392,4 +394,9 @@ void ViewControllerData()
   Serial.println(AutonButton);
 
   Serial.println("------------------------");
+}
+
+void autonMovementData() // Could be substituted with sending commands directly to ODrives (How would the program look? Is there and ODrive Python Library?)
+{
+
 }
