@@ -236,7 +236,7 @@ void loop()
 
   // Falling Edge Detection (Goes from High to Low)
   // EStop (If statement) only activates when button is pressed
-  if (prevEStopButton == HIGH && EStopButton == LOW && )
+  if (prevEStopButton == HIGH && EStopButton == LOW)
   {
     // Toggles EStop State
     if(!EStopState)
@@ -257,20 +257,23 @@ void loop()
   prevEStopButton = EStopButton;
 
 
-  if (AutonButton == LOW && prevAutonButton == HIGH) // I may have to change what ID the ODrives are listening to?
+  if(!EStopState)
   {
-    if(!AutonState)
+    if (AutonButton == LOW && prevAutonButton == HIGH) // I may have to change what ID the ODrives are listening to?
     {
-      AutonState = true;
-      digitalWrite(AutonButtonIndicator, HIGH);
-    }
-    
-    else 
-    {
-      AutonState = false;
-      digitalWrite(AutonButtonIndicator, LOW);
-    }
-  } 
+      if(!AutonState)
+      {
+        AutonState = true;
+        digitalWrite(AutonButtonIndicator, HIGH);
+      }
+      
+      else 
+      {
+        AutonState = false;
+        digitalWrite(AutonButtonIndicator, LOW);
+      }
+    } 
+  }
   
   prevAutonButton = AutonButton;
 

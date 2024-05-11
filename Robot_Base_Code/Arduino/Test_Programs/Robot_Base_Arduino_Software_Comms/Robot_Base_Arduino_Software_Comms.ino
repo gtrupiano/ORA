@@ -41,44 +41,12 @@ bool AutonButton = false;
 bool AutonState = false;
 bool prevAutonButton = false;
 
-// Function Initialization
+// Function Prototypes
 static inline void receiveCallback(int);
 bool setupCan();
-struct ODriveUserData;
 void onHeartbeat(Heartbeat_msg_t&, void*);
 void onFeedback(Get_Encoder_Estimates_msg_t&, void*);
 void onCanMessage(const &);
-
-
-static inline void receiveCallback(int packet_size)
-{
-  if (packet_size > 8) 
-  {
-    return;
-  }
-  CanMsg msg = {.id = (unsigned int)CAN.packetId(), .len = (uint8_t)packet_size};
-  CAN.readBytes(msg.buffer, packet_size);
-  onCanMessage(msg);
-}
-
-bool setupCan() 
-{
-  // configure and initialize the CAN bus interface
-  CAN.setPins(MCP2515_CS, MCP2515_INT);
-  CAN.setClockFrequency(MCP2515_CLK_HZ);
-  if (!CAN.begin(CAN_BAUDRATE))
-  {
-    return false;
-  }
-
-  CAN.onReceive(receiveCallback);
-  return true;
-}
-
-// Initialize ODrive objects
-ODriveCAN odrv0(wrap_can_intf(can_intf), ODRV0_NODE_ID); // Initalize odrv0 as ODriveCAN object with respective node ID
-ODriveCAN odrv1(wrap_can_intf(can_intf), ODRV1_NODE_ID); // Initalize odrv1 as ODriveCAN object with respective node ID
-ODriveCAN* odrives[] = {&odrv0, &odrv1}; // Make sure all ODriveCAN instances are accounted for here
 
 // Data type created for ODrive (Consists of last heartbeat, if heartbeat was received, encoder feedback, and if there is feedback)
 struct ODriveUserData 
@@ -89,34 +57,15 @@ struct ODriveUserData
   bool received_feedback = false;
 };
 
+// Initialize ODrive objects
+ODriveCAN odrv0(wrap_can_intf(can_intf), ODRV0_NODE_ID); // Initalize odrv0 as ODriveCAN object with respective node ID
+ODriveCAN odrv1(wrap_can_intf(can_intf), ODRV1_NODE_ID); // Initalize odrv1 as ODriveCAN object with respective node ID
+ODriveCAN* odrives[] = {&odrv0, &odrv1}; // Make sure all ODriveCAN instances are accounted for here
+
 // Initalizes variables to hold ODrive configuation data
 ODriveUserData odrv0_user_data;
 ODriveUserData odrv1_user_data;
 
-// Called every time a Heartbeat message arrives from the ODrive
-void onHeartbeat(Heartbeat_msg_t& msg, void* user_data) 
-{
-  ODriveUserData* odrv_user_data = static_cast<ODriveUserData*>(user_data);
-  odrv_user_data->last_heartbeat = msg;
-  odrv_user_data->received_heartbeat = true;
-}
-
-// Called every time a feedback message arrives from the ODrive
-void onFeedback(Get_Encoder_Estimates_msg_t& msg, void* user_data) 
-{
-  ODriveUserData* odrv_user_data = static_cast<ODriveUserData*>(user_data);
-  odrv_user_data->last_feedback = msg;
-  odrv_user_data->received_feedback = true;
-}
-
-// Called for every message that arrives on the CAN bus
-void onCanMessage(const CanMsg& msg) 
-{
-  for (auto odrive: odrives) 
-  {
-    onReceive(msg, *odrive);
-  }
-}
 
 void setup() 
 {
@@ -195,6 +144,9 @@ void loop()
   // This is required on some platforms to handle incoming feedback CAN messages
   pumpEvents(can_intf);
 
+  // Fetches values from controller that are sent over I2C
+  fetchControllerData();
+
   // Falling Edge Detection (Goes from High to Low)
   // EStop (If statement) only activates when button is pressed
   if (prevEStopButton == HIGH && EStopButton == LOW)
@@ -216,28 +168,27 @@ void loop()
     }
   } 
 
-
   prevEStopButton = EStopButton;
 
-
-  if (AutonButton == LOW && prevAutonButton == HIGH) // I may have to change what ID the ODrives are listening to?
+  if(!EStopState)
   {
-    if(!AutonState)
+    if (AutonButton == LOW && prevAutonButton == HIGH) // I may have to change what ID the ODrives are listening to?
     {
-      autonMovementData(); // Receive data from path planner and send motor speeds to ODrives
-      AutonState = true;
-      digitalWrite(AutonButtonIndicator, HIGH);
+      if(!AutonState)
+      {
+        autonMovementData(); // Receive data from path planner and send motor speeds to ODrives
+        AutonState = true;
+        digitalWrite(AutonButtonIndicator, HIGH);
+      }
+      
+      else 
+      {
+        AutonState = false;
+        digitalWrite(AutonButtonIndicator, LOW);
+      }
     }
-    
-    else 
-    {
-      // Fetches values from controller that are sent over I2C
-      fetchControllerData();
-      AutonState = false;
-      digitalWrite(AutonButtonIndicator, LOW);
-    }
-  } 
-  
+  }
+
   prevAutonButton = AutonButton;
 
   // Prints ODrive Velocities and Position via Encoders
@@ -248,18 +199,19 @@ void loop()
 
 void fetchControllerData()
 {
-  Wire.requestFrom(8, sizeof(int) + sizeof(int) + sizeof(bool) + sizeof(bool)); // request data from slave device 8 (ESP32)
+  // Requests data from slave device 8 (ESP32)
+  Wire.requestFrom(8, sizeof(int) + sizeof(int) + sizeof(bool) + sizeof(bool));
 
   // Checks to see if data is recieved over I2C. If so sets values from controller to predefined variables
-  if(Wire.available() >= sizeof(int) + sizeof(int) + sizeof(bool) + sizeof(bool)) // could combine with If statement below but this is easier to read for now
+  if(Wire.available() >= sizeof(int) + sizeof(int) + sizeof(bool) + sizeof(bool))
   {
     // Read vertical movement from left joystick
     verticalMov = Wire.read();
-    verticalMov |= Wire.read() << 8; // Combine with the next byte
+    verticalMov |= Wire.read() << 8; // Combines with the next byte
 
     // Read horizontal movement from left joystick
     horizontalMov = Wire.read();
-    horizontalMov |= Wire.read() << 8; // Combine with the next byte
+    horizontalMov |= Wire.read() << 8; // Combines with the next byte
 
     // Read EStopButton from right bumper
     EStopButton = Wire.read();
@@ -296,7 +248,7 @@ void ODriveMovement(double verticalVelocity, double horizontalVelocity) // Confi
   // Input RPM
   const double inputRPM = 4400.0;
 
-  // Converts the velocity requested into Turns / second
+  // Converts the velocity requested into turns/second
   const double maxVelocity = 5.0; //  Speed limit m/s according to IGVC rules
   double leftMotorTPS = leftMotorVel * maxVelocity; // m/s
   double rightMotorTPS = rightMotorVel * maxVelocity; // m/s
@@ -310,7 +262,7 @@ void ODriveMovement(double verticalVelocity, double horizontalVelocity) // Confi
   odrv1.setVelocity(rightMotorTPS);
 }
 
-// Send CAN command to ODrive to initate EStop
+// Sends command over CAN to ODrive to initiate EStop
 void ODriveEStop()
 {
   Serial.println("Enabling EStop...");
@@ -398,5 +350,58 @@ void ViewControllerData()
 
 void autonMovementData() // Could be substituted with sending commands directly to ODrives (How would the program look? Is there and ODrive Python Library?)
 {
+  // Get motor speeds over can (in turns per second)
+  // Send motor speeds
+}
 
+// Below are all of the ODriveCAN Specific function declarations
+
+static inline void receiveCallback(int packet_size)
+{
+  if (packet_size > 8) 
+  {
+    return;
+  }
+  CanMsg msg = {.id = (unsigned int)CAN.packetId(), .len = (uint8_t)packet_size};
+  CAN.readBytes(msg.buffer, packet_size);
+  onCanMessage(msg);
+}
+
+bool setupCan() 
+{
+  // configure and initialize the CAN bus interface
+  CAN.setPins(MCP2515_CS, MCP2515_INT);
+  CAN.setClockFrequency(MCP2515_CLK_HZ);
+  if (!CAN.begin(CAN_BAUDRATE))
+  {
+    return false;
+  }
+
+  CAN.onReceive(receiveCallback);
+  return true;
+}
+
+// Called every time a Heartbeat message arrives from the ODrive
+void onHeartbeat(Heartbeat_msg_t& msg, void* user_data) 
+{
+  ODriveUserData* odrv_user_data = static_cast<ODriveUserData*>(user_data);
+  odrv_user_data->last_heartbeat = msg;
+  odrv_user_data->received_heartbeat = true;
+}
+
+// Called every time a feedback message arrives from the ODrive
+void onFeedback(Get_Encoder_Estimates_msg_t& msg, void* user_data) 
+{
+  ODriveUserData* odrv_user_data = static_cast<ODriveUserData*>(user_data);
+  odrv_user_data->last_feedback = msg;
+  odrv_user_data->received_feedback = true;
+}
+
+// Called for every message that arrives on the CAN bus
+void onCanMessage(const CanMsg& msg) 
+{
+  for (auto odrive: odrives) 
+  {
+    onReceive(msg, *odrive);
+  }
 }
