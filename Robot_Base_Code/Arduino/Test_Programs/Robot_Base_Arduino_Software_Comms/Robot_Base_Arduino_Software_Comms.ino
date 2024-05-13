@@ -350,7 +350,8 @@ void ViewControllerData()
 
 void autonMovementData() // Could be substituted with sending commands directly to ODrives (How would the program look? Is there and ODrive Python Library?)
 {
-  // Get motor speeds over can (in turns per second)
+  // Get motor speeds over can
+  // Convert to turns per second)
   // Send motor speeds
 }
 
