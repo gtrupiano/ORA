@@ -73,7 +73,7 @@
     "ssh_key": ""
   },
   "meta": {
-    "filename": "ORA_Arduino_ESP_Shield.kicad_prl",
+    "filename": "ORA_Arduino_ESP_CAN_Shield.kicad_prl",
     "version": 3
   },
   "project": {
