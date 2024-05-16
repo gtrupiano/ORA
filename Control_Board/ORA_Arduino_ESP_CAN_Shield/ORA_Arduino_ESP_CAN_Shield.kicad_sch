@@ -4,6 +4,11 @@
 	(generator_version "8.0")
 	(uuid "3a920e77-b17e-4e27-8c6c-6f819acb818a")
 	(paper "A4")
+	(title_block
+		(title "ORA_Arduino_ESP_CAN_Shield")
+		(date "2024-05-15")
+		(rev "1")
+	)
 	(lib_symbols
 		(symbol "+5V_1"
 			(power)
@@ -3774,7 +3779,7 @@
 	)
 	(wire
 		(pts
-			(xy 93.98 80.01) (xy 96.52 80.01)
+			(xy 92.71 91.44) (xy 92.71 88.9)
 		)
 		(stroke
 			(width 0)
@@ -3784,7 +3789,7 @@
 	)
 	(wire
 		(pts
-			(xy 109.22 83.82) (xy 109.22 86.36)
+			(xy 105.41 87.63) (xy 105.41 90.17)
 		)
 		(stroke
 			(width 0)
@@ -4025,6 +4030,18 @@
 		(uuid 9df0d8e8-b952-4258-822c-4bfa7eda5347)
 	)
 	(rectangle
+		(start 81.28 76.2)
+		(end 115.57 104.14)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid ad85b85b-8a6c-44a5-94eb-d00ebefea175)
+	)
+	(rectangle
 		(start 80.01 17.78)
 		(end 127 73.66)
 		(stroke
@@ -4235,6 +4252,17 @@
 			(justify left bottom)
 		)
 		(uuid "ae975dab-d88f-4864-b498-c39399021abf")
+	)
+	(text "Power Flags"
+		(exclude_from_sim no)
+		(at 82.55 80.01 0)
+		(effects
+			(font
+				(size 2 2)
+			)
+			(justify left bottom)
+		)
+		(uuid "b1efb47e-54c2-4a4f-b81d-57800443864a")
 	)
 	(text "Vin"
 		(exclude_from_sim no)
@@ -5357,7 +5385,7 @@
 	)
 	(symbol
 		(lib_id "power:+5V")
-		(at 96.52 80.01 270)
+		(at 92.71 88.9 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5365,7 +5393,7 @@
 		(dnp no)
 		(uuid "6d332788-221a-4d0e-9073-99e160420375")
 		(property "Reference" "#PWR09"
-			(at 92.71 80.01 0)
+			(at 92.71 92.71 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5374,7 +5402,7 @@
 			)
 		)
 		(property "Value" "+5V"
-			(at 101.346 80.01 90)
+			(at 92.71 84.074 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5382,7 +5410,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 96.52 80.01 0)
+			(at 92.71 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5391,7 +5419,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 96.52 80.01 0)
+			(at 92.71 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5400,7 +5428,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 96.52 80.01 0)
+			(at 92.71 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6259,16 +6287,15 @@
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
-		(at 93.98 80.01 90)
+		(at 92.71 91.44 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "b8bec349-8234-400e-ad33-0b01f40d4649")
 		(property "Reference" "#FLG01"
-			(at 92.075 80.01 0)
+			(at 92.71 93.345 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6277,7 +6304,7 @@
 			)
 		)
 		(property "Value" "PWR_FLAG"
-			(at 90.17 80.0099 90)
+			(at 97.282 96.266 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6286,7 +6313,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 93.98 80.01 0)
+			(at 92.71 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6295,7 +6322,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 93.98 80.01 0)
+			(at 92.71 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6304,7 +6331,7 @@
 			)
 		)
 		(property "Description" "Special symbol for telling ERC where power comes from"
-			(at 93.98 80.01 0)
+			(at 92.71 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6885,7 +6912,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 109.22 83.82 180)
+		(at 105.41 87.63 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6893,7 +6920,7 @@
 		(dnp no)
 		(uuid "e5bfce23-2b2a-417b-94a8-ae6072373ca0")
 		(property "Reference" "#PWR012"
-			(at 109.22 77.47 0)
+			(at 105.41 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6902,7 +6929,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 105.41 82.55 0)
+			(at 101.6 86.36 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6910,7 +6937,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 109.22 83.82 0)
+			(at 105.41 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6919,7 +6946,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 109.22 83.82 0)
+			(at 105.41 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6928,7 +6955,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 109.22 83.82 0)
+			(at 105.41 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6950,7 +6977,7 @@
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
-		(at 109.22 86.36 180)
+		(at 105.41 90.17 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6959,7 +6986,7 @@
 		(fields_autoplaced yes)
 		(uuid "e7efad67-b2fb-4e25-a151-6403e6f07104")
 		(property "Reference" "#FLG02"
-			(at 109.22 88.265 0)
+			(at 105.41 92.075 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6968,7 +6995,7 @@
 			)
 		)
 		(property "Value" "PWR_FLAG"
-			(at 109.22 91.44 0)
+			(at 105.41 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6976,7 +7003,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 109.22 86.36 0)
+			(at 105.41 90.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6985,7 +7012,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 109.22 86.36 0)
+			(at 105.41 90.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6994,7 +7021,7 @@
 			)
 		)
 		(property "Description" "Special symbol for telling ERC where power comes from"
-			(at 109.22 86.36 0)
+			(at 105.41 90.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
