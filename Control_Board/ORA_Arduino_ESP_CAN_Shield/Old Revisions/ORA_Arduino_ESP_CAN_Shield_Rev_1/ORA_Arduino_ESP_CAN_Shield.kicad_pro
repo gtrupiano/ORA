@@ -426,15 +426,13 @@
     }
   },
   "libraries": {
-    "pinned_footprint_libs": [
-      "Shield"
-    ],
+    "pinned_footprint_libs": [],
     "pinned_symbol_libs": [
       "Connector_Generic"
     ]
   },
   "meta": {
-    "filename": "ORA_Arduino_ESP_Shield.kicad_pro",
+    "filename": "ORA_Arduino_ESP_CAN_Shield.kicad_pro",
     "version": 1
   },
   "net_settings": {
@@ -469,7 +467,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "",
+      "plot": "/Users/georgetrupiano/Documents/GitHub/ORA/Control_Board/ORA_Arduino_ESP_CAN_Shield/Gerbers/",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "",
