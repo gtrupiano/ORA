@@ -2,6 +2,7 @@
 #include "ODriveMCPCAN.hpp"
 #include <SPI.h>
 #include <Wire.h>
+#include <mcp_can.h>
 
 #define CAN_BAUDRATE 500000
 #define CAN0_INT 2 // Set INT to pin 2 (This is the Interrupt pin)
@@ -9,6 +10,8 @@
 #define ODRV1_NODE_ID 1 // Right Motor
 
 MCP2515Class& can_intf = CAN;
+
+MCP_CAN CAN0(10);
 
 #define MCP2515_CS 10
 #define MCP2515_INT 2
@@ -348,11 +351,18 @@ void ViewControllerData()
   Serial.println("------------------------");
 }
 
+long unsigned int ID;
+unsigned char msgLen = 0;
+unsigned char msg[8];
+
 void autonMovementData() // Could be substituted with sending commands directly to ODrives (How would the program look? Is there and ODrive Python Library?)
 {
-  // Get motor speeds over can
-  // Convert to turns per second)
-  // Send motor speeds
+  //CAN0.readMsgBuf(&ID, &msgLen, msg);
+  CAN0.readMsgBuf(&ID, &msgLen, msg);
+  if((ID & 0x80000000) == 0x80000000)
+  {
+    
+  }
 }
 
 // Below are all of the ODriveCAN Specific function declarations
@@ -368,9 +378,21 @@ static inline void receiveCallback(int packet_size)
   onCanMessage(msg);
 }
 
+// Configure and initialize the CAN bus interface
 bool setupCan() 
 {
-  // configure and initialize the CAN bus interface
+  if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK)
+  {
+    Serial.println("MCP2515 Initialized Successfully!");
+  }
+  else
+  {
+    Serial.println("Error Initializing MCP2515...");
+  }
+  
+  CAN0.setMode(MCP_NORMAL);
+
+
   CAN.setPins(MCP2515_CS, MCP2515_INT);
   CAN.setClockFrequency(MCP2515_CLK_HZ);
   if (!CAN.begin(CAN_BAUDRATE))
