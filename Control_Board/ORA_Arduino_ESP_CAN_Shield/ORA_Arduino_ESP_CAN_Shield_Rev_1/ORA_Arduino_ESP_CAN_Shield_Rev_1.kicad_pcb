@@ -7612,34 +7612,46 @@
 			(justify left bottom mirror)
 		)
 	)
+	(gr_text "5/16/2024\n"
+		(at 66.05 67.42 0)
+		(layer "F.SilkS")
+		(uuid "0c7a70ad-3483-427e-a40f-455d6b73afb7")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "Arduino ESP CAN Shield Rev 1"
+		(at 59.35 63.75 0)
+		(layer "F.SilkS")
+		(uuid "3b7930de-05ee-4656-8794-d28a8d62207e")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "ORA IGVC 2023/24"
+		(at 63.73 65.66 0)
+		(layer "F.SilkS")
+		(uuid "4ab8de6c-6b87-43af-a9ee-c67afaac96cd")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
 	(gr_text "George Trupiano"
-		(at 66.275 70.74 -0)
+		(at 64.44 68.97 -0)
 		(layer "F.SilkS")
-		(uuid "709a1fe1-3911-4dbb-96cc-7f94fbdf6535")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-			(justify left bottom)
-		)
-	)
-	(gr_text "ORA IGVC 2023/24 Control Board REV 0.1"
-		(at 56.295 67.32 0)
-		(layer "F.SilkS")
-		(uuid "90035168-cd92-4870-87d5-ccaa0c3f5dbc")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-			(justify left bottom)
-		)
-	)
-	(gr_text "5/15/2024\n"
-		(at 67.795 69.22 0)
-		(layer "F.SilkS")
-		(uuid "ec5d3380-8a28-4973-bd5c-a5b4e6ed4064")
+		(uuid "fd1ab7ef-d602-4a99-a3cf-bffdb5f27b3b")
 		(effects
 			(font
 				(size 1 1)
