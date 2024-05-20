@@ -50,8 +50,8 @@ bool AutonState = false;
 bool prevAutonButton = false;
 
 // IDs of the messages we are interested in
-const unsigned long rightWheelSpeedID = 1;
-const unsigned long leftWheelSpeedID = 2;
+const unsigned long rightWheelSpeedID = 2;
+const unsigned long leftWheelSpeedID = 3;
 
 // Buffers to store incoming CAN data
 byte msgWheelSpeed[8];
@@ -428,6 +428,9 @@ void autonMovementData() // Assuming data is given in m/s
 
   rightWheelSpeed = rightWheelSpeed / ((M_PI) * Wheel_Diameter);
   leftWheelSpeed = leftWheelSpeed / ((M_PI) * Wheel_Diameter);
+
+  odrv0.setVelocity(leftWheelSpeed);
+  odrv1.setVelocity(rightWheelSpeed);
 
 }
 
