@@ -2,7 +2,6 @@
 #include "ODriveMCPCAN.hpp"
 #include <SPI.h>
 #include <Wire.h>
-#include <mcp_can.h>
 
 #define CAN_BAUDRATE 500000
 #define CAN0_INT 2 // Set INT to pin 2 (This is the Interrupt pin)
@@ -10,8 +9,6 @@
 #define ODRV1_NODE_ID 1 // Right Motor
 
 MCP2515Class& can_intf = CAN;
-
-MCP_CAN CAN0(10);
 
 #define MCP2515_CS 10
 #define MCP2515_INT 2
@@ -34,12 +31,7 @@ MCP_CAN CAN0(10);
 // Battery Voltage Detection Declaration
 #define Battery_Voltage A0 // On AtMega32U4 Connected to Pin 27 (PF0)
 
-
-#define Wheel_Diameter 8
-
 // Global Variable Declaration
-
-// Controller Variables
 int verticalMov = 0;
 int horizontalMov = 0;
 bool EStopButton = false;
@@ -48,18 +40,6 @@ bool prevEStopButton = false;
 bool AutonButton = false;
 bool AutonState = false;
 bool prevAutonButton = false;
-
-// IDs of the messages we are interested in
-const unsigned long rightWheelSpeedID = 1;
-const unsigned long leftWheelSpeedID = 2;
-
-// Buffers to store incoming CAN data
-byte msgWheelSpeed[8];
-
-// Variables to store wheel speeds
-double rightWheelSpeed;
-double leftWheelSpeed;
-
 
 // Function Prototypes
 static inline void receiveCallback(int);
@@ -196,7 +176,7 @@ void loop()
     {
       if(!AutonState)
       {
-        autonMovementData(); // Receives data from path planner and send motor speeds to ODrives
+        autonMovementData(); // Receive data from path planner and send motor speeds to ODrives
         AutonState = true;
         digitalWrite(AutonButtonIndicator, HIGH);
       }
@@ -368,67 +348,11 @@ void ViewControllerData()
   Serial.println("------------------------");
 }
 
-void autonMovementData() // Assuming data is given in m/s
+void autonMovementData() // Could be substituted with sending commands directly to ODrives (How would the program look? Is there and ODrive Python Library?)
 {
-  unsigned long receivedID;
-  byte msgLen;
-
-  // Check if a CAN message is available
-  if (CAN_MSGAVAIL == CAN0.checkReceive()) 
-  {
-    // Read the CAN message
-    CAN0.readMsgBuf(&receivedID, &msgLen, msgWheelSpeed);
-    
-    // Check if the received message ID matches the right wheel speed ID
-    if (receivedID == rightWheelSpeedID) 
-    {
-      // Check to see if lenth is 8 bytes (Double)
-      if (msgLen == 8) 
-      {
-          // Convert byte array to double
-          memcpy(&rightWheelSpeed, msgWheelSpeed, sizeof(double));
-          
-          /*
-          // Print the received right wheel speed
-          Serial.print("Received right wheel speed: ");
-          Serial.println(rightWheelSpeed, 8); // Print with 8 decimal places
-          */
-      } 
-      else 
-      {
-        Serial.println("Received message length does not match expected double size.");
-      }
-    }
-
-    // Read the CAN message again for the left wheel speed
-    CAN0.readMsgBuf(&receivedID, &msgLen, msgWheelSpeed);
-
-    // Check if the received message ID matches the left wheel speed ID
-    if (receivedID == leftWheelSpeedID) 
-    {
-      // Check to see if lenth is 8 bytes (Double)
-      if (msgLen == 8) 
-      {
-        // Convert byte array to double
-        memcpy(&leftWheelSpeed, msgWheelSpeed, sizeof(double));
-        
-        /*
-        // Print the received left wheel speed
-        Serial.print("Received left wheel speed: ");
-        Serial.println(leftWheelSpeed, 8); // Print with 8 decimal places
-        */
-      }
-
-      else
-      {
-        Serial.println("Received message length does not match expected double size.");
-      }
-    } 
-  }
-
-  rightWheelSpeed = rightWheelSpeed / ((M_PI) * Wheel_Diameter);
-  leftWheelSpeed = leftWheelSpeed / ((M_PI) * Wheel_Diameter);
-
+  // Get motor speeds over can
+  // Convert to turns per second)
+  // Send motor speeds
 }
 
 // Below are all of the ODriveCAN Specific function declarations
@@ -444,21 +368,9 @@ static inline void receiveCallback(int packet_size)
   onCanMessage(msg);
 }
 
-// Configure and initialize the CAN bus interface
 bool setupCan() 
 {
-  if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK)
-  {
-    Serial.println("MCP2515 Initialized Successfully!");
-  }
-  else
-  {
-    Serial.println("Error Initializing MCP2515...");
-  }
-  
-  CAN0.setMode(MCP_NORMAL);
-
-
+  // configure and initialize the CAN bus interface
   CAN.setPins(MCP2515_CS, MCP2515_INT);
   CAN.setClockFrequency(MCP2515_CLK_HZ);
   if (!CAN.begin(CAN_BAUDRATE))
