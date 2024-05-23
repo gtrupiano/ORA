@@ -3336,10 +3336,6 @@
 		(uuid "1e7699da-9f5a-4e29-ab94-2bad232538df")
 	)
 	(no_connect
-		(at 110.49 54.61)
-		(uuid "2486eb13-b8a8-4487-92c3-aa7149197857")
-	)
-	(no_connect
 		(at 205.74 35.56)
 		(uuid "28ad2b48-cdbb-4118-97b6-c41ab3f0ea1b")
 	)
@@ -3366,6 +3362,14 @@
 	(no_connect
 		(at 110.49 29.21)
 		(uuid "5225dbcf-163e-497a-894e-930b2ac7bcca")
+	)
+	(no_connect
+		(at 92.71 62.23)
+		(uuid "54349dbc-b97a-4c1a-b44f-05fa2b3e916e")
+	)
+	(no_connect
+		(at 110.49 39.37)
+		(uuid "55e3fe6f-d270-4109-8972-568731019791")
 	)
 	(no_connect
 		(at 57.15 35.56)
@@ -3424,10 +3428,6 @@
 		(uuid "8cf54e8b-53e3-42a4-b278-f09ead4a98cf")
 	)
 	(no_connect
-		(at 92.71 29.21)
-		(uuid "8eee0435-3ed4-4426-90f9-11514f98fae0")
-	)
-	(no_connect
 		(at 110.49 57.15)
 		(uuid "93c27c60-815a-464e-ac13-6377e3cb9d30")
 	)
@@ -3444,6 +3444,10 @@
 		(uuid "aa746f64-7c29-4a52-85b6-9817da529b40")
 	)
 	(no_connect
+		(at 110.49 31.75)
+		(uuid "abd52417-b980-4f74-84c7-ddea7e4fc8c3")
+	)
+	(no_connect
 		(at 92.71 49.53)
 		(uuid "ad9aa67e-d136-42dc-aeb8-6a1d67521959")
 	)
@@ -3458,6 +3462,10 @@
 	(no_connect
 		(at 92.71 41.91)
 		(uuid "b4f4846e-bd21-4022-a119-0e93b7a30d86")
+	)
+	(no_connect
+		(at 92.71 64.77)
+		(uuid "b593e22a-6578-4ff1-a1a1-c228a3b7a342")
 	)
 	(no_connect
 		(at 30.48 81.28)
@@ -3496,14 +3504,6 @@
 		(uuid "e324585e-c60d-46a2-afec-23017789b2ab")
 	)
 	(no_connect
-		(at 92.71 31.75)
-		(uuid "e8a6e522-90aa-45bf-af11-41e4f6415680")
-	)
-	(no_connect
-		(at 110.49 62.23)
-		(uuid "e95555b0-6043-485a-bba4-2382ee1327ac")
-	)
-	(no_connect
 		(at 110.49 41.91)
 		(uuid "ed28afdd-67e7-4f1e-8ea8-05032961e096")
 	)
@@ -3536,16 +3536,6 @@
 			(type default)
 		)
 		(uuid "001c2acc-c142-4704-a49f-af784773438e")
-	)
-	(wire
-		(pts
-			(xy 95.25 64.77) (xy 92.71 64.77)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0c8aa4cd-a216-4bde-81e2-481af46b56c9")
 	)
 	(wire
 		(pts
@@ -3816,16 +3806,6 @@
 			(type default)
 		)
 		(uuid "9539616f-268c-4ed2-945e-8802f49b81e2")
-	)
-	(wire
-		(pts
-			(xy 95.25 62.23) (xy 92.71 62.23)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "95fc76ca-0149-4088-8fd4-ba403906bdf1")
 	)
 	(wire
 		(pts
@@ -4352,7 +4332,7 @@
 		)
 		(uuid "febb2d32-3404-427c-942f-761d925a3420")
 	)
-	(global_label "CAN_L"
+	(global_label "CAN-"
 		(shape input)
 		(at 232.41 35.56 0)
 		(fields_autoplaced yes)
@@ -4364,7 +4344,7 @@
 		)
 		(uuid "0f4f0126-dd8f-488b-af90-a6932e96918a")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 241.08 35.56 0)
+			(at 240.6567 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4396,31 +4376,9 @@
 			)
 		)
 	)
-	(global_label "SDA"
-		(shape input)
-		(at 110.49 39.37 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "207d84df-8cfd-4239-8081-2588ad71eb1d")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 103.9367 39.37 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "SCL"
 		(shape input)
-		(at 110.49 31.75 180)
+		(at 110.49 62.23 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4428,9 +4386,9 @@
 			)
 			(justify right)
 		)
-		(uuid "22c2a249-9e24-48f9-95c3-bad00d96ae08")
+		(uuid "43155d7b-25fb-4af8-b328-55dd974aad4d")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 103.9972 31.75 0)
+			(at 103.9972 62.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4484,7 +4442,7 @@
 			)
 		)
 	)
-	(global_label "CAN_H"
+	(global_label "CAN+"
 		(shape input)
 		(at 232.41 30.48 0)
 		(fields_autoplaced yes)
@@ -4496,7 +4454,7 @@
 		)
 		(uuid "5c2b0d58-f8b2-4686-b8ed-9a3d5e6b114c")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 241.3824 30.48 0)
+			(at 240.6567 30.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4550,7 +4508,7 @@
 			)
 		)
 	)
-	(global_label "CAN_L"
+	(global_label "CAN-"
 		(shape input)
 		(at 35.56 101.6 180)
 		(fields_autoplaced yes)
@@ -4562,7 +4520,7 @@
 		)
 		(uuid "73433ef4-fd65-4d0f-aeb3-3af44f42f609")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 26.89 101.6 0)
+			(at 27.3133 101.6 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4660,7 +4618,7 @@
 			)
 		)
 	)
-	(global_label "CAN_H"
+	(global_label "CAN+"
 		(shape input)
 		(at 35.56 104.14 180)
 		(fields_autoplaced yes)
@@ -4672,7 +4630,7 @@
 		)
 		(uuid "a65fa62d-0f60-44fd-9677-6fe8d0cb9525")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 26.5876 104.14 0)
+			(at 27.3133 104.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4717,6 +4675,28 @@
 		(uuid "b519ebc1-1028-4253-9f7a-8c08cc54ef0b")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 51.6248 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "SDA"
+		(shape input)
+		(at 110.49 54.61 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "d7fef5ac-0b9f-4d37-97e2-c2b875e3d8d7")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 103.9367 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4880,77 +4860,9 @@
 			(uuid "02110d1e-64c1-45c7-8bff-4be3220087b7")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "U2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_name "GND_1")
-		(lib_id "power:GND")
-		(at 95.25 62.23 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "04094d20-eae3-460a-bf30-a2a9dca6d3df")
-		(property "Reference" "#PWR010"
-			(at 101.6 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 99.06 62.2299 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" ""
-			(at 95.25 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 95.25 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 95.25 62.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "a07cc5b4-ec9b-4267-8309-695a479097d9")
-		)
-		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
-				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
-					(reference "#PWR010")
 					(unit 1)
 				)
 			)
@@ -5018,7 +4930,7 @@
 			(uuid "58977edb-8be9-45ed-b6b5-08a40769950e")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "J1")
 					(unit 1)
@@ -5088,7 +5000,7 @@
 			(uuid "0e7afa1f-55fd-436d-8736-951d697fc13a")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "J2")
 					(unit 1)
@@ -5153,9 +5065,77 @@
 			(uuid "1dd540c3-0502-42ce-8c73-3aff026f63a3")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#PWR04")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_name "GND_1")
+		(lib_id "power:GND")
+		(at 92.71 31.75 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "17428ec1-c1b5-4690-8569-02878f38796b")
+		(property "Reference" "#PWR010"
+			(at 99.06 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 96.52 31.7499 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 92.71 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 92.71 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 92.71 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f03d9652-3696-4322-b4ef-29da92afa933")
+		)
+		(instances
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
+				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
+					(reference "#PWR010")
 					(unit 1)
 				)
 			)
@@ -5241,7 +5221,7 @@
 			(uuid "22820b74-bd7f-4e96-b7d6-5ec340105ca3")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "U3")
 					(unit 1)
@@ -5308,7 +5288,7 @@
 			(uuid "e7c95d4c-0e4a-45c8-91cd-64d70cd7ea0c")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "C1")
 					(unit 1)
@@ -5375,7 +5355,7 @@
 			(uuid "fd3dd1de-fc75-40de-9b3b-f672d566ecf3")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "R2")
 					(unit 1)
@@ -5440,7 +5420,7 @@
 			(uuid "06ccd764-9298-4960-8eae-f189db1e31ea")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#PWR09")
 					(unit 1)
@@ -5509,7 +5489,7 @@
 			(uuid "834d278b-58ef-49c7-8548-85c982b708e6")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "R1")
 					(unit 1)
@@ -5616,7 +5596,7 @@
 			(uuid "02506111-448b-49f4-b9fb-82ea7f244543")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "EN_1")
 					(unit 1)
@@ -5696,7 +5676,7 @@
 			(uuid "49ba9ffd-71bb-4091-9b41-f0a3089744c9")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "Analog_1")
 					(unit 1)
@@ -5762,7 +5742,7 @@
 			(uuid "cadfa65f-91dd-4dd2-ab44-3e4143f8f725")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#PWR08")
 					(unit 1)
@@ -5831,7 +5811,7 @@
 			(uuid "486c96ec-9552-4b23-a3fe-b979380c1c72")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "Y1")
 					(unit 1)
@@ -5919,7 +5899,7 @@
 			(uuid "f68d5045-191b-46e1-b646-28e2439387c4")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "Digital_2")
 					(unit 1)
@@ -5986,7 +5966,7 @@
 			(uuid "f6f17205-21a4-4b94-ae9e-670aa663088b")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "C2")
 					(unit 1)
@@ -6053,7 +6033,7 @@
 			(uuid "0bed60aa-8302-4f4d-b5d0-48129bc3a319")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "R3")
 					(unit 1)
@@ -6147,7 +6127,7 @@
 			(uuid "eb7ac7f5-6d79-4d7f-ab0e-215971462458")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "Digital_1")
 					(unit 1)
@@ -6212,7 +6192,7 @@
 			(uuid "6b54bbe5-fee5-4173-9d78-31f7bd52e2d7")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#PWR07")
 					(unit 1)
@@ -6277,7 +6257,7 @@
 			(uuid "99d3df79-0cdc-4419-971d-570729b033ca")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#PWR014")
 					(unit 1)
@@ -6343,7 +6323,7 @@
 			(uuid "bcc80acc-ed18-47c0-a7a0-e0e456d171c2")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#FLG01")
 					(unit 1)
@@ -6412,7 +6392,7 @@
 			(uuid "7ad6149c-4b3b-4c95-bfbe-c04232c23286")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "TR1")
 					(unit 1)
@@ -6500,7 +6480,7 @@
 			(uuid "3cef722b-2ec6-44f4-8fe7-e2a989b74f55")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "Power_1")
 					(unit 1)
@@ -6565,7 +6545,7 @@
 			(uuid "1b240223-7671-48e5-a3a9-4b1eeba4f41b")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#PWR03")
 					(unit 1)
@@ -6632,7 +6612,7 @@
 			(uuid "ed187483-3a96-49c7-b42d-189a2ac376a2")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#PWR05")
 					(unit 1)
@@ -6699,7 +6679,7 @@
 			(uuid "a5461c9b-98b3-445e-a5a1-8e210831ecc0")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#PWR06")
 					(unit 1)
@@ -6765,7 +6745,7 @@
 			(uuid "f9084b6f-9502-4ac9-b0db-6274c1577c25")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#PWR01")
 					(unit 1)
@@ -6834,77 +6814,9 @@
 			(uuid "b4657b87-f127-4bf5-8961-2a69926db506")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "C3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_name "+5V_1")
-		(lib_id "power:+5V")
-		(at 95.25 64.77 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "e586d1e4-e445-42e3-9781-fd9350162906")
-		(property "Reference" "#PWR011"
-			(at 91.44 64.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+5V"
-			(at 99.06 64.7699 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 95.25 64.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 95.25 64.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 95.25 64.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "5106cf80-f322-45fb-9265-c603c832da7f")
-		)
-		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
-				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
-					(reference "#PWR011")
 					(unit 1)
 				)
 			)
@@ -6967,9 +6879,77 @@
 			(uuid "b5a0b72c-6e72-4e70-a276-637df585472c")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#PWR012")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_name "+5V_1")
+		(lib_id "power:+5V")
+		(at 92.71 29.21 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e678f322-099c-42ff-9c56-268a8f06e7b2")
+		(property "Reference" "#PWR011"
+			(at 88.9 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 96.52 29.2099 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 92.71 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 92.71 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 92.71 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "404bba8d-2e97-4397-8fc5-3034c1413a9a")
+		)
+		(instances
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
+				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
+					(reference "#PWR011")
 					(unit 1)
 				)
 			)
@@ -7033,7 +7013,7 @@
 			(uuid "bc1923cb-f1f6-446d-8f57-1492b896d450")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#FLG02")
 					(unit 1)
@@ -7100,7 +7080,7 @@
 			(uuid "d77c14fe-87d0-4867-8259-da4fb27cbe1d")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#PWR013")
 					(unit 1)
@@ -7210,7 +7190,7 @@
 			(uuid "68e1be0d-b86a-4c59-8933-07eb899fedff")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "BOOT_1")
 					(unit 1)
@@ -7275,7 +7255,7 @@
 			(uuid "dfe1d882-e7c4-4031-a44a-7683628d1224")
 		)
 		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield"
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#PWR02")
 					(unit 1)
