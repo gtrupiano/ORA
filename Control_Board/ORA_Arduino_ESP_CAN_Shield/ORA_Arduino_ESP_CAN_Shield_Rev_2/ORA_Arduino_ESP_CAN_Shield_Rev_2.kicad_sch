@@ -5048,6 +5048,16 @@
 	)
 	(wire
 		(pts
+			(xy 222.25 67.31) (xy 220.98 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b4f3ba32-bb5f-4ea0-9f3c-95e7aa0a5b5b")
+	)
+	(wire
+		(pts
 			(xy 205.74 71.12) (xy 205.74 72.39)
 		)
 		(stroke
@@ -7504,7 +7514,7 @@
 				)
 			)
 		)
-		(property "Value" "22uF"
+		(property "Value" "22pF"
 			(at 171.45 52.07 90)
 			(effects
 				(font
@@ -7690,7 +7700,7 @@
 	)
 	(symbol
 		(lib_id "Device:R_Small")
-		(at 223.52 67.31 270)
+		(at 224.79 67.31 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7698,7 +7708,7 @@
 		(dnp no)
 		(uuid "40575fa2-d839-49e7-be97-8e01a563f8e7")
 		(property "Reference" "R11"
-			(at 223.52 64.77 90)
+			(at 224.79 64.77 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7706,7 +7716,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 223.52 69.85 90)
+			(at 224.79 69.85 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7714,7 +7724,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 223.52 67.31 0)
+			(at 224.79 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7723,7 +7733,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 223.52 67.31 0)
+			(at 224.79 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7732,7 +7742,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 223.52 67.31 0)
+			(at 224.79 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8208,7 +8218,7 @@
 				)
 			)
 		)
-		(property "Value" "22uF"
+		(property "Value" "22pF"
 			(at 171.45 64.77 90)
 			(effects
 				(font
@@ -8778,6 +8788,71 @@
 	)
 	(symbol
 		(lib_id "power:+5V")
+		(at 227.33 67.31 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "81def6e0-3b1f-4b3b-9581-a7c7c1ad1842")
+		(property "Reference" "#PWR012"
+			(at 223.52 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 229.87 64.77 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 227.33 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 227.33 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 227.33 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "865b59cd-b170-41f6-9ab4-94a15022653e")
+		)
+		(instances
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_2"
+				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
+					(reference "#PWR012")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
 		(at 247.65 31.75 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -8906,73 +8981,6 @@
 			(project "ORA_Arduino_ESP_CAN_Shield_Rev_2"
 				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
 					(reference "R15")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 226.06 67.31 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "862f4244-757d-4f59-9a43-a7805b6d9674")
-		(property "Reference" "#PWR027"
-			(at 232.41 67.31 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 229.87 67.31 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" ""
-			(at 226.06 67.31 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 226.06 67.31 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 226.06 67.31 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "8be2d37d-c96e-41b0-9dc1-4c7b1e59e20d")
-		)
-		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield_Rev_2"
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
-					(reference "#PWR027")
 					(unit 1)
 				)
 			)
