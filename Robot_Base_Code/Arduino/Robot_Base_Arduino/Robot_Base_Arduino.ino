@@ -187,7 +187,7 @@ void loop()
       digitalWrite(EStopButtonIndicator, LOW);
     }
   } 
-// fix plz
+  
   prevEStopButton = EStopButton;
 
   if(!EStopState)
@@ -246,7 +246,7 @@ void fetchControllerData()
   {
     verticalMov = 0;
     horizontalMov = 0;
-    EStopState = false;
+    EStopState = true; // check if this logic makes sure if estop actually engages and doesn't mess up 
     AutonState = false;
     Serial.println("Insufficient bytes received");
   }
