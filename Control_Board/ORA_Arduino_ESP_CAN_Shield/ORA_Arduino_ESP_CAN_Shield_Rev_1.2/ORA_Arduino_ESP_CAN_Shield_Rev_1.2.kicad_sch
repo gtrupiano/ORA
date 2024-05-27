@@ -4557,7 +4557,7 @@
 	)
 	(text "* Indicates a PWM-capable pin"
 		(exclude_from_sim no)
-		(at 177.8 180.34 0)
+		(at 70.358 23.368 0)
 		(effects
 			(font
 				(size 1.27 1.27)
