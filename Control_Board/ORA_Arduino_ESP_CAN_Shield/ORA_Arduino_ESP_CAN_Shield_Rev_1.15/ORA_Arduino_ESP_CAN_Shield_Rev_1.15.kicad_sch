@@ -3689,16 +3689,6 @@
 	)
 	(wire
 		(pts
-			(xy 199.39 58.42) (xy 198.12 58.42)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "70308671-7b6c-4439-846a-1ffcdee28ab2")
-	)
-	(wire
-		(pts
 			(xy 191.77 30.48) (xy 195.58 30.48)
 		)
 		(stroke
@@ -5372,73 +5362,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
-		(at 199.39 58.42 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "51430493-a439-438b-aba6-d643ad8de0d3")
-		(property "Reference" "#PWR015"
-			(at 205.74 58.42 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 203.2 58.4199 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" ""
-			(at 199.39 58.42 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 199.39 58.42 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 199.39 58.42 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "37df89da-a808-48c5-961f-458afd69a218")
-		)
-		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
-				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
-					(reference "#PWR015")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R_Small")
 		(at 195.58 58.42 270)
 		(unit 1)
@@ -5500,6 +5423,71 @@
 			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "R2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 198.12 58.42 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5e0d6be2-abcb-4af1-b959-a155da03ba77")
+		(property "Reference" "#PWR05"
+			(at 194.31 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 200.66 55.88 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 198.12 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 198.12 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 198.12 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "cb17c67d-f60e-4790-b5c6-b9074c95ef19")
+		)
+		(instances
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
+				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
+					(reference "#PWR05")
 					(unit 1)
 				)
 			)

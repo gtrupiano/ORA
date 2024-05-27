@@ -218,7 +218,7 @@
 		(property ki_fp_filters "R_*")
 		(path "/7813d3cf-4b20-477f-8131-928264c2329b")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr smd)
 		(fp_line
 			(start -0.227064 0.735)
@@ -428,7 +428,7 @@
 		(property ki_fp_filters "R_*")
 		(path "/bae7b553-1a19-43b8-bd62-8fe9d7d6413b")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr smd)
 		(fp_line
 			(start -0.227064 -0.735)
@@ -638,7 +638,7 @@
 		(property ki_fp_filters "C_*")
 		(path "/b072a955-993f-4cc8-a1eb-1ea506ed8a47")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr smd)
 		(fp_line
 			(start -0.261252 -0.735)
@@ -850,7 +850,7 @@
 		(property ki_fp_filters "Connector*:*_1x??_*")
 		(path "/b4257b18-b42f-4907-a399-b8874bff977f")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr through_hole)
 		(fp_line
 			(start -1.33 -1.33)
@@ -1202,7 +1202,7 @@
 		(property ki_fp_filters "C_*")
 		(path "/36f8b376-c535-458b-8bf0-587417f5e71b")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr smd)
 		(fp_line
 			(start -0.261252 -0.735)
@@ -1412,7 +1412,7 @@
 		(property ki_fp_filters "R_*")
 		(path "/583a1185-33fc-4229-84da-bf6f30aa542f")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr smd)
 		(fp_line
 			(start -0.227064 -0.735)
@@ -1530,7 +1530,7 @@
 			(size 1.2 1.4)
 			(layers "F.Cu" "F.Paste" "F.Mask")
 			(roundrect_rratio 0.208333)
-			(net 16 "GND")
+			(net 10 "+5V")
 			(pintype "passive")
 			(uuid "b894d338-40a4-40af-a2e2-0f8b81a78748")
 		)
@@ -1624,7 +1624,7 @@
 		(property ki_fp_filters "Connector*:*_1x??_*")
 		(path "/bf457b88-0f0a-4e95-9525-6d0b6b06ca41")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr through_hole)
 		(fp_line
 			(start -1.33 -1.33)
@@ -1954,7 +1954,7 @@
 		(property ki_fp_filters "R_*")
 		(path "/b2fabf58-d51c-4235-aff3-593404f4e7ab")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr smd)
 		(fp_line
 			(start -0.227064 -0.735)
@@ -2166,7 +2166,7 @@
 		(property ki_fp_filters "Connector*:*_1x??_*")
 		(path "/92affd07-ed5b-4a68-bd15-31d5c79537cf")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr through_hole)
 		(fp_line
 			(start -1.33 -1.33)
@@ -2474,7 +2474,7 @@
 		(property ki_fp_filters "C_*")
 		(path "/dba29d7b-3e1b-4523-b864-739fc7271e97")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr smd)
 		(fp_line
 			(start -0.261252 0.735)
@@ -2686,7 +2686,7 @@
 		(property ki_fp_filters "Connector*:*_1x??_*")
 		(path "/ac1c802c-6d08-467c-bdb6-789019bc199e")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr through_hole)
 		(fp_line
 			(start -1.33 -1.33)
@@ -3016,7 +3016,7 @@
 		(property ki_fp_filters "SOIC*3.9x4.9mm*P1.27mm*")
 		(path "/265e517d-f74e-4120-a961-a3d5b39c0615")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr smd)
 		(fp_line
 			(start 0 -2.56)
@@ -3335,7 +3335,7 @@
 		(property ki_fp_filters "SOIC*7.5x11.6mm*P1.27mm*")
 		(path "/012ed00f-a80d-4d43-ba9e-a4e57ba42038")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr smd)
 		(fp_line
 			(start 3.86 5.885)
@@ -5388,7 +5388,7 @@
 		(property ki_fp_filters "Connector*:*_1x??_*")
 		(path "/8acb297c-8015-4b7e-b6a5-41ad07caf8a2")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr through_hole)
 		(fp_line
 			(start 1.33 -36.89)
@@ -5801,7 +5801,7 @@
 		(property ki_fp_filters "TerminalBlock*:*")
 		(path "/068f563c-ae7e-4352-98f0-ea3e9a5f1760")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr through_hole)
 		(fp_line
 			(start 7.56 5.261)
@@ -6299,7 +6299,7 @@
 		(property ki_fp_filters "TerminalBlock*:*")
 		(path "/0f01dd26-c50f-4c8b-aa0e-e07bad8078a4")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr through_hole)
 		(fp_line
 			(start 7.56 5.261)
@@ -6798,7 +6798,7 @@
 		(property ki_fp_filters "Connector*:*_1x??_*")
 		(path "/eb1debc1-9c60-46ec-bf6e-f9d4ab581bf7")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr through_hole)
 		(fp_line
 			(start 1.33 1.33)
@@ -7211,7 +7211,7 @@
 		(property ki_fp_filters "Crystal*")
 		(path "/a3c23bc0-7d12-4d86-8c54-0fe0b7fac11f")
 		(sheetname "Root")
-		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.1.kicad_sch")
+		(sheetfile "ORA_Arduino_ESP_CAN_Shield_Rev_1.15.kicad_sch")
 		(attr through_hole)
 		(fp_line
 			(start 5.64 -2.525)
@@ -8329,6 +8329,30 @@
 		(net 10)
 		(uuid "5819c26e-8bb9-42a8-9204-a34e027a9048")
 	)
+	(via
+		(at 29.71 73.27)
+		(size 0.6)
+		(drill 0.3)
+		(layers "F.Cu" "B.Cu")
+		(net 10)
+		(uuid "6e571041-6c03-43f1-99d6-c0423286b0c1")
+	)
+	(via
+		(at 45.65 66.16)
+		(size 0.6)
+		(drill 0.3)
+		(layers "F.Cu" "B.Cu")
+		(net 10)
+		(uuid "896027d5-902b-404a-89cd-9e7d2718d5c7")
+	)
+	(segment
+		(start 48.265 68.775)
+		(end 49.541346 68.775)
+		(width 0.2)
+		(layer "B.Cu")
+		(net 10)
+		(uuid "430ec307-003a-4035-b4ed-f2be2f83b1cb")
+	)
 	(segment
 		(start 28.675 57.73)
 		(end 30.54 55.865)
@@ -8336,6 +8360,30 @@
 		(layer "B.Cu")
 		(net 10)
 		(uuid "54cfbe3f-eea5-43df-9d29-fc84543a02d5")
+	)
+	(segment
+		(start 53.87 73.103654)
+		(end 53.87 74.056346)
+		(width 0.2)
+		(layer "B.Cu")
+		(net 10)
+		(uuid "661f3cad-1e6e-40f0-ab6f-3ada6a4f7677")
+	)
+	(segment
+		(start 53.87 74.056346)
+		(end 53.196346 74.73)
+		(width 0.2)
+		(layer "B.Cu")
+		(net 10)
+		(uuid "7cbe7e94-838a-407f-b3cc-840ed680f26d")
+	)
+	(segment
+		(start 45.65 66.16)
+		(end 48.265 68.775)
+		(width 0.2)
+		(layer "B.Cu")
+		(net 10)
+		(uuid "c4a9c8c6-eb89-4bb3-80a0-7007d61f21c4")
 	)
 	(segment
 		(start 33.54 54.46)
@@ -8352,6 +8400,30 @@
 		(layer "B.Cu")
 		(net 10)
 		(uuid "e4d75633-5950-437c-8b2a-628863b7ad34")
+	)
+	(segment
+		(start 31.17 74.73)
+		(end 29.71 73.27)
+		(width 0.2)
+		(layer "B.Cu")
+		(net 10)
+		(uuid "e50dbacd-3774-4126-9c88-04da2c6876b1")
+	)
+	(segment
+		(start 49.541346 68.775)
+		(end 53.87 73.103654)
+		(width 0.2)
+		(layer "B.Cu")
+		(net 10)
+		(uuid "eff3dfc8-86b0-4eba-b7e0-cedc49bf9cc8")
+	)
+	(segment
+		(start 53.196346 74.73)
+		(end 31.17 74.73)
+		(width 0.2)
+		(layer "B.Cu")
+		(net 10)
+		(uuid "f06a9adc-4c4d-4789-996f-6707f54d7dad")
 	)
 	(segment
 		(start 30.54 55.865)
@@ -8994,14 +9066,6 @@
 		(uuid "3e1e7f4f-fcdd-4156-803f-571b69c059f3")
 	)
 	(via
-		(at 29.71 73.27)
-		(size 0.6)
-		(drill 0.3)
-		(layers "F.Cu" "B.Cu")
-		(net 16)
-		(uuid "6e571041-6c03-43f1-99d6-c0423286b0c1")
-	)
-	(via
 		(at 47.665 70.53)
 		(size 0.6)
 		(drill 0.3)
@@ -9090,14 +9154,6 @@
 		(uuid "11b9fa38-2083-4e43-909f-f7f1cb7e000b")
 	)
 	(segment
-		(start 29.71 73.27)
-		(end 30.34 73.9)
-		(width 0.2)
-		(layer "B.Cu")
-		(net 16)
-		(uuid "2bf22b3d-3e66-47fd-8193-78a03cc64660")
-	)
-	(segment
 		(start 35.86 73.26)
 		(end 35.86 69.3)
 		(width 0.2)
@@ -9154,14 +9210,6 @@
 		(uuid "899f850e-a445-4cb3-b2d9-2905be009134")
 	)
 	(segment
-		(start 35.22 73.9)
-		(end 35.86 73.26)
-		(width 0.2)
-		(layer "B.Cu")
-		(net 16)
-		(uuid "8ccc67f7-9951-45f5-924a-4ebb66e67d81")
-	)
-	(segment
 		(start 35.035 65.09)
 		(end 35.035 65.345552)
 		(width 0.2)
@@ -9208,14 +9256,6 @@
 		(layer "B.Cu")
 		(net 16)
 		(uuid "cd7482c3-a9fe-4e8c-983f-c7e9f50d25fe")
-	)
-	(segment
-		(start 30.34 73.9)
-		(end 35.22 73.9)
-		(width 0.2)
-		(layer "B.Cu")
-		(net 16)
-		(uuid "d9d5f742-970d-46c1-ba8f-569d95da078b")
 	)
 	(segment
 		(start 36.14 69.02)
