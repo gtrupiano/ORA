@@ -3819,6 +3819,16 @@
 	)
 	(wire
 		(pts
+			(xy 193.04 58.42) (xy 191.77 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a0fa725f-0bc6-43c3-9a2b-f4591a0525df")
+	)
+	(wire
+		(pts
 			(xy 170.18 21.59) (xy 176.53 21.59)
 		)
 		(stroke
@@ -4057,6 +4067,17 @@
 		)
 		(uuid fe9cc678-14da-4edf-a105-d8f879956003)
 	)
+	(text "D2"
+		(exclude_from_sim no)
+		(at 48.26 77.216 0)
+		(effects
+			(font
+				(size 1.2192 1.2192)
+			)
+			(justify left bottom)
+		)
+		(uuid "027b6f95-735a-4735-9f8a-4619812ae448")
+	)
 	(text "D5"
 		(exclude_from_sim no)
 		(at 53.34 69.342 0)
@@ -4079,6 +4100,17 @@
 		)
 		(uuid "0f756df1-be46-40e5-8329-1f7b283d770b")
 	)
+	(text "D12"
+		(exclude_from_sim no)
+		(at 48.006 44.196 0)
+		(effects
+			(font
+				(size 1.2192 1.2192)
+			)
+			(justify left bottom)
+		)
+		(uuid "16c228a8-01b5-4a64-96b5-6b0e26752ea7")
+	)
 	(text "D8"
 		(exclude_from_sim no)
 		(at 53.34 54.102 0)
@@ -4100,6 +4132,17 @@
 			(justify left bottom)
 		)
 		(uuid "499a22fa-3533-48d0-99c3-b44866947d55")
+	)
+	(text "D13"
+		(exclude_from_sim no)
+		(at 46.736 41.656 0)
+		(effects
+			(font
+				(size 1.2192 1.2192)
+			)
+			(justify left bottom)
+		)
+		(uuid "547d5081-537d-42a1-8782-adc9bde1bea4")
 	)
 	(text "CAN Terminals"
 		(exclude_from_sim no)
@@ -4144,6 +4187,17 @@
 			(justify left bottom)
 		)
 		(uuid "68bc8437-31fd-4093-ba2d-e3aedb2878c4")
+	)
+	(text "D11"
+		(exclude_from_sim no)
+		(at 48.006 46.736 0)
+		(effects
+			(font
+				(size 1.2192 1.2192)
+			)
+			(justify left bottom)
+		)
+		(uuid "73dc8d35-2fc7-4621-868f-c8e090dbed24")
 	)
 	(text "D0_RX"
 		(exclude_from_sim no)
@@ -4221,6 +4275,17 @@
 			(justify left bottom)
 		)
 		(uuid "ab7eb27b-0979-4f1e-892b-f341234d5919")
+	)
+	(text "D10"
+		(exclude_from_sim no)
+		(at 48.006 49.276 0)
+		(effects
+			(font
+				(size 1.2192 1.2192)
+			)
+			(justify left bottom)
+		)
+		(uuid "ac9258c0-4b48-4f6a-965d-9d25fae86912")
 	)
 	(text "ARef"
 		(exclude_from_sim no)
@@ -5246,7 +5311,7 @@
 				)
 			)
 		)
-		(property "Value" "22uF"
+		(property "Value" "22pF"
 			(at 142.24 43.18 90)
 			(effects
 				(font
@@ -5298,7 +5363,7 @@
 	)
 	(symbol
 		(lib_id "Device:R_Small")
-		(at 194.31 58.42 270)
+		(at 195.58 58.42 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5306,7 +5371,7 @@
 		(dnp no)
 		(uuid "583a1185-33fc-4229-84da-bf6f30aa542f")
 		(property "Reference" "R2"
-			(at 194.31 55.88 90)
+			(at 195.58 55.88 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5314,7 +5379,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 194.31 60.96 90)
+			(at 195.58 60.96 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5322,7 +5387,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 194.31 58.42 0)
+			(at 195.58 58.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5331,7 +5396,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 194.31 58.42 0)
+			(at 195.58 58.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5340,7 +5405,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 194.31 58.42 0)
+			(at 195.58 58.42 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5358,6 +5423,71 @@
 			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "R2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 198.12 58.42 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5e0d6be2-abcb-4af1-b959-a155da03ba77")
+		(property "Reference" "#PWR05"
+			(at 194.31 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 200.66 55.88 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 198.12 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 198.12 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 198.12 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "cb17c67d-f60e-4790-b5c6-b9074c95ef19")
+		)
+		(instances
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
+				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
+					(reference "#PWR05")
 					(unit 1)
 				)
 			)
@@ -5924,7 +6054,7 @@
 				)
 			)
 		)
-		(property "Value" "22uF"
+		(property "Value" "22pF"
 			(at 142.24 55.88 90)
 			(effects
 				(font
@@ -6548,73 +6678,6 @@
 			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
 				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
 					(reference "#PWR03")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 196.85 58.42 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "c3dcaff0-2349-4a31-b345-e5a2b5a6751a")
-		(property "Reference" "#PWR05"
-			(at 203.2 58.42 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 200.66 58.42 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" ""
-			(at 196.85 58.42 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 196.85 58.42 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 196.85 58.42 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "ed187483-3a96-49c7-b42d-189a2ac376a2")
-		)
-		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.1"
-				(path "/3a920e77-b17e-4e27-8c6c-6f819acb818a"
-					(reference "#PWR05")
 					(unit 1)
 				)
 			)

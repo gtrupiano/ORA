@@ -79,7 +79,7 @@
 		(aux_axis_origin 100 100)
 		(grid_origin 100 100)
 		(pcbplotparams
-			(layerselection 0x0000030_80000001)
+			(layerselection 0x0000030_ffffffff)
 			(plot_on_all_layers_selection 0x0000000_00000000)
 			(disableapertmacros no)
 			(usegerberextensions no)
@@ -111,9 +111,9 @@
 			(subtractmaskfromsilk no)
 			(outputformat 1)
 			(mirror no)
-			(drillshape 1)
+			(drillshape 0)
 			(scaleselection 1)
-			(outputdirectory "")
+			(outputdirectory "/Users/georgetrupiano/Documents/GitHub/ORA/Control_Board/ORA_Arduino_ESP_CAN_Shield/ORA_Arduino_ESP_CAN_Shield_Rev_2/Gerber/")
 		)
 	)
 	(net 0 "")
@@ -1542,7 +1542,7 @@
 				)
 			)
 		)
-		(property "Value" "22uF"
+		(property "Value" "22pF"
 			(at 0 1.68 180)
 			(layer "F.Fab")
 			(uuid "41736241-5003-43c1-919e-c1c482741326")
@@ -2920,7 +2920,7 @@
 				)
 			)
 		)
-		(property "Value" "22uF"
+		(property "Value" "22pF"
 			(at 0 1.68 180)
 			(layer "F.Fab")
 			(uuid "e6249829-b21d-4aa3-a61c-5b5323ade885")
@@ -10018,7 +10018,7 @@
 			(size 1.2 1.4)
 			(layers "B.Cu" "B.Paste" "B.Mask")
 			(roundrect_rratio 0.208333)
-			(net 1 "GND")
+			(net 3 "+5V")
 			(pintype "passive")
 			(uuid "c1b1f1e6-78d4-4c30-a5d3-d22dabb51e54")
 		)
@@ -11614,22 +11614,6 @@
 		(uuid "469f4941-b5a4-4db8-a923-6d8423912d80")
 	)
 	(segment
-		(start 158.87 87.96)
-		(end 153.51 82.6)
-		(width 0.25)
-		(layer "B.Cu")
-		(net 1)
-		(uuid "46b38e6b-4a25-4634-b9fb-4ec4adf79e2b")
-	)
-	(segment
-		(start 159.16 87.96)
-		(end 158.87 87.96)
-		(width 0.25)
-		(layer "B.Cu")
-		(net 1)
-		(uuid "49b61583-06ff-43eb-936d-b5dd2b73a2aa")
-	)
-	(segment
 		(start 105.74 97.88)
 		(end 107.24 99.38)
 		(width 0.25)
@@ -11910,6 +11894,14 @@
 		(uuid "512fdbb7-25e1-4593-a108-eb8415c532b7")
 	)
 	(segment
+		(start 155.37 87.96)
+		(end 153.14 85.73)
+		(width 0.25)
+		(layer "B.Cu")
+		(net 3)
+		(uuid "51b87749-e673-4095-bdb6-c00fe548e7f5")
+	)
+	(segment
 		(start 149.359092 73.08)
 		(end 152.529092 76.25)
 		(width 0.25)
@@ -11932,6 +11924,14 @@
 		(layer "B.Cu")
 		(net 3)
 		(uuid "a492381e-3056-4b7d-a410-961ac59a60a3")
+	)
+	(segment
+		(start 159.16 87.96)
+		(end 155.37 87.96)
+		(width 0.25)
+		(layer "B.Cu")
+		(net 3)
+		(uuid "af832bb1-6c03-4241-9c13-b8d0ee54c933")
 	)
 	(segment
 		(start 142.599092 73.08)

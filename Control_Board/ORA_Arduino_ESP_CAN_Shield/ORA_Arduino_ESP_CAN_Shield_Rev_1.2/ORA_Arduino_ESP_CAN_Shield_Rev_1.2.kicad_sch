@@ -3988,6 +3988,16 @@
 	)
 	(wire
 		(pts
+			(xy 223.52 57.15) (xy 222.25 57.15)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6a91c4d8-97ea-44ed-a561-db2463d866e1")
+	)
+	(wire
+		(pts
 			(xy 82.55 104.14) (xy 87.63 104.14)
 		)
 		(stroke
@@ -4557,7 +4567,7 @@
 	)
 	(text "* Indicates a PWM-capable pin"
 		(exclude_from_sim no)
-		(at 177.8 180.34 0)
+		(at 70.358 23.368 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -5873,6 +5883,71 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+5V")
+		(at 228.6 57.15 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "1074a0f6-e4d3-4560-b29a-a7ad498a0fab")
+		(property "Reference" "#PWR01"
+			(at 224.79 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 231.14 54.61 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 228.6 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 228.6 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 228.6 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "c115a523-d027-44e4-b980-63742f969108")
+		)
+		(instances
+			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.2"
+				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
+					(reference "#PWR01")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Interface_CAN_LIN:MCP2551-I-SN")
 		(at 248.92 31.75 0)
 		(unit 1)
@@ -6095,7 +6170,7 @@
 	)
 	(symbol
 		(lib_id "Device:R_Small")
-		(at 224.79 57.15 270)
+		(at 226.06 57.15 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6103,7 +6178,7 @@
 		(dnp no)
 		(uuid "3cf11bec-2234-4ce4-a30d-929e29aa6af5")
 		(property "Reference" "R2"
-			(at 224.79 54.61 90)
+			(at 226.06 54.61 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6111,7 +6186,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 224.79 59.69 90)
+			(at 226.06 59.69 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6119,7 +6194,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 224.79 57.15 0)
+			(at 226.06 57.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6128,7 +6203,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 224.79 57.15 0)
+			(at 226.06 57.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6137,7 +6212,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 224.79 57.15 0)
+			(at 226.06 57.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6492,7 +6567,7 @@
 				)
 			)
 		)
-		(property "Value" "22uF"
+		(property "Value" "22pF"
 			(at 172.72 54.61 90)
 			(effects
 				(font
@@ -6736,73 +6811,6 @@
 			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.2"
 				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
 					(reference "R1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 227.33 57.15 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "8ff720e0-c9a6-43ed-bb88-8de37b6932bd")
-		(property "Reference" "#PWR016"
-			(at 233.68 57.15 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 231.14 57.15 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" ""
-			(at 227.33 57.15 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 227.33 57.15 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 227.33 57.15 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "86b9162b-f4f2-48c1-b1e0-6f04551670b0")
-		)
-		(instances
-			(project "ORA_Arduino_ESP_CAN_Shield_Rev_1.2"
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
-					(reference "#PWR016")
 					(unit 1)
 				)
 			)
@@ -7236,7 +7244,7 @@
 				)
 			)
 		)
-		(property "Value" "22uF"
+		(property "Value" "22pF"
 			(at 172.72 41.91 90)
 			(effects
 				(font
