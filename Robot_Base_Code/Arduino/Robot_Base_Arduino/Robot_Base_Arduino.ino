@@ -187,7 +187,7 @@ void loop()
       digitalWrite(EStopButtonIndicator, LOW);
     }
   } 
-
+// fix plz
   prevEStopButton = EStopButton;
 
   if(!EStopState)
@@ -242,7 +242,7 @@ void fetchControllerData()
     // Reads controller values from ESP-32
     // ViewControllerData()
   } 
-  else
+  else // make this engage estop
   {
     verticalMov = 0;
     horizontalMov = 0;
@@ -283,7 +283,7 @@ void ODriveMovement(double verticalVelocity, double horizontalVelocity) // Confi
 }
 
 // Sends command over CAN to ODrive to initiate EStop
-void ODriveEStop()
+void ODriveEStop() // use errors from declarations. I gues change ODriveAxisState::AXIS_STATE_IDLE to ODriveErrors::ODRIVE_ERROR_ESTOP_REQUESTED  
 {
   Serial.println("Enabling EStop...");
   while (odrv0_user_data.last_heartbeat.Axis_State != ODriveAxisState::AXIS_STATE_IDLE || odrv1_user_data.last_heartbeat.Axis_State != ODriveAxisState::AXIS_STATE_IDLE) 
