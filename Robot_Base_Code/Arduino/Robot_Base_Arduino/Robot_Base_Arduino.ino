@@ -17,8 +17,6 @@ MCP_CAN CAN0(10);
 #define MCP2515_INT 2
 #define MCP2515_CLK_HZ 8000000
 #define EStop 0 // Hardware EStop
-#define IMU_SDA 2 // On AtMega32U4 Connected to Pin 19 (PD1)
-#define IMU_SCL 3 // On AtMega32U4 Connected to Pin 18 (PD0) // CHECK
 
 /*
 // LED Declarations
@@ -28,14 +26,14 @@ MCP_CAN CAN0(10);
 */
 
 // Robot State Declarations
-#define EStopButtonIndicator 4 // On AtMega32U4 Connected to Pin 25 (PD4)
-#define AutonButtonIndicator 5 // On AtMega32U4 Connected to Pin 26 (PD6)
+#define EStopButtonIndicator 4
+#define AutonButtonIndicator 5
 
 // Battery Voltage Detection Declaration
-#define Battery_Voltage A0 // On AtMega32U4 Connected to Pin 27 (PF0)
+#define Battery_Voltage A0
 
-
-#define Wheel_Diameter 8
+// Physical perameters of robot
+#define Wheel_Diameter 14
 
 // Global Variable Declaration
 
@@ -52,7 +50,7 @@ bool prevAutonButton = false;
 // IDs of the messages we are interested in
 const unsigned long rightWheelSpeedID = 2;
 const unsigned long leftWheelSpeedID = 3;
-
+INT32U asdf;
 // Buffers to store incoming CAN data
 byte msgWheelSpeed[8];
 
@@ -60,6 +58,9 @@ byte msgWheelSpeed[8];
 double rightWheelSpeed;
 double leftWheelSpeed;
 
+// Variables to store encoder wheel speed 
+double odrv0EncoderVel;
+double odrv1EncoderVel;
 
 // Function Prototypes
 static inline void receiveCallback(int);
@@ -96,9 +97,6 @@ void setup()
   pinMode(EStop, INPUT);
 
   pinMode(CAN0_INT, INPUT);
-
-  pinMode(IMU_SCL, INPUT); // Work on later
-  pinMode(IMU_SDA, INPUT); // Work on later
 
   pinMode(EStopButtonIndicator, OUTPUT);
   pinMode(AutonButtonIndicator, OUTPUT);
@@ -167,54 +165,69 @@ void loop()
   // Fetches values from controller that are sent over I2C
   fetchControllerData();
 
-  // Falling Edge Detection (Goes from High to Low)
-  // EStop (If statement) only activates when button is pressed
-  if (prevEStopButton == HIGH && EStopButton == LOW)
+  // Physical button is engaged, making the EStop pin read a low signal not a high signal
+  if(digitalRead(EStop) == LOW)
   {
-    // Toggles EStop State
+    // Falling Edge Detection (Goes from High to Low)
+    // EStop (If statement) only activates when button is pressed
+    if (prevEStopButton == HIGH && EStopButton == LOW)
+    {
+      // Toggles EStop State
+      // If state was off before then the action of pressing the button means that it is enabled
+      if(!EStopState)
+      {
+        ODriveEStop();
+        EStopState = true;
+        digitalWrite(EStopButtonIndicator, HIGH);
+      }
+
+      else
+      {
+        ODriveControlState();
+        ODriveMovement(verticalMov, horizontalMov);
+        EStopState = false;
+        digitalWrite(EStopButtonIndicator, LOW);
+      }
+    } 
+    
+    prevEStopButton = EStopButton;
+
     if(!EStopState)
     {
-      ODriveEStop();
-      EStopState = true;
-      digitalWrite(EStopButtonIndicator, HIGH);
-    }
-
-    else
-    {
-      ODriveControlState();
-      ODriveMovement(verticalMov, horizontalMov);
-      EStopState = false;
-      digitalWrite(EStopButtonIndicator, LOW);
-    }
-  } 
-  
-  prevEStopButton = EStopButton;
-
-  if(!EStopState)
-  {
-    if (AutonButton == LOW && prevAutonButton == HIGH) // I may have to change what ID the ODrives are listening to?
-    {
-      if(!AutonState)
+      if (AutonButton == LOW && prevAutonButton == HIGH)
       {
-        autonMovementData(); // Receives data from path planner and send motor speeds to ODrives
-        AutonState = true;
-        digitalWrite(AutonButtonIndicator, HIGH);
-      }
-      
-      else 
-      {
-        AutonState = false;
-        digitalWrite(AutonButtonIndicator, LOW);
+        // If state was off before then the action of pressing the button means that it is enabled
+        if(!AutonState)
+        {
+          autonMovement();
+          AutonState = true;
+          digitalWrite(AutonButtonIndicator, HIGH);
+        }
+        
+        else 
+        {
+          AutonState = false;
+          digitalWrite(AutonButtonIndicator, LOW);
+        }
       }
     }
+
+    prevAutonButton = AutonButton;
+
+    autonEncoderData();
+
+    // Prints ODrive Velocities and Position via Encoders
+    //ViewODriveEncoderData()();
   }
 
-  prevAutonButton = AutonButton;
+  // Physical EStop is engaged (Set all states to safe states)
+  else
+  {
 
-  // Prints ODrive Velocities and Position via Encoders
-  //ODriveEncoderData();
+  }
+  
 
-  delay(10);
+  delay(20);
 }
 
 void fetchControllerData()
@@ -283,7 +296,7 @@ void ODriveMovement(double verticalVelocity, double horizontalVelocity) // Confi
 }
 
 // Sends command over CAN to ODrive to initiate EStop
-void ODriveEStop() // use errors from declarations. I gues change ODriveAxisState::AXIS_STATE_IDLE to ODriveErrors::ODRIVE_ERROR_ESTOP_REQUESTED  
+void ODriveEStop()
 {
   Serial.println("Enabling EStop...");
   while (odrv0_user_data.last_heartbeat.Axis_State != ODriveAxisState::AXIS_STATE_IDLE || odrv1_user_data.last_heartbeat.Axis_State != ODriveAxisState::AXIS_STATE_IDLE) 
@@ -329,7 +342,7 @@ void ODriveControlState() // Could combine with estop function (Possibly make fu
 }
 
 // Prints position and velocity from each ODrive (For debugging)
-void ODriveEncoderData()
+void ViewODriveEncoderData()
 {
   if (odrv0_user_data.received_feedback) 
   {
@@ -368,7 +381,13 @@ void ViewControllerData()
   Serial.println("------------------------");
 }
 
-void autonMovementData() // Assuming data is given in m/s
+void stateCommunication()
+{
+  
+}
+
+// Receives data from path planner and send motor speeds to ODrives
+void autonMovement() // Assuming data is given in m/s
 {
   unsigned long receivedID;
   byte msgLen;
@@ -431,7 +450,54 @@ void autonMovementData() // Assuming data is given in m/s
 
   odrv0.setVelocity(leftWheelSpeed);
   odrv1.setVelocity(rightWheelSpeed);
+}
 
+// Obtains Encoder data from each ODrive and sends it over CAN to it's respective ID
+void autonEncoderData()
+{
+  // Obtaining ODrive Encoder data
+  if (odrv0_user_data.received_feedback) 
+  {
+    Get_Encoder_Estimates_msg_t feedbackOdrv0 = odrv0_user_data.last_feedback;
+    odrv0_user_data.received_feedback = false;
+    
+    double odrv0EncoderVel = feedbackOdrv0.Vel_Estimate;
+  }
+
+  if (odrv1_user_data.received_feedback) 
+  {
+    Get_Encoder_Estimates_msg_t feedbackOdrv1 = odrv1_user_data.last_feedback;
+    odrv1_user_data.received_feedback = false;
+    double odrv1EncoderVel = feedbackOdrv1.Vel_Estimate;
+  }
+
+  // Sending that data over CAN using left and right wheel IDs
+
+  // leftWheelSpeedID,  ODrv 0 is the left wheel
+  // rightWheelSpeedID, ODrv 1 is the right wheel
+  
+  byte* odrv0EncoderVelBA = (byte*)&odrv0EncoderVel;
+  byte* odrv1EncoderVelBA = (byte*)&odrv1EncoderVel;
+
+  byte leftMsgStatus = CAN0.sendMsgBuf(leftWheelSpeedID, 8, odrv0EncoderVelBA);
+  byte rightMsgStatus = CAN0.sendMsgBuf(rightWheelSpeedID, 8, odrv1EncoderVelBA);
+
+  // Check the feedback message to see if the message was sent successfully (was the message acknowledged)
+  if(leftMsgStatus == CAN_OK)
+  {
+    if(rightMsgStatus == CAN_OK)
+    {
+      Serial.println("Message Sent Successfully!");
+    }
+    else 
+    {
+      Serial.println("Error Sending Message...");
+    }
+  } 
+  else 
+  {
+    Serial.println("Error Sending Message...");
+  }
 }
 
 // Below are all of the ODriveCAN Specific function declarations
