@@ -205,21 +205,28 @@ void loop()
     // Toggles EStop State
     if(!EStopState)
     {
-      ODriveEStop();
       EStopState = true;
-      digitalWrite(EStopButtonIndicator, HIGH);
     }
 
     else
     {
-      ODriveControlState();
-      ODriveMovement(verticalMov, horizontalMov);
       EStopState = false;
-      digitalWrite(EStopButtonIndicator, LOW);
     }
   } 
   prevEStopButton = EStopButton;
 
+  if(EStopState)
+  {
+    ODriveEStop();
+    digitalWrite(EStopButtonIndicator, HIGH);
+  }
+
+  else
+  {
+    ODriveControlState();
+    ODriveMovement(verticalMov, horizontalMov);
+    digitalWrite(EStopButtonIndicator, LOW);
+  }
 
   if (AutonButton == LOW && prevAutonButton == HIGH) // I may have to change what ID the ODrives are listening to?
   {

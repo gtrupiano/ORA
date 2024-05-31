@@ -48,6 +48,7 @@ void loop()
   Serial.println(lBump);
   Serial.println();
 
+
   delay(100); // Delay for stability
 }
 
