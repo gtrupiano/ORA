@@ -308,12 +308,15 @@ void loop()
 void ODriveMovement(double verticalVelocity, double horizontalVelocity) // Fix later
 {
   // Arbitrarily scales inputs 
-  verticalVelocity = constrain(verticalVelocity, -20, 20);
-  horizontalVelocity = constrain(horizontalVelocity, -20, 20);
+  verticalVelocity = constrain(verticalVelocity, -1, 1);
+  horizontalVelocity = constrain(horizontalVelocity, -1, 1);
 
   // Standard for differential drive control
-  double leftMotorMove = verticalVelocity;
-  double rightMotorMove = horizontalVelocity;
+  double leftMotorMove = verticalVelocity - horizontalVelocity;
+  double rightMotorMove = verticalVelocity + horizontalVelocity;
+
+  leftMotorMove = leftMotorMove * 70;
+  rightMotorMove = rightMotorMove * 70;
 
   // Send velocity CAN commands to left and right motors
   odrv0.setVelocity(leftMotorMove);

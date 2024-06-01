@@ -176,62 +176,62 @@ void loop()
   */
 
   // Falling Edge Detection (Goes from High to Low)
-    // EStop (If statement) only activates when button is pressed
-    if (prevEStopButton == HIGH && EStopButton == LOW)
+  // EStop (If statement) only activates when button is pressed
+  if (prevEStopButton == HIGH && EStopButton == LOW)
+  {
+    // Toggles EStop State
+    // If state was off before then the action of pressing the button means that it is enabled
+    if(!EStopState)
     {
-      // Toggles EStop State
-      // If state was off before then the action of pressing the button means that it is enabled
-      if(!EStopState)
-      {
-        EStopState = true;
-      }
-
-      else
-      {
-        EStopState = false;
-      }
-    } 
-    
-    prevEStopButton = EStopButton;
-
-    if(EStopState)
-    {
-      ODriveEStop();
-      digitalWrite(EStopButtonIndicator, HIGH);
+      EStopState = true;
     }
+
     else
     {
-      ODriveControlState();
-      ODriveMovement(angularMov, linearMov);
-      digitalWrite(EStopButtonIndicator, LOW);
+      EStopState = false;
     }
+  } 
+  
+  prevEStopButton = EStopButton;
 
-    if(!EStopState) // do thing that you did previously
+  if(EStopState)
+  {
+    ODriveEStop();
+    digitalWrite(EStopButtonIndicator, HIGH);
+  }
+  else
+  {
+    ODriveControlState();
+    ODriveMovement(angularMov, linearMov);
+    digitalWrite(EStopButtonIndicator, LOW);
+  }
+
+  if(!EStopState) // do thing that you did previously
+  {
+    if (AutonButton == LOW && prevAutonButton == HIGH)
     {
-      if (AutonButton == LOW && prevAutonButton == HIGH)
+      // If state was off before then the action of pressing the button means that it is enabled
+      if(!AutonState)
       {
-        // If state was off before then the action of pressing the button means that it is enabled
-        if(!AutonState)
-        {
-          autonMovement();
-          AutonState = true;
-          digitalWrite(AutonButtonIndicator, HIGH);
-        }
-        
-        else 
-        {
-          AutonState = false;
-          digitalWrite(AutonButtonIndicator, LOW);
-        }
+        autonMovement();
+        AutonState = true;
+        digitalWrite(AutonButtonIndicator, HIGH);
+      }
+      
+      else 
+      {
+        AutonState = false;
+        digitalWrite(AutonButtonIndicator, LOW);
       }
     }
+  }
 
-    prevAutonButton = AutonButton;
+  prevAutonButton = AutonButton;
 
-    //autonEncoderData();
+  //autonEncoderData();
 
-    // Prints ODrive Velocities and Position via Encoders
-    //ViewODriveEncoderData()();
+  // Prints ODrive Velocities and Position via Encoders
+  //ViewODriveEncoderData();
 
   // Physical EStop is engaged (Set all states to safe states)
   
@@ -241,7 +241,7 @@ void loop()
   //}
   
 
-  delay(20);
+  delay(50);
 }
 
 void fetchControllerData()
@@ -285,14 +285,28 @@ void ODriveMovement(double angularVelocity, double linearVelocity) // Confirm if
   angularVelocity = constrain(angularVelocity, -1.0, 1.0);
   linearVelocity = constrain(linearVelocity, -1.0, 1.0);
 
+
+  
+  //original
   // Radians Per Second
-  double leftMotorTPS = (1 / Wheel_Radius) * (linearVelocity - ((Wheel_Seperation * angularVelocity) / 2));
-  double rightMotorTPS = (1 / Wheel_Radius) * (linearVelocity + ((Wheel_Seperation * angularVelocity) / 2));
+  double leftMotorTPS = (1 / Wheel_Radius) * (linearVelocity - ((Wheel_Seperation * angularVelocity * 0.56) / 2));
+  double rightMotorTPS = (1 / Wheel_Radius) * (linearVelocity + ((Wheel_Seperation * angularVelocity * 0.56) / 2));
+
+  // Converting to Turns per second
+  leftMotorTPS = (leftMotorTPS / (2 * M_PI)) * 50;
+  rightMotorTPS = rightMotorTPS / (2 * M_PI) * 50;
+  
+  Serial.println("Angular Velocity: " + (String) angularVelocity + "\tLinear Velocity: " + (String) linearVelocity + "\tLeft Motor: " + (String) leftMotorTPS + "\tRight Motor: " + (String) rightMotorTPS);
+  /*
+  // Op 2
+  // Radians Per Second
+  double leftMotorTPS = (1 / Wheel_Radius) * ((linearVelocity * 40) - ((Wheel_Seperation * angularVelocity * 21) / 2));
+  double rightMotorTPS = (1 / Wheel_Radius) * ((linearVelocity * 40) + ((Wheel_Seperation * angularVelocity * 21) / 2));
 
   // Converting to Turns per second
   leftMotorTPS = leftMotorTPS / (2 * M_PI);
   rightMotorTPS = rightMotorTPS / (2 * M_PI);
-
+  */
   
   // Send velocity CAN commands to left and right motors
   odrv0.setVelocity(leftMotorTPS);
@@ -325,7 +339,7 @@ void ODriveEStop()
 // Send CAN command to put axis into closed loop control state
 void ODriveControlState() 
 {
-  Serial.println("Enabling closed loop control...");
+  //Serial.println("Enabling closed loop control...");
   while (odrv0_user_data.last_heartbeat.Axis_State != ODriveAxisState::AXIS_STATE_CLOSED_LOOP_CONTROL || odrv1_user_data.last_heartbeat.Axis_State != ODriveAxisState::AXIS_STATE_CLOSED_LOOP_CONTROL) 
   {
     odrv0.clearErrors();
@@ -342,7 +356,7 @@ void ODriveControlState()
       pumpEvents(can_intf);  // Pump events for 150ms (Look at example for full explanation)
     }
   }
-  Serial.println("Put into closed loop control state");
+  //Serial.println("Put into closed loop control state");
 }
 
 // Prints position and velocity from each ODrive (For debugging)

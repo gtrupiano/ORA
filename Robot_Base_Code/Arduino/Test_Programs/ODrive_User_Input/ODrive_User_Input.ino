@@ -4,7 +4,7 @@
 #include "ODriveMCPCAN.hpp"
 
 #define CAN_BAUDRATE 500000
-#define ODRV0_NODE_ID 1
+#define ODRV0_NODE_ID 0
 
 #define MCP2515_CS 10
 #define MCP2515_INT 2

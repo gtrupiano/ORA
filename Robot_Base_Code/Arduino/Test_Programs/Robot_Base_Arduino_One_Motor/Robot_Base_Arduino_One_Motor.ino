@@ -5,8 +5,8 @@
 
 #define CAN_BAUDRATE 500000
 #define CAN0_INT 2    // Set INT to pin 2 (This is the Interrupt pin)
-#define ODRV0_NODE_ID 1 // Left Motor
-#define ODRV1_NODE_ID 1 // Right Motor
+#define ODRV0_NODE_ID 0 // Left Motor
+#define ODRV1_NODE_ID 0 // Right Motor
 
 MCP2515Class& can_intf = CAN;
 
