@@ -26,7 +26,7 @@ MCP_CAN CAN0(10);
 #define EStop 8 // Hardware EStop
 
 // Robot State Declarations
-#define EStopButtonIndicator 4
+#define EStopButtonIndicator 1
 #define AutonButtonIndicator 5
 
 // Battery Voltage Detection Declaration
