@@ -1,27 +1,26 @@
 #include <Wire.h>
 
-int yPos, xPos;
+int8_t yPos, xPos;
 bool rBump, lBump;
 
 void setup() {
   Wire.begin(8);        // join I2C bus (address optional for master)
-  Serial.begin(9600);  // start serial for output
-  Serial.print(sizeof(int));
+  Serial.begin(115200);  // start serial for output
 }
 
 void loop() {
   // Request data from slave device #8
-  Wire.requestFrom(8, sizeof(int) * 2 + sizeof(bool)*2);
+  Wire.requestFrom(8, sizeof(int8_t) * 2 + sizeof(bool)*2);
 
   // Make sure there's enough data available
-  if (Wire.available() >= sizeof(int) * 2 + sizeof(bool)*2) {
+  if (Wire.available() >= sizeof(int8_t) * 2 + sizeof(bool)*2) {
     // Read yPos
     yPos = Wire.read();
-    yPos |= Wire.read() << 8; // Combine with the next byte
+    //yPos |= Wire.read() << 8; // Combine with the next byte
 
     // Read xPos
     xPos = Wire.read();
-    xPos |= Wire.read() << 8; // Combine with the next byte
+    //xPos |= Wire.read() << 8; // Combine with the next byte
 
     // Read rBump
     rBump = Wire.read();
