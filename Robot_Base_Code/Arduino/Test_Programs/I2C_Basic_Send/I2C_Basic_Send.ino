@@ -1,3 +1,7 @@
+#include <PS4Controller.h>
+#include <ps4.h>
+#include <ps4_int.h>
+
 // ESP32 Model: DOIT ESP32 DEVKIT V1
 
 #include <Wire.h>
@@ -19,18 +23,20 @@ void setup()
 void loop() 
 {
   // Read controller values
-  if (abs(PS4.LStickY()) > deadband) // Implements deadband
+  if (abs(PS4.RStickY()) > deadband) // Implements deadband
   {
-    yPos = PS4.LStickY(); // Reads Y position
+    yPos = PS4.RStickY(); // Reads Y position
   }
-  else {
+  else 
+  {
     yPos = 0;
   }
   if (abs(PS4.LStickX()) > deadband) // Implements deadband
   {
     xPos = PS4.LStickX(); // Reads X position
   }
-  else {
+  else 
+  {
     xPos = 0;
   }
   rBump = PS4.R1(); // Reads right bumper state
@@ -47,8 +53,7 @@ void loop()
   Serial.println(lBump);
   Serial.println();
 
-
-  delay(100); // Delay for stability
+  delay(50); // Delay for stability
 }
 
 // Function that executes whenever data is requested by master
