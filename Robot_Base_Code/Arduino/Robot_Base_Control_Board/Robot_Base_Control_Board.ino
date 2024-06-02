@@ -16,10 +16,11 @@ unsigned long prevRunTime = 0;
 const int blinkInterval = 200;
 bool autonLEDState = false;
 void AutonRedBlink();
+
 void setup() 
 {
-  pinMode(EStopPin, INPUT);  // Configure EStop as input signal
-  pinMode(AutonPin, INPUT);  // Configure Auton as input signal
+  pinMode(EStopPin, INPUT);
+  pinMode(AutonPin, INPUT);
 
   pinMode(LED_R, OUTPUT);
   pinMode(LED_G, OUTPUT);
@@ -33,8 +34,8 @@ void setup()
 
 void loop() 
 {
-  EStopped = digitalRead(EStopPin);  // Read the EStop signal
-  AutonMode = digitalRead(AutonPin);  // Read the Auton signal
+  EStopped = digitalRead(EStopPin);
+  AutonMode = digitalRead(AutonPin);
 
   if (EStopped) 
   { 
@@ -71,6 +72,6 @@ void AutonRedBlink()
 
     digitalWrite(LED_R, autonLEDState ? HIGH : LOW);
 
-    prevRunTime = currRunTime;  // Update the previous run time after toggling
+    prevRunTime = currRunTime;
   }
 }
