@@ -217,6 +217,16 @@ void loop()
     }
   }
 
+  if(digitalRead(EStop) == LOW)
+  {
+    digitalWrite(EStopButtonIndicator, HIGH);
+  } 
+
+  else
+  {
+    digitalWrite(EStopButtonIndicator, LOW);
+  }
+
   prevAutonButton = AutonButton;
 
   //autonEncoderData();
