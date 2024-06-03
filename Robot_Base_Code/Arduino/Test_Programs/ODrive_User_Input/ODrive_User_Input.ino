@@ -4,7 +4,7 @@
 #include "ODriveMCPCAN.hpp"
 
 #define CAN_BAUDRATE 500000
-#define ODRV0_NODE_ID 0
+#define ODRV0_NODE_ID 1
 
 #define MCP2515_CS 10
 #define MCP2515_INT 2
@@ -108,6 +108,7 @@ void setup()
   while (!odrv0_user_data.received_heartbeat) 
   {
     pumpEvents(can_intf);
+    Serial.println("Trying to connect");
     delay(100);
   }
 
