@@ -9,13 +9,6 @@
 #define ODRV0_NODE_ID 0 // Left Motor
 #define ODRV1_NODE_ID 1 // Right Motor
 
-// CAN IDs of the messages we are interested in
-const unsigned long rightWheelSpeedID = 2;
-const unsigned long leftWheelSpeedID = 3;
-const unsigned long rightEncoderID = 4;
-const unsigned long leftEncoderID = 5;
-const unsigned long AutonStateID = 6;
-
 MCP2515Class& can_intf = CAN;
 
 MCP_CAN CAN0(10);
@@ -48,6 +41,13 @@ bool prevEStopButton = false;
 bool AutonButton = false;
 bool AutonState = false;
 bool prevAutonButton = false;
+
+// CAN IDs of the messages we are interested in
+const unsigned long rightWheelSpeedID = 2;
+const unsigned long leftWheelSpeedID = 3;
+const unsigned long rightEncoderID = 4;
+const unsigned long leftEncoderID = 5;
+const unsigned long AutonStateID = 6;
 
 // Buffers to store incoming CAN data
 byte msgWheelSpeed[8];
@@ -202,8 +202,8 @@ void loop()
   // Auton Logic
 
   // EStop has priority
-  //if(!EStopState)
-  //{
+  if(!EStopState)
+  {
     // Falling Edge Detection (Goes from High to Low)
     // Auton (If statement) only activates when button is pressed
     if (AutonButton == LOW && prevAutonButton == HIGH)
@@ -219,7 +219,8 @@ void loop()
         AutonState = false;
       }
     }
-  //}
+    prevAutonButton = AutonButton;
+  }
 
   // Checks AutonState data (which is determined by the toggle of the controller button)
   if(AutonState)
@@ -576,4 +577,5 @@ void onCanMessage(const CanMsg& msg)
   {
     onReceive(msg, *odrive);
   }
+
 }
