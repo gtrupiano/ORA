@@ -10,7 +10,7 @@
 // Variables to stre controller values
 int8_t xPos, yPos; // Left joystick X and Y position values used for differential drive movement
 bool rBump, lBump; // Left and right bumper states used for E-Stop and Autonomous State respectivly
-int deadband = 5; // Used to offset joystick so resting state is a value of 0
+int8_t deadband = 5; // Used to offset joystick so resting state is a value of 0
 
 void setup() 
 {
