@@ -1,5 +1,5 @@
 #include "MCP2515.h"
-#include "ODriveMCPCAN.hpp"
+#include "ODriveMCPCAN.hpp" // Includes ODriveCAN.h and MCP2515.h
 #include <SPI.h>
 #include <Wire.h>
 #include <mcp_can.h>
@@ -26,9 +26,9 @@ MCP_CAN CAN0(10);
 #define Battery_Voltage A0
 
 // Physical perameters of robot
-#define Wheel_Radius 0.184 // meters
-#define Wheel_Seperation 0.7112 // meters
-#define Max_Velocity = 2.2352 //  Speed limit m/s according to IGVC rules
+#define Wheel_Radius 0.184f // meters
+#define Wheel_Seperation 0.7112f // meters
+#define Max_Velocity 2.2352f //  Speed limit m/s according to IGVC rules
 
 // Global Variable Declaration
 
@@ -53,19 +53,21 @@ const unsigned long AutonStateID = 6;
 byte msgWheelSpeed[8];
 
 // Variables to store wheel speeds
-double rightWheelSpeed;
-double leftWheelSpeed;
+// They are delared as floats in the ODriveCAN library
+float rightWheelSpeed;
+float leftWheelSpeed;
 
 // Variables to store encoder wheel speed 
-double odrv0EncoderVel;
-double odrv1EncoderVel;
+// They are delared as floats in the ODriveCAN library
+float odrv0EncoderVel; 
+float odrv1EncoderVel;
 
 // Function Prototypes
 static inline void receiveCallback(int);
 bool setupCan();
 void onHeartbeat(Heartbeat_msg_t&, void*);
 void onFeedback(Get_Encoder_Estimates_msg_t&, void*);
-void onCanMessage(const &);
+void onCanMessage(const CanMsg&);
 
 // Data type created for ODrive (Consists of last heartbeat, if heartbeat was received, encoder feedback, and if there is feedback)
 struct ODriveUserData 
@@ -290,14 +292,15 @@ void fetchControllerData()
 void ODriveMovement(int8_t angularVelIn, int8_t linearVelIn)
 {
   // Normalize inputs to directional velocity vectors
-  double angularVelocity = (double)angularVelIn / 127.0;
-  double linearVelocity = (double)linearVelIn / 127.0;
+  float angularVelocity = (float)angularVelIn / 127.0;
+  float linearVelocity = (float)linearVelIn / 127.0;
   
   // Radians Per Second
-  double leftMotorTPS = (1 / Wheel_Radius) * (linearVelocity - ((Wheel_Seperation * angularVelocity) / 2));
-  double rightMotorTPS = (1 / Wheel_Radius) * (linearVelocity + ((Wheel_Seperation * angularVelocity) / 2));
+  float leftMotorTPS = (1 / Wheel_Radius) * (linearVelocity - ((Wheel_Seperation * angularVelocity) / 2));
+  float rightMotorTPS = (1 / Wheel_Radius) * (linearVelocity + ((Wheel_Seperation * angularVelocity) / 2));
 
   // Converting to Turns per second
+  // Convert wheel speeds from rad/s to turns per second with scaling factor 21
   leftMotorTPS = (leftMotorTPS / (2 * M_PI)) * 21;
   rightMotorTPS = (rightMotorTPS / (2 * M_PI)) * -21;
   
@@ -406,61 +409,35 @@ void autonMovement() // Assuming data is given in rad/sec
   unsigned long receivedID;
   byte msgLen;
 
-  // Check if a CAN message is available
-  if (CAN_MSGAVAIL == CAN0.checkReceive()) 
+  // Check if a CAN messages are available (Now looks for all messages in the bus rather than just per function call)
+  while(CAN_MSGAVAIL == CAN0.checkReceive()) 
   {
-    // Read the CAN message
+    // Read the CAN messages in the RX buffer
     CAN0.readMsgBuf(&receivedID, &msgLen, msgWheelSpeed);
     
-    // Check if the received message ID matches the right wheel speed ID
-    if (receivedID == rightWheelSpeedID)
+    if(msgLen == 8)
     {
-      // Check to see if lenth is 8 bytes (Double)
-      if (msgLen == 8) 
+      // Check if the received message ID matches the right wheel speed ID
+      if(receivedID == rightWheelSpeedID)
       {
-          // Convert byte array to double
-          memcpy(&rightWheelSpeed, msgWheelSpeed, sizeof(double));
-          
-          /*
-          // Print the received right wheel speed
-          Serial.print("Received right wheel speed: ");
-          Serial.println(rightWheelSpeed, 8); // Print with 8 decimal places
-          */
-      } 
-      else 
-      {
-        Serial.println("Received message length does not match expected double size.");
+        memcpy(&rightWheelSpeed, msgWheelSpeed, sizeof(float));
       }
+
+      // Check if the received message ID matches the left wheel speed ID
+      else if(receivedID == leftWheelSpeedID)
+      {
+        memcpy(&leftWheelSpeed, msgWheelSpeed, sizeof(float));
+      }
+
     }
-
-    // Read the CAN message again for the left wheel speed
-    CAN0.readMsgBuf(&receivedID, &msgLen, msgWheelSpeed);
-
-    // Check if the received message ID matches the left wheel speed ID
-    if (receivedID == leftWheelSpeedID) 
+    else 
     {
-      // Check to see if lenth is 8 bytes (Double)
-      if (msgLen == 8) 
-      {
-        // Convert byte array to double
-        memcpy(&leftWheelSpeed, msgWheelSpeed, sizeof(double));
-        
-        /*
-        // Print the received left wheel speed
-        Serial.print("Received left wheel speed: ");
-        Serial.println(leftWheelSpeed, 8); // Print with 8 decimal places
-        */
-      }
-
-      else
-      {
-        Serial.println("Received message length does not match expected double size.");
-      }
-    } 
+      Serial.println("Received message length does not match expected float size.");
+    }
   }
 
-  leftWheelSpeed = (leftWheelSpeed / (2 * M_PI)) * 21;
-  rightWheelSpeed = (rightWheelSpeed / (2 * M_PI)) * -21;
+  leftWheelSpeed = (leftWheelSpeed / ((float)(2f * M_PI))) * 21f;
+  rightWheelSpeed = (rightWheelSpeed / ((float)(2f * M_PI))) * -21f;
   
   odrv0.setVelocity(leftWheelSpeed);
   odrv1.setVelocity(rightWheelSpeed);
@@ -473,16 +450,15 @@ void autonEncoderData()
   if (odrv0_user_data.received_feedback) 
   {
     Get_Encoder_Estimates_msg_t feedbackOdrv0 = odrv0_user_data.last_feedback;
+    odrv0EncoderVel = feedbackOdrv0.Vel_Estimate;
     odrv0_user_data.received_feedback = false;
-    
-    float odrv0EncoderVel = feedbackOdrv0.Vel_Estimate;
   }
 
   if (odrv1_user_data.received_feedback) 
   {
     Get_Encoder_Estimates_msg_t feedbackOdrv1 = odrv1_user_data.last_feedback;
+    odrv1EncoderVel = feedbackOdrv1.Vel_Estimate;
     odrv1_user_data.received_feedback = false;
-    float odrv1EncoderVel = feedbackOdrv1.Vel_Estimate;
   }
 
   // Sending that data over CAN using left and right wheel IDs
@@ -494,24 +470,22 @@ void autonEncoderData()
   byte* odrv1EncoderVelBA = (byte*)&odrv1EncoderVel;
   
 
-  byte leftMsgStatus = CAN0.sendMsgBuf(leftEncoderID, 4, odrv0EncoderVelBA);
+  byte leftMsgStatus = CAN0.sendMsgBuf(leftEncoderID, 4, odrv0EncoderVelBA); // length might be incorrect.
   byte rightMsgStatus = CAN0.sendMsgBuf(rightEncoderID, 4, odrv1EncoderVelBA);
 
   // Check the feedback message to see if the message was sent successfully (was the message acknowledged)
-  if(leftMsgStatus == CAN_OK)
+  if (leftMsgStatus != CAN_OK) 
   {
-    if(rightMsgStatus == CAN_OK)
-    {
-      //Serial.println("Message Sent Successfully!");
-    }
-    else 
-    {
-      Serial.println("Error Sending Message...");
-    }
-  } 
-  else 
+    Serial.println("Error Sending Left Encoder Data...");
+  }
+
+  if (rightMsgStatus != CAN_OK) 
   {
-    Serial.println("Error Sending Message...");
+    Serial.println("Error Sending Right Encoder Data...");
+  }
+  else
+  {
+    //Serial.println("Message Sent Successfully!");
   }
 }
 
@@ -531,7 +505,7 @@ static inline void receiveCallback(int packet_size)
 // Configure and initialize the CAN bus interface
 bool setupCan() 
 {
-  if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK)
+  if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK) // Should this be MCP_Normal?
   {
     Serial.println("MCP2515 Initialized Successfully!");
   }
@@ -540,7 +514,7 @@ bool setupCan()
     Serial.println("Error Initializing MCP2515...");
   }
   
-  CAN0.setMode(MCP_NORMAL);
+  CAN0.setMode(MCP_NORMAL); // Should this be MCP_Any?
 
 
   CAN.setPins(MCP2515_CS, MCP2515_INT);
