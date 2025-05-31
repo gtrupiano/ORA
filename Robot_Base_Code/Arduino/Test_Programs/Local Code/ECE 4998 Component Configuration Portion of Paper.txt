@@ -1,0 +1,38 @@
+Since there are a variety of different components in Horizon, properly controlling each one is something that needs to be properly addressed. 
+
+Components including each ODrive, CAN Communication with ODrive, Control Board, and Stack Light. Each component has both a software and hardware (wiring) aspect to it. 
+
+
+ODrive
+When configuring the ODrives, there were different perameters within the ODrive that needed to be configured. These include power, motor, control mode, and communication parameters.
+
+	Power:
+Configurations for the power supply needed to be modified based on the battery present on Horizon. Specifying the maximum and minimum voltage expected from the battery. This is used in order for the Odrive to check whtether it is being over or under volted and disengage when limits are crossed. 
+
+Matching the specifications of the battery to the parameters, the maximum and minimum voltage shouldn't cross 17V and 12V respectivly. A maximum positive current is also needed to make sure the ODrive isn't drawing more current then possible from the battery which in this case is 30A.
+
+
+	Motor:
+Setting the motor parameters is needed to make sure the ODrives don't draw too much current from the battery. The parameters that are needed consist of pole pairs, KV, and current limit.
+
+
+	Control Mode:
+dsfaasdf
+
+	Communication:
+asdfasdf
+
+
+
+
+CAN Communication with ODrive:
+
+	Intro:
+kjhgkjh
+
+
+Connecting CAN signals to ODrive
+ODriveArduino
+
+
+
