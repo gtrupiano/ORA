@@ -32,7 +32,7 @@ IMU_t imu = {};
 MPU9250 mpu;
 
 // Function Defines
-void updateImuObject();
+bool updateImuObject();
 void printImuData();
 
 
@@ -50,24 +50,45 @@ void setup()
     }
   }
   Serial.println("MPU9250 ready!");
+
+  mpu.selectFilter(QuatFilterSel::MADGWICK);
+
+  // Calibration sequence
+  Serial.println("Accel Gyro calibration will start in 5sec.");
+  Serial.println("Please leave the device still on the flat plane.");
+  mpu.verbose(true);
+  delay(5000);
+  mpu.calibrateAccelGyro();
+
+  Serial.println("Mag calibration will start in 5sec.");
+  Serial.println("Please Wave device in a figure eight until done.");
+  delay(5000);
+  mpu.calibrateMag();
+
+  mpu.verbose(false);
 }
 
 void loop() 
 {
   // Fetching data from IMU and updating IMU struct
-  updateImuObject();
+  bool imuDataPresent = updateImuObject();
 
-  // Printing acceleration data
-  printImuData();
+  // Printing acceleration data only if imu data is present
+  if(imuDataPresent)
+  {
+    printImuData();
+  }
 
-  delay(100);
+  // Quaternions are computed by the fusion filter and only update when mpu.update() runs frequently. 
+  // Keep loop fast; avoid long delays or quat may freeze at (1,0,0,0). 
+  delay(1);
 }
 
-void updateImuObject()
+bool updateImuObject()
 {
+  bool imuDataPresent = false;
   if (mpu.update())
   {
-
     // Copying data to IMU structure
     imu.acceleration.x = mpu.getAccX();
     imu.acceleration.y = mpu.getAccY();
@@ -85,7 +106,11 @@ void updateImuObject()
     imu.temperature = mpu.getTemperature();
 
     imu.sampleTime = millis();
+
+    imuDataPresent = true;
   }
+
+  return imuDataPresent;
 }
 
 void printImuData()
