@@ -1,14 +1,14 @@
 /*
  ******************************************************************************
-      File Name  : ESP32_IMU.h
+      File Name  : ESP32_IMU_MICRO_ROS_H.h
       Author     : George Trupiano
       Date       : 
       Description:
  ******************************************************************************
  */
   
-#ifndef ESP32_IMU_H
-#define ESP32_IMU_H
+#ifndef ESP32_IMU_MICRO_ROS_H
+#define ESP32_IMU_MICRO_ROS_H
   
 /*
  ******************************************************************************
@@ -17,6 +17,15 @@
  */
 
 #include "MPU9250.h"
+
+#include <micro_ros_arduino.h>
+#include <rcl/rcl.h>
+#include <rcl/error_handling.h>
+#include <rclc/rclc.h>
+#include <rclc/executor.h>
+#include <sensor_msgs/msg/imu.h>
+
+#include <stdio.h>
 #include <Wire.h>
 
 /*
@@ -29,7 +38,10 @@
 #define IMU_SDA_PIN 21
 #define IMU_SCL_PIN 22
 
-#define MPU_ADDRESS 0x68
+
+// This is the I2C address of the IMU chip itself.
+// May change with chip variant so run the example program connection_check.ino
+#define IMU_I2C_ADDRESS 0x68
 
 typedef struct
 {
@@ -53,22 +65,9 @@ typedef struct
     Vector_t gyro;
     Quaternion_t quat;
     float temp;
-    unsigned long sampleTimeMS;
+    bool dataPresent;
+    unsigned long sampleTime;
 } IMU_t;
-
-
-typedef struct 
-{
-    // Time is in MS
-    unsigned long period;
-    unsigned long lastTime;
-} Task_t;
-
-typedef struct
-{
-    Task_t printImu;
-    Task_t led;
-} TaskTime_t;
 
 /*
  ******************************************************************************
@@ -82,7 +81,13 @@ typedef struct
  ******************************************************************************
  */
 
+void initIMU();
+void initMicroRos();
+void restartSystem();
+void imuTimerCallback(rcl_timer_t * timer, int64_t last_call_time);
+void ledTimerCallback(rcl_timer_t * timer, int64_t last_call_time);
 bool updateImuObject();
+void fillImuMsgFromImuStruct();
 void printImuData(bool accel, bool gyro, bool quat, bool temp);
   
-#endif // ESP32_IMU_H
+#endif // ESP32_IMU_MICRO_ROS_H

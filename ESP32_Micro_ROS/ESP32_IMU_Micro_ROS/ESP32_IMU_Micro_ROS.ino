@@ -1,70 +1,48 @@
-#include "MPU9250.h"
+/*
+ **********************************************************************
+ * INCLUDES
+ **********************************************************************
+*/
 
-#include <micro_ros_arduino.h>
-#include <rcl/rcl.h>
-#include <rcl/error_handling.h>
-#include <rclc/rclc.h>
-#include <rclc/executor.h>
-#include <sensor_msgs/msg/imu.h>
+#include "ESP32_IMU_Micro_ROS.h"
 
-#include <stdio.h>
-#include <Wire.h>
-
-#define ERROR_LED_PIN 13
-
-#define IMU_SDA_PIN 21
-#define IMU_SCL_PIN 22
-
-// This is the I2C address of the IMU chip itself.
-// May change with chip variant so run the example program connection_check.ino
-#define IMU_I2C_ADDRESS 0x68
+/*
+ **********************************************************************
+ * DEFINES and CONSTANTS
+ **********************************************************************
+*/
 
 // Checks return value of RCLC function. If the function failed, then either send to error state
 // or (in soft checks case) ignore.
-#define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){errorLoop();}}
+#define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){restartSystem();}}
 #define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){Serial.println("Soft Failed");}}
 
-// Typedefs
-typedef struct
-{
-  float x;
-  float y;
-  float z;
-} Vector_t;
-
-typedef struct
-{
-  float x;
-  float y;
-  float z;
-  float w;
-} Quaternion_t;
-
-typedef struct
-{
-  Vector_t acceleration;
-  Vector_t gyro;
-  Quaternion_t quat;
-  float temperature;
-  unsigned long sampleTimeMS;
-} IMU_t;
-
+// IMU Calibration bias values for calibration (X,Y,Z)
+static const Vector_t ACCEL_BIAS = {-1558.80f, 64.50f, -890.80f};
+static const Vector_t GYRO_BIAS = {-764.85f, -37.55f, -66.93f};
+static const Vector_t MAG_BIAS = {214.03f, 184.00f, 114.59f};
+static const Vector_t MAG_SCALE = {0.86f, 0.89f, 01.39f};
 
 // ROS expects: accel = m/s^2, gyro = rad/s
 static const float G_TO_MPS2 = 9.80665f;
 
 // Timer Interrupt timeout
-const unsigned int TIMER_TIMEOUT_MS = 20;
+const unsigned int IMU_PUBLISH_TASK_TIME_MS = 20;
+const unsigned int LED_TASK_TIME_MS = 500;
 
-
-// Global Variables
+/*
+ **********************************************************************
+ * GLOBAL VARIABLES
+ **********************************************************************
+*/
 
 // ROS Client Library (RCL) Variables
 // C API's for implementing ROS2 objects
 rcl_publisher_t imuPublisher;
 rcl_allocator_t allocator;
 rcl_node_t node;
-rcl_timer_t timer;
+rcl_timer_t imuPublishTimer;
+rcl_timer_t ledTimer;
 
 // ROS Client Library for C (RCLC)
 // Helper functions for easier use of RCL
@@ -74,211 +52,327 @@ rclc_support_t support;
 // ROS message object for IMU
 sensor_msgs__msg__Imu ImuMsg;
 
-
 // IMU struct and object initialization
 IMU_t imu = {};
 MPU9250 mpu;
 
-// Function Definitions
-void initIMU();
-void initMicroRos();
-void errorLoop();
-void timerCallback(rcl_timer_t * timer, int64_t last_call_time);
-void updateImuObject();
-void printImuData();
+/*
+ **********************************************************************
+ * LOCAL TYPES
+ **********************************************************************
+*/
 
+/*
+ **********************************************************************
+ * LOCAL VARIABLES (declare as static)
+ **********************************************************************
+*/
+
+/*
+ **********************************************************************
+ * LOCAL FUNCTION PROTOTYPES (declare as static)
+ **********************************************************************
+*/
+  
+/*
+ **********************************************************************
+ * GLOBAL FUNCTIONS
+ **********************************************************************
+*/
 
 void setup() 
 {
-  Serial.begin(115200);
-  pinMode(ERROR_LED_PIN, OUTPUT);
-  digitalWrite(ERROR_LED_PIN, HIGH);
-  initIMU();
-  initMicroRos();
+    Serial.begin(115200);
+
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, HIGH);
+
+    initIMU();
+    initMicroRos();
 }
 
 
 void loop() 
 {
-  // Runs callback (timer publishes data)
-  RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(5)));
-  delay(1);
+    /*
+        Keep IMU update running as often as possible so the fusion filter
+        can continue computing quaternion values properly.
+    */
+
+    imu.dataPresent = updateImuObject();
+
+    // Run timer callback(s)
+    RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(5)));
+
+    delay(1);
 }
 
+
+/**************************************************
+ * Function Name: initIMU
+ * Description: 
+**************************************************/
 
 void initIMU()
 {
-  Wire.begin(IMU_SDA_PIN, IMU_SCL_PIN);
+    Wire.begin(IMU_SDA_PIN, IMU_SCL_PIN);
 
-  if(!mpu.setup(0x68)) 
-  {
-    while (1) 
+    if(!mpu.setup(IMU_I2C_ADDRESS)) 
     {
-      Serial.println("MPU connection failed. Please check your connection with `connection_check` example.");
-      delay(5000);
+        while (true) 
+        {
+            Serial.println("MPU connection failed. Please check your connection with `connection_check` example.");
+            delay(5000);
+        }
     }
-  }
-  Serial.println("MPU9250 ready!");
+
+    mpu.selectFilter(QuatFilterSel::MADGWICK);
+
+    // Apply saved calibration values
+    mpu.setAccBias(ACCEL_BIAS.x,  ACCEL_BIAS.y,  ACCEL_BIAS.z);
+    mpu.setGyroBias(GYRO_BIAS.x, GYRO_BIAS.y, GYRO_BIAS.z);
+    mpu.setMagBias(MAG_BIAS.x, MAG_BIAS.y, MAG_BIAS.z);
+    mpu.setMagScale(MAG_SCALE.x, MAG_SCALE.y, MAG_SCALE.z);
+
+    Serial.println("MPU9250 ready!");
 }
 
+
+/**************************************************
+ * Function Name: initMicroRos
+ * Description: 
+**************************************************/
 
 void initMicroRos()
 {
-  // Configures how ESP talks to micro ROS agent (serial, wifi, etc)
-  set_microros_transports();
-  
-  delay(2000);
+    // Configures how ESP talks to micro ROS agent (serial, wifi, etc)
+    set_microros_transports();
+    
+    delay(2000);
 
-  allocator = rcl_get_default_allocator();
+    allocator = rcl_get_default_allocator();
 
-  // Create init_options
-  RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
+    // Create init_options
+    RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
 
-  // Create node
-  RCCHECK(rclc_node_init_default(&node, "esp32", "", &support));
+    // Create node
+    RCCHECK(rclc_node_init_default(&node, "esp32", "", &support));
 
-  // Create publisher
-  RCCHECK(rclc_publisher_init_default(
-    &imuPublisher,
-    &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Imu),"imu_publisher"));
+    // Create publisher
+    RCCHECK(rclc_publisher_init_default(
+        &imuPublisher,
+        &node,
+        ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Imu),
+        "imu_publisher")
+    );
 
-  // Create timer
-  RCCHECK(rclc_timer_init_default(
-    &timer,
-    &support,
-    RCL_MS_TO_NS(TIMER_TIMEOUT_MS),
-    timerCallback));
+    // Create timers
 
-  // Create executor
-  RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
-  RCCHECK(rclc_executor_add_timer(&executor, &timer));
+    // IMU publisher timer
+    RCCHECK(rclc_timer_init_default(
+        &imuPublishTimer,
+        &support,
+        RCL_MS_TO_NS(IMU_PUBLISH_TASK_TIME_MS),
+        imuTimerCallback)
+    );
 
-  static char IMU_FRAME[] = "imu_frame";
-  ImuMsg.header.frame_id.data = IMU_FRAME;
-  ImuMsg.header.frame_id.size = strlen(IMU_FRAME);
-  ImuMsg.header.frame_id.capacity = ImuMsg.header.frame_id.size + 1;
+    // Blinking LED timer
+    RCCHECK(rclc_timer_init_default(
+        &ledTimer,
+        &support,
+        RCL_MS_TO_NS(LED_TASK_TIME_MS),
+        ledTimerCallback)
+    );
+
+    // Create executor
+    RCCHECK(rclc_executor_init(&executor, &support.context, 2, &allocator));
+    RCCHECK(rclc_executor_add_timer(&executor, &imuPublishTimer));
+    RCCHECK(rclc_executor_add_timer(&executor, &ledTimer));
+
+    // Initializing IMU frame
+    static char IMU_FRAME[] = "imu_frame";
+    ImuMsg.header.frame_id.data = IMU_FRAME;
+    ImuMsg.header.frame_id.size = strlen(IMU_FRAME);
+    ImuMsg.header.frame_id.capacity = ImuMsg.header.frame_id.size + 1;
 }
 
 
-void errorLoop()
+/**************************************************
+ * Function Name: restartSystem
+ * Description: 
+**************************************************/
+
+void restartSystem()
 {
-  while(1)
-  {
-    digitalWrite(ERROR_LED_PIN, !digitalRead(ERROR_LED_PIN));
-    delay(100);
-  }
+    digitalWrite(LED_PIN, LOW);
+    delay(500);
+
+    ESP.restart();
 }
 
 
-void timerCallback(rcl_timer_t * timer, int64_t last_call_time)
+/**************************************************
+ * Function Name: imuTimerCallback
+ * Description: 
+**************************************************/
+
+void imuTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
 {  
   RCLC_UNUSED(last_call_time);
-  if (timer != NULL) 
+
+  if ((timer != NULL) && (imu.dataPresent == true))
   {
-    updateImuObject();
     fillImuMsgFromImuStruct();
     RCSOFTCHECK(rcl_publish(&imuPublisher, &ImuMsg, NULL));
   }
 }
 
 
-void updateImuObject()
-{
-  if (mpu.update())
+/**************************************************
+ * Function Name: ledTimerCallback
+ * Description: 
+**************************************************/
+
+void ledTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
+{  
+  RCLC_UNUSED(last_call_time);
+
+  if (timer != NULL) 
   {
-    // Copying data to IMU structure
-
-    // Coverting to SI units for ROS
-    imu.acceleration.x = mpu.getAccX() * G_TO_MPS2;
-    imu.acceleration.y = mpu.getAccY() * G_TO_MPS2;
-    imu.acceleration.z = mpu.getAccZ() * G_TO_MPS2;
-
-    imu.gyro.x = mpu.getGyroX() * DEG_TO_RAD;
-    imu.gyro.y = mpu.getGyroY() * DEG_TO_RAD;
-    imu.gyro.z = mpu.getGyroZ() * DEG_TO_RAD;
-
-    imu.quat.w = mpu.getQuaternionW();
-    imu.quat.x = mpu.getQuaternionX();
-    imu.quat.y = mpu.getQuaternionY();
-    imu.quat.z = mpu.getQuaternionZ();
-
-    imu.temperature = mpu.getTemperature();
-
-    imu.sampleTimeMS = millis();
+    digitalWrite(LED_PIN, !digitalRead(LED_PIN));
   }
 }
 
 
-void fillImuMsgFromImuStruct()
+/**************************************************
+ * Function Name: updateImuObject
+ * Description: 
+**************************************************/
+
+bool updateImuObject()
 {
-  // Header
-  //
-  ImuMsg.header.stamp.sec = (int32_t)(imu.sampleTimeMS / 1000);
-  ImuMsg.header.stamp.nanosec = (uint32_t)((imu.sampleTimeMS  % 1000) * 1000000);
+    bool imuDataPresent = false;
+    if (mpu.update())
+    {
+        // Copying data to IMU structure
+        imu.accel.x = mpu.getAccX() * G_TO_MPS2;
+        imu.accel.y = mpu.getAccY() * G_TO_MPS2;
+        imu.accel.z = mpu.getAccZ() * G_TO_MPS2;
 
-  // Linear acceleration (m/s^2)
-  ImuMsg.linear_acceleration.x = imu.acceleration.x;
-  ImuMsg.linear_acceleration.y = imu.acceleration.y;
-  ImuMsg.linear_acceleration.z = imu.acceleration.z;
+        imu.gyro.x = mpu.getGyroX() * DEG_TO_RAD;
+        imu.gyro.y = mpu.getGyroY() * DEG_TO_RAD;
+        imu.gyro.z = mpu.getGyroZ() * DEG_TO_RAD;
 
-  // Angular velocity (rad/s)
-  ImuMsg.angular_velocity.x = imu.gyro.x;
-  ImuMsg.angular_velocity.y = imu.gyro.y;
-  ImuMsg.angular_velocity.z = imu.gyro.z;
+        imu.quat.w = mpu.getQuaternionW();
+        imu.quat.x = mpu.getQuaternionX();
+        imu.quat.y = mpu.getQuaternionY();
+        imu.quat.z = mpu.getQuaternionZ();
 
-  // Orientation (only if valid)
-  ImuMsg.orientation.w = imu.quat.w;
-  ImuMsg.orientation.x = imu.quat.x;
-  ImuMsg.orientation.y = imu.quat.y;
-  ImuMsg.orientation.z = imu.quat.z;
+        imu.temp = mpu.getTemperature();
+
+        imu.sampleTime = millis();
+
+        imuDataPresent = true;
+    }
+
+    return imuDataPresent;
 }
 
 
-void printImuData()
+/**************************************************
+ * Function Name: fillImuMsgFromImuStruct
+ * Description: 
+**************************************************/
+
+void fillImuMsgFromImuStruct()
 {
-  // Printing acceleration data
-  Serial.print("[");
-  Serial.print(imu.sampleTimeMS);
-  Serial.print("] X: ");
-  Serial.print(imu.acceleration.x);
-  Serial.print(", Y: ");
-  Serial.print(imu.acceleration.y);
-  Serial.print(", Z: ");
-  Serial.print(imu.acceleration.z);
-  Serial.println(" m/s^2");
-  Serial.println();
+    // Message Header
+    ImuMsg.header.stamp.sec = (int32_t)(imu.sampleTimeMS / 1000);
+    ImuMsg.header.stamp.nanosec = (uint32_t)((imu.sampleTimeMS  % 1000) * 1000000);
 
-  // Printing gyroscopic data
-  Serial.print("[");
-  Serial.print(imu.sampleTimeMS);
-  Serial.print("] X: ");
-  Serial.print(imu.gyro.x);
-  Serial.print(", Y: ");
-  Serial.print(imu.gyro.y);
-  Serial.print(", Z: ");
-  Serial.print(imu.gyro.z);
-  Serial.println(" rad/s");
-  Serial.println();
+    // Linear acceleration (m/s^2)
+    ImuMsg.linear_acceleration.x = imu.accel.x;
+    ImuMsg.linear_acceleration.y = imu.accel.y;
+    ImuMsg.linear_acceleration.z = imu.accel.z;
 
-  // Printing quaternion data
-  Serial.print("[");
-  Serial.print(imu.sampleTimeMS);
-  Serial.print("] quat (w,x,y,z): ");
-  Serial.print(imu.quat.w, 6); Serial.print(", ");
-  Serial.print(imu.quat.x, 6); Serial.print(", ");
-  Serial.print(imu.quat.y, 6); Serial.print(", ");
-  Serial.println(imu.quat.z, 6);
-  Serial.println();
+    // Angular velocity (rad/s)
+    ImuMsg.angular_velocity.x = imu.gyro.x;
+    ImuMsg.angular_velocity.y = imu.gyro.y;
+    ImuMsg.angular_velocity.z = imu.gyro.z;
 
-  // Printing temperature data
-  Serial.print("[");
-  Serial.print(imu.sampleTimeMS);
-  Serial.print("] Temperature: ");
-  Serial.print(imu.temperature);
-  Serial.println(" c");
-  Serial.println();
+    // Orientation (only if valid)
+    ImuMsg.orientation.w = imu.quat.w;
+    ImuMsg.orientation.x = imu.quat.x;
+    ImuMsg.orientation.y = imu.quat.y;
+    ImuMsg.orientation.z = imu.quat.z;
+}
 
-  Serial.println("--------------------------");
-  Serial.println();
+
+/**************************************************
+ * Function Name: printImuData
+ * Description: 
+**************************************************/
+
+void printImuData(bool accel, bool gyro, bool quat, bool temp)
+{
+    // Printing acceleration data
+    if(accel)
+    {
+        Serial.print("[");
+        Serial.print(imu.sampleTime);
+        Serial.print("] X: ");
+        Serial.print(imu.accel.x);
+        Serial.print(", Y: ");
+        Serial.print(imu.accel.y);
+        Serial.print(", Z: ");
+        Serial.print(imu.accel.z);
+        Serial.println(" m/s^2");
+        Serial.println();
+    }
+
+    // Printing gyroscopic data
+    if(gyro)
+    {
+        Serial.print("[");
+        Serial.print(imu.sampleTime);
+        Serial.print("] X: ");
+        Serial.print(imu.gyro.x);
+        Serial.print(", Y: ");
+        Serial.print(imu.gyro.y);
+        Serial.print(", Z: ");
+        Serial.print(imu.gyro.z);
+        Serial.println(" rad/s");
+        Serial.println();
+    }
+
+    // Printing quaternion data
+    if(quat)
+    {
+        Serial.print("[");
+        Serial.print(imu.sampleTime);
+        Serial.print("] quat (w,x,y,z): ");
+        Serial.print(imu.quat.w, 6); Serial.print(", ");
+        Serial.print(imu.quat.x, 6); Serial.print(", ");
+        Serial.print(imu.quat.y, 6); Serial.print(", ");
+        Serial.println(imu.quat.z, 6);
+        Serial.println();
+    }
+
+    // Printing temperature data
+    if(temp)
+    {
+        Serial.print("[");
+        Serial.print(imu.sampleTime);
+        Serial.print("] Temperature: ");
+        Serial.print(imu.temp);
+        Serial.println(" c");
+        Serial.println();
+    }
+    
+    // Ending line if any value are requested
+    if(accel || gyro || quat || temp)
+    {
+        Serial.println("--------------------------");
+        Serial.println();
+    }
 }

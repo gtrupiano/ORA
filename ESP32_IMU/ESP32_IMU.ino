@@ -12,7 +12,7 @@
  **********************************************************************
 */
 
-// Bias values for calibration (X,Y,Z)
+// IMU Calibration bias values bias values for calibration (X,Y,Z)
 static const Vector_t ACCEL_BIAS = {-1558.80f, 64.50f, -890.80f};
 static const Vector_t GYRO_BIAS = {-764.85f, -37.55f, -66.93f};
 static const Vector_t MAG_BIAS = {214.03f, 184.00f, 114.59f};
