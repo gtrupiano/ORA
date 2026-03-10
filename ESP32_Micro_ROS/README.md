@@ -28,6 +28,7 @@ In the Arduino IDE library manager, search for `micro_ros_arduino`. It should sh
 ### Using proper ESP32 board library version
 
 There is a bug in the micro ROS arduino library that limits the refresh rate the agent updates the topic. In order to fix this, the ESP32 board library version needs to be downgraded to `2.0.17`
+
 ![Board_Image](./Documentation/esp32_board_library_version.png)
 
 
@@ -47,5 +48,6 @@ __To view the data that is being published to the ROS topic, execute the followi
 ```
 ros2 topic echo imu
 ```
+
 
 IMU data should be updating in the echo terminal window.
