@@ -15,7 +15,7 @@
 // Checks return value of RCLC function. If the function failed, then either send to error state
 // or (in soft checks case) ignore.
 #define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){restartSystem();}}
-#define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){Serial.println("Soft Failed");}}
+#define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){}}
 
 // IMU Calibration bias values for calibration (X,Y,Z)
 static const Vector_t ACCEL_BIAS = {-1558.80f, 64.50f, -890.80f};
@@ -23,11 +23,16 @@ static const Vector_t GYRO_BIAS = {-764.85f, -37.55f, -66.93f};
 static const Vector_t MAG_BIAS = {214.03f, 184.00f, 114.59f};
 static const Vector_t MAG_SCALE = {0.86f, 0.89f, 01.39f};
 
+// IMU measurement covariance (accuracy)
+static const Vector_t ACCEL_COV_DIAG = {0.02f, 0.02f, 0.02f};
+static const Vector_t GYRO_COV_DIAG = {0.0001f, 0.000144f, 0.000081f};
+static const Vector_t ORIENT_COV_DIAG = {0.01f, 0.01f, 0.01f};
+
 // ROS expects: accel = m/s^2, gyro = rad/s
 static const float G_TO_MPS2 = 9.80665f;
 
 // Timer Interrupt timeout
-const unsigned int IMU_PUBLISH_TASK_TIME_MS = 20;
+const unsigned int IMU_PUBLISH_TASK_TIME_MS = 100;
 const unsigned int LED_TASK_TIME_MS = 500;
 
 /*
@@ -163,12 +168,11 @@ void initMicroRos()
         &imuPublisher,
         &node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Imu),
-        "imu_publisher")
+        "imu")
     );
 
     // Create timers
-
-    // IMU publisher timer
+    // IMU publisher timermicro ros
     RCCHECK(rclc_timer_init_default(
         &imuPublishTimer,
         &support,
@@ -194,20 +198,9 @@ void initMicroRos()
     ImuMsg.header.frame_id.data = IMU_FRAME;
     ImuMsg.header.frame_id.size = strlen(IMU_FRAME);
     ImuMsg.header.frame_id.capacity = ImuMsg.header.frame_id.size + 1;
-}
 
-
-/**************************************************
- * Function Name: restartSystem
- * Description: 
-**************************************************/
-
-void restartSystem()
-{
-    digitalWrite(LED_PIN, LOW);
-    delay(500);
-
-    ESP.restart();
+    // Set covariances in IMU frame
+    setDiagonalCovariance();
 }
 
 
@@ -245,6 +238,36 @@ void ledTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
 
 
 /**************************************************
+ * Function Name: setDiagonalCovariance
+ * Description: 
+**************************************************/
+
+void setDiagonalCovariance()
+{
+    // Initialize all indices to 0
+    for(int i = 0; i < COVARIANCE_1D_ARRAY_SIZE; i++)
+    {
+        ImuMsg.linear_acceleration_covariance[i] = 0.0;
+        ImuMsg.angular_velocity_covariance[i] = 0.0;
+        ImuMsg.orientation_covariance[i] = 0.0;
+    }
+
+    // Setting the variance indices to the proper weight
+    ImuMsg.linear_acceleration_covariance[X_VARIANCE_INDEX] = ACCEL_COV_DIAG.x;
+    ImuMsg.linear_acceleration_covariance[Y_VARIANCE_INDEX] = ACCEL_COV_DIAG.y;
+    ImuMsg.linear_acceleration_covariance[Z_VARIANCE_INDEX] = ACCEL_COV_DIAG.z;
+
+    ImuMsg.angular_velocity_covariance[X_VARIANCE_INDEX] = GYRO_COV_DIAG.x;
+    ImuMsg.angular_velocity_covariance[Y_VARIANCE_INDEX] = GYRO_COV_DIAG.y;
+    ImuMsg.angular_velocity_covariance[Z_VARIANCE_INDEX] = GYRO_COV_DIAG.z;
+        
+    ImuMsg.orientation_covariance[X_VARIANCE_INDEX] = ORIENT_COV_DIAG.x;
+    ImuMsg.orientation_covariance[Y_VARIANCE_INDEX] = ORIENT_COV_DIAG.y;
+    ImuMsg.orientation_covariance[Z_VARIANCE_INDEX] = ORIENT_COV_DIAG.z;
+}
+
+
+/**************************************************
  * Function Name: updateImuObject
  * Description: 
 **************************************************/
@@ -270,7 +293,7 @@ bool updateImuObject()
 
         imu.temp = mpu.getTemperature();
 
-        imu.sampleTime = millis();
+        imu.sampleTimeMS = millis();
 
         imuDataPresent = true;
     }
@@ -319,7 +342,7 @@ void printImuData(bool accel, bool gyro, bool quat, bool temp)
     if(accel)
     {
         Serial.print("[");
-        Serial.print(imu.sampleTime);
+        Serial.print(imu.sampleTimeMS);
         Serial.print("] X: ");
         Serial.print(imu.accel.x);
         Serial.print(", Y: ");
@@ -334,7 +357,7 @@ void printImuData(bool accel, bool gyro, bool quat, bool temp)
     if(gyro)
     {
         Serial.print("[");
-        Serial.print(imu.sampleTime);
+        Serial.print(imu.sampleTimeMS);
         Serial.print("] X: ");
         Serial.print(imu.gyro.x);
         Serial.print(", Y: ");
@@ -349,7 +372,7 @@ void printImuData(bool accel, bool gyro, bool quat, bool temp)
     if(quat)
     {
         Serial.print("[");
-        Serial.print(imu.sampleTime);
+        Serial.print(imu.sampleTimeMS);
         Serial.print("] quat (w,x,y,z): ");
         Serial.print(imu.quat.w, 6); Serial.print(", ");
         Serial.print(imu.quat.x, 6); Serial.print(", ");
@@ -362,7 +385,7 @@ void printImuData(bool accel, bool gyro, bool quat, bool temp)
     if(temp)
     {
         Serial.print("[");
-        Serial.print(imu.sampleTime);
+        Serial.print(imu.sampleTimeMS);
         Serial.print("] Temperature: ");
         Serial.print(imu.temp);
         Serial.println(" c");
@@ -375,4 +398,18 @@ void printImuData(bool accel, bool gyro, bool quat, bool temp)
         Serial.println("--------------------------");
         Serial.println();
     }
+}
+
+
+/**************************************************
+ * Function Name: restartSystem
+ * Description: 
+**************************************************/
+
+void restartSystem()
+{
+    digitalWrite(LED_PIN, LOW);
+    delay(500);
+
+    ESP.restart();
 }

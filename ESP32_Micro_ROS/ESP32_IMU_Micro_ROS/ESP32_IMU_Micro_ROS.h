@@ -43,6 +43,12 @@
 // May change with chip variant so run the example program connection_check.ino
 #define IMU_I2C_ADDRESS 0x68
 
+// Represents the 3x3 matrix for the covariances but as a 1D array
+#define COVARIANCE_1D_ARRAY_SIZE 9
+#define X_VARIANCE_INDEX 0
+#define Y_VARIANCE_INDEX 4
+#define Z_VARIANCE_INDEX 8
+
 typedef struct
 {
     float x;
@@ -66,7 +72,7 @@ typedef struct
     Quaternion_t quat;
     float temp;
     bool dataPresent;
-    unsigned long sampleTime;
+    unsigned long sampleTimeMS;
 } IMU_t;
 
 /*
@@ -83,11 +89,12 @@ typedef struct
 
 void initIMU();
 void initMicroRos();
-void restartSystem();
 void imuTimerCallback(rcl_timer_t * timer, int64_t last_call_time);
 void ledTimerCallback(rcl_timer_t * timer, int64_t last_call_time);
+void setDiagonalCovariance();
 bool updateImuObject();
 void fillImuMsgFromImuStruct();
 void printImuData(bool accel, bool gyro, bool quat, bool temp);
+void restartSystem();
   
 #endif // ESP32_IMU_MICRO_ROS_H
