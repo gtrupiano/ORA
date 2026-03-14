@@ -271,7 +271,7 @@ void setDiagonalCovariance()
 
 /**************************************************
  * Function Name: updateImuObject
- * Description: 
+ * Description:
 **************************************************/
 
 void updateImuObject()
