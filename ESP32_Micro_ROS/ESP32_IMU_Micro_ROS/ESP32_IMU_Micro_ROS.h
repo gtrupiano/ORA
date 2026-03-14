@@ -34,7 +34,7 @@
  ******************************************************************************
  */
 
-#define LED_PIN 13
+#define LED_PIN 2
 #define IMU_SDA_PIN 21
 #define IMU_SCL_PIN 22
 
@@ -48,6 +48,9 @@
 #define X_VARIANCE_INDEX 0
 #define Y_VARIANCE_INDEX 4
 #define Z_VARIANCE_INDEX 8
+
+// MicroROS parameters
+#define SYNC_SESSION_TIMEOUT_MS 1000
 
 typedef struct
 {
@@ -71,7 +74,6 @@ typedef struct
     Vector_t gyro;
     Quaternion_t quat;
     float temp;
-    bool dataPresent;
     unsigned long sampleTimeMS;
 } IMU_t;
 
@@ -92,7 +94,7 @@ void initMicroRos();
 void imuTimerCallback(rcl_timer_t * timer, int64_t last_call_time);
 void ledTimerCallback(rcl_timer_t * timer, int64_t last_call_time);
 void setDiagonalCovariance();
-bool updateImuObject();
+void updateImuObject();
 void fillImuMsgFromImuStruct();
 void printImuData(bool accel, bool gyro, bool quat, bool temp);
 void restartSystem();

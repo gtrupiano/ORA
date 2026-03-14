@@ -103,8 +103,7 @@ void loop()
         Keep IMU update running as often as possible so the fusion filter
         can continue computing quaternion values properly.
     */
-
-    imu.dataPresent = updateImuObject();
+    updateImuObject();
 
     // Run timer callback(s)
     RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(5)));
@@ -201,6 +200,9 @@ void initMicroRos()
 
     // Set covariances in IMU frame
     setDiagonalCovariance();
+
+    // Sychronize timing for the microROS agent
+    rmw_uros_sync_session(SYNC_SESSION_TIMEOUT_MS);
 }
 
 
@@ -213,7 +215,7 @@ void imuTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
 {  
   RCLC_UNUSED(last_call_time);
 
-  if ((timer != NULL) && (imu.dataPresent == true))
+  if ((timer != NULL))
   {
     fillImuMsgFromImuStruct();
     RCSOFTCHECK(rcl_publish(&imuPublisher, &ImuMsg, NULL));
@@ -272,9 +274,8 @@ void setDiagonalCovariance()
  * Description: 
 **************************************************/
 
-bool updateImuObject()
+void updateImuObject()
 {
-    bool imuDataPresent = false;
     if (mpu.update())
     {
         // Copying data to IMU structure
@@ -294,11 +295,7 @@ bool updateImuObject()
         imu.temp = mpu.getTemperature();
 
         imu.sampleTimeMS = millis();
-
-        imuDataPresent = true;
     }
-
-    return imuDataPresent;
 }
 
 
@@ -310,8 +307,11 @@ bool updateImuObject()
 void fillImuMsgFromImuStruct()
 {
     // Message Header
-    ImuMsg.header.stamp.sec = (int32_t)(imu.sampleTimeMS / 1000);
-    ImuMsg.header.stamp.nanosec = (uint32_t)((imu.sampleTimeMS  % 1000) * 1000000);
+    if(rmw_uros_epoch_synchronized())
+    {
+        ImuMsg.header.stamp.sec = rmw_uros_epoch_millis() / 1000;
+        ImuMsg.header.stamp.nanosec = rmw_uros_epoch_nanos();
+    }
 
     // Linear acceleration (m/s^2)
     ImuMsg.linear_acceleration.x = imu.accel.x;
