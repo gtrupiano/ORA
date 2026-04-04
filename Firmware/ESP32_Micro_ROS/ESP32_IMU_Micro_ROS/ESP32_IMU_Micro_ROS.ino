@@ -262,7 +262,7 @@ void setDiagonalCovariance()
     ImuMsg.angular_velocity_covariance[X_VARIANCE_INDEX] = GYRO_COV_DIAG.x;
     ImuMsg.angular_velocity_covariance[Y_VARIANCE_INDEX] = GYRO_COV_DIAG.y;
     ImuMsg.angular_velocity_covariance[Z_VARIANCE_INDEX] = GYRO_COV_DIAG.z;
-        
+    
     ImuMsg.orientation_covariance[X_VARIANCE_INDEX] = ORIENT_COV_DIAG.x;
     ImuMsg.orientation_covariance[Y_VARIANCE_INDEX] = ORIENT_COV_DIAG.y;
     ImuMsg.orientation_covariance[Z_VARIANCE_INDEX] = ORIENT_COV_DIAG.z;
