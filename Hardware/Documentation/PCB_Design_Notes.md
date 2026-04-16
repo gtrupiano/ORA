@@ -18,7 +18,7 @@ For configuring the ESP32-S3 and determining which pins should be used for the f
 
 The datasheet shows the strapping pins which for this board (since we aren't short on pins) we'll be avoiding. Below is the strapping pin table:
 
-![Boot_Pins_To_Avoid](C:\Users\George\Documents\GitHub\ORA\Hardware\Documentation\Images\ESP32\Boot_Pins_To_Avoid.png)
+![Boot_Pins_To_Avoid](./Images\ESP32\Boot_Pins_To_Avoid.png)
 
 
 
@@ -26,7 +26,7 @@ For determining which pins can be used for I2C, refering to the pin mapping tabl
 
 * Note: This is only a partial view of the table (there are other pins that can be used for I2C). Refer to full table for all information.
 
-![I2C_Pin_Mapping](C:\Users\George\Documents\GitHub\ORA\Hardware\Documentation\Images\ESP32\I2C_Pin_Mapping.png)
+![I2C_Pin_Mapping](./Images/ESP32/I2C_Pin_Mapping.png)
 
 
 
@@ -38,11 +38,12 @@ For configuring the BNO086, there were a few things to consider.
 
 1. Configuring it to be in I2C mode which can be achieved by using the diagram below.
 
-<img title="" src="./Images/BNO086/I2C_Connection_Diagram.png" alt="I2C_Connection_Diagram" width="515" data-align="center">
+![I2C_Connection_Diagram](./Images/BNO086/I2C_Connection_Diagram.png)
+
 
 2. Determining whether to use the internal or external clock. I opted to use the internal one. This means that the diagram that was implemented for I2C needs to be modified to include the following diagram.
 
-<img title="" src="file:///C:/Users/George/Documents/GitHub/ORA/Hardware/Documentation/Images/BNO086/Internal_Clock_Selection.png" alt="Internal_Clock_Selection" data-align="center" width="452">
+![Internal_Clock_Selection](./Images/BNO086/Internal_Clock_Selection.png)
 
 ---
 
@@ -50,7 +51,7 @@ For configuring the BNO086, there were a few things to consider.
 
 For configuring the AMS1117-3.3, determining whether the generic part which can be configured to or using the fixed voltage variant that is specifically for 3.3V. I decided it would be easier for the fixed voltage approach.
 
-![Fixed_Output_Voltage](C:\Users\George\Documents\GitHub\ORA\Hardware\Documentation\Images\AMS1117-3.3\Fixed_Output_Voltage.png)
+![Fixed_Output_Voltage](./Images/AMS1117-3.3/Fixed_Output_Voltage.png)
 
 ---
 
