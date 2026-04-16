@@ -18,7 +18,7 @@ For configuring the ESP32-S3 and determining which pins should be used for the f
 
 The datasheet shows the strapping pins which for this board (since we aren't short on pins) we'll be avoiding. Below is the strapping pin table:
 
-![Boot_Pins_To_Avoid](./Images\ESP32\Boot_Pins_To_Avoid.png)
+![Boot_Pins_To_Avoid](./Images/ESP32/Boot_Pins_To_Avoid.png)
 
 
 
