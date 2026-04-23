@@ -1,15 +1,15 @@
 /*
- **********************************************************************
+ *************************************************************************
  * INCLUDES
- **********************************************************************
+ *************************************************************************
 */
 
 #include "ESP32_IMU_Micro_ROS.h"
 
 /*
- **********************************************************************
+ *************************************************************************
  * DEFINES and CONSTANTS
- **********************************************************************
+ *************************************************************************
 */
 
 // Checks return value of RCLC function. If the function failed, then either send to error state
@@ -36,9 +36,9 @@ const unsigned int IMU_PUBLISH_TASK_TIME_MS = 100;
 const unsigned int LED_TASK_TIME_MS = 500;
 
 /*
- **********************************************************************
+ *************************************************************************
  * GLOBAL VARIABLES
- **********************************************************************
+ *************************************************************************
 */
 
 // ROS Client Library (RCL) Variables
@@ -48,6 +48,9 @@ rcl_allocator_t allocator;
 rcl_node_t node;
 rcl_timer_t imuPublishTimer;
 rcl_timer_t ledTimer;
+rcl_service_t autonomousLedStateService;
+std_srvs__srv__SetBool_Request autonomousLedStateRequest;
+std_srvs__srv__SetBool_Response autonomousLedStateResponse;
 
 // ROS Client Library for C (RCLC)
 // Helper functions for easier use of RCL
@@ -61,28 +64,31 @@ sensor_msgs__msg__Imu ImuMsg;
 IMU_t imu = {};
 MPU9250 mpu;
 
+// Application Variables
+bool autonomousLedState = false;
+
 /*
- **********************************************************************
+ *************************************************************************
  * LOCAL TYPES
- **********************************************************************
+ *************************************************************************
 */
 
 /*
- **********************************************************************
+ *************************************************************************
  * LOCAL VARIABLES (declare as static)
- **********************************************************************
+ *************************************************************************
 */
 
 /*
- **********************************************************************
+ *************************************************************************
  * LOCAL FUNCTION PROTOTYPES (declare as static)
- **********************************************************************
+ *************************************************************************
 */
   
 /*
- **********************************************************************
+ *************************************************************************
  * GLOBAL FUNCTIONS
- **********************************************************************
+ *************************************************************************
 */
 
 void setup() 
@@ -90,7 +96,10 @@ void setup()
     Serial.begin(115200);
 
     pinMode(LED_PIN, OUTPUT);
+    pinMode(AUTONOMOUS_LED_PIN, OUTPUT);
+
     digitalWrite(LED_PIN, HIGH);
+    digitalWrite(AUTONOMOUS_LED_PIN, LOW);
 
     initIMU();
     initMicroRos();
@@ -112,10 +121,10 @@ void loop()
 }
 
 
-/**************************************************
+/*************************************************************************
  * Function Name: initIMU
  * Description: 
-**************************************************/
+*************************************************************************/
 
 void initIMU()
 {
@@ -142,10 +151,10 @@ void initIMU()
 }
 
 
-/**************************************************
+/*************************************************************************
  * Function Name: initMicroRos
  * Description: 
-**************************************************/
+*************************************************************************/
 
 void initMicroRos()
 {
@@ -171,7 +180,7 @@ void initMicroRos()
     );
 
     // Create timers
-    // IMU publisher timermicro ros
+    // IMU publisher timer
     RCCHECK(rclc_timer_init_default(
         &imuPublishTimer,
         &support,
@@ -187,10 +196,30 @@ void initMicroRos()
         ledTimerCallback)
     );
 
+    // Creating Services
+    // Autonomous LED State service
+    RCCHECK(rclc_service_init_default(
+    &autonomousLedStateService,
+    &node,
+    ROSIDL_GET_SRV_TYPE_SUPPORT(std_srvs, srv, SetBool),
+    "/set_autonomous_led_state")
+    );
+
     // Create executor
-    RCCHECK(rclc_executor_init(&executor, &support.context, 2, &allocator));
+    RCCHECK(rclc_executor_init(&executor, &support.context, 3, &allocator));
+    
+    // Adding Timers
     RCCHECK(rclc_executor_add_timer(&executor, &imuPublishTimer));
     RCCHECK(rclc_executor_add_timer(&executor, &ledTimer));
+    
+    // Adding Services with callback and request / response variables
+    RCCHECK(rclc_executor_add_service(
+        &executor,
+        &autonomousLedStateService,
+        &autonomousLedStateRequest,
+        &autonomousLedStateResponse,
+        autonomousLedStateServiceCallback)
+    );
 
     // Initializing IMU frame
     static char IMU_FRAME[] = "imu_frame";
@@ -206,10 +235,10 @@ void initMicroRos()
 }
 
 
-/**************************************************
+/*************************************************************************
  * Function Name: imuTimerCallback
  * Description: 
-**************************************************/
+*************************************************************************/
 
 void imuTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
 {  
@@ -223,10 +252,10 @@ void imuTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
 }
 
 
-/**************************************************
+/*************************************************************************
  * Function Name: ledTimerCallback
  * Description: 
-**************************************************/
+*************************************************************************/
 
 void ledTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
 {  
@@ -239,10 +268,50 @@ void ledTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
 }
 
 
-/**************************************************
+/*************************************************************************
+ * Function Name: autonomousLedStateServiceCallback
+ * Description: Service for autonomous LED state. This is called whenever
+ *              the client sends a request using this service.
+*************************************************************************/
+
+void autonomousLedStateServiceCallback(const void * request_msg, void * response_msg)
+{
+    // Cast generic pointers to the actual ROS service message types
+    const std_srvs__srv__SetBool_Request * req = (const std_srvs__srv__SetBool_Request *)request_msg;
+
+    std_srvs__srv__SetBool_Response * res = (std_srvs__srv__SetBool_Response *)response_msg;
+
+    // Update your firmware/application state
+    autonomousLedState = req->data;
+
+    // Fill response
+    res->success = true;
+
+    // Populating the response message going back to the client based on the state
+    // In addition, changing the AUTONOMOUS_LED_PIN to match up with the incoming service
+    if(autonomousLedState)
+    {
+        const char * msg = "Autonomous LED enabled";
+        res->message.data = (char *)msg;
+        res->message.size = strlen(msg);
+        res->message.capacity = res->message.size + 1;
+        digitalWrite(AUTONOMOUS_LED_PIN, HIGH);
+    }
+    else
+    {
+        const char * msg = "Autonomous LED disabled";
+        res->message.data = (char *)msg;
+        res->message.size = strlen(msg);
+        res->message.capacity = res->message.size + 1;
+        digitalWrite(AUTONOMOUS_LED_PIN, LOW);
+    }
+}
+
+
+/*************************************************************************
  * Function Name: setDiagonalCovariance
  * Description: 
-**************************************************/
+*************************************************************************/
 
 void setDiagonalCovariance()
 {
@@ -269,10 +338,10 @@ void setDiagonalCovariance()
 }
 
 
-/**************************************************
+/*************************************************************************
  * Function Name: updateImuObject
- * Description:
-**************************************************/
+ * Description: 
+*************************************************************************/
 
 void updateImuObject()
 {
@@ -299,10 +368,10 @@ void updateImuObject()
 }
 
 
-/**************************************************
+/*************************************************************************
  * Function Name: fillImuMsgFromImuStruct
  * Description: 
-**************************************************/
+*************************************************************************/
 
 void fillImuMsgFromImuStruct()
 {
@@ -331,10 +400,10 @@ void fillImuMsgFromImuStruct()
 }
 
 
-/**************************************************
+/*************************************************************************
  * Function Name: printImuData
  * Description: 
-**************************************************/
+*************************************************************************/
 
 void printImuData(bool accel, bool gyro, bool quat, bool temp)
 {
@@ -401,10 +470,10 @@ void printImuData(bool accel, bool gyro, bool quat, bool temp)
 }
 
 
-/**************************************************
+/*************************************************************************
  * Function Name: restartSystem
  * Description: 
-**************************************************/
+*************************************************************************/
 
 void restartSystem()
 {
