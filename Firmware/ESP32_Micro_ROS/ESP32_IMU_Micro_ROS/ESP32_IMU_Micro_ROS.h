@@ -38,7 +38,7 @@
  ******************************************************************************
  */
 
-#define LED_PIN 2
+#define HEARTBEAT_LED_PIN 2
 #define AUTONOMOUS_LED_PIN 0
 #define IMU_SDA_PIN 21
 #define IMU_SCL_PIN 22

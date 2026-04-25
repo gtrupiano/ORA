@@ -96,10 +96,10 @@ void setup()
 {
     Serial.begin(115200);
 
-    pinMode(LED_PIN, OUTPUT);
+    pinMode(HEARTBEAT_LED_PIN, OUTPUT);
     pinMode(AUTONOMOUS_LED_PIN, OUTPUT);
 
-    digitalWrite(LED_PIN, HIGH);
+    digitalWrite(HEARTBEAT_LED_PIN, HIGH);
     digitalWrite(AUTONOMOUS_LED_PIN, HIGH);
 
     initIMU();
@@ -262,7 +262,7 @@ void ledTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
 
   if (timer != NULL) 
   {
-    digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+    digitalWrite(HEARTBEAT_LED_PIN, !digitalRead(HEARTBEAT_LED_PIN));
   }
 }
 
@@ -476,7 +476,7 @@ void printImuData(bool accel, bool gyro, bool quat, bool temp)
 
 void restartSystem()
 {
-    digitalWrite(LED_PIN, LOW);
+    digitalWrite(HEARTBEAT_LED_PIN, LOW);
     delay(500);
 
     ESP.restart();
