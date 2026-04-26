@@ -6,3 +6,4 @@ install/
 log/
 src/
 .DS_Store
+.history/
