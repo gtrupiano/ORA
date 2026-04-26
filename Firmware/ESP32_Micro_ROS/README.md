@@ -1,6 +1,6 @@
 # IMU Sensor Integration with ROS
 
-### The purpose of this program is to capture and publish IMU data using a MicroROS agent. This will publish acceleration, gyroscopic, and quaternion data to the corresponding ROS topic.
+ The purpose of this program is to capture and publish IMU data using a MicroROS agent. This will publish acceleration, gyroscopic, and quaternion data to the corresponding ROS topic.
 
 ## Hardware
 * [ESP32 WROOM-DA](https://www.microcenter.com/product/704603/ESP-32_Development_Board_-_3_Pack?storeID=055)
