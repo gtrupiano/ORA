@@ -2,8 +2,6 @@
 
 This document describes the design of the ESP IMU PCB. Questions I encountered, as well as what I used as a reference from the provided datasheets.
 
-
-
 ---
 
 ## ESP32-S3
@@ -14,13 +12,9 @@ For configuring the ESP32-S3 and determining which pins should be used for the f
 
 * Which pins can be used for I2C
 
-
-
 The datasheet shows the strapping pins which for this board (since we aren't short on pins) we'll be avoiding. Below is the strapping pin table:
 
 ![Boot_Pins_To_Avoid](./Images/ESP32/Boot_Pins_To_Avoid.png)
-
-
 
 For determining which pins can be used for I2C, refering to the pin mapping table in the data sheet shows which pins can be used
 
@@ -28,18 +22,17 @@ For determining which pins can be used for I2C, refering to the pin mapping tabl
 
 ![I2C_Pin_Mapping](./Images/ESP32/I2C_Pin_Mapping.png)
 
-
-
 ---
 
 ## IMU (BNO086)
 
-For configuring the BNO086, there were a few things to consider. 
+For configuring the BNO086, there were a few things to consider.
+
+Note: The datasheet referenced is [here](https://docs.sparkfun.com/SparkFun_VR_IMU_Breakout_BNO086_QWIIC/assets/component_documentation/BNO080_085-Datasheet_v1.16.pdf). It is also in this repo [here](./Datasheets/BNO086.pdf).
 
 1. Configuring it to be in I2C mode which can be achieved by using the diagram below.
 
 ![I2C_Connection_Diagram](./Images/BNO086/I2C_Connection_Diagram.png)
-
 
 2. Determining whether to use the internal or external clock. I opted to use the internal one. This means that the diagram that was implemented for I2C needs to be modified to include the following diagram.
 
@@ -78,3 +71,13 @@ This part fits these criteria with the following parameters:
 * ID(ON)  (On state drain current) = 30A
   
   * This is VGS = 4.5V so it could be less than this.
+
+
+
+# Irregularities
+
+In the [SparkFun BNO086 IMU Breakout Board Schematic](https://docs.sparkfun.com/SparkFun_VR_IMU_Breakout_BNO086_QWIIC/assets/board_files/SparkFun_VR_IMU_Breakout_BNO086_QWIIC_Schematic_v10.pdf) it has the environmental sensor I2C pins being pulled up to 3.3V with 4.7k resistors. While in the datasheet, (there is no direct schematic without it fully), when connecting to the sensors, it is using 2.2k.
+
+
+
+![](C:\Users\George\Documents\GitHub\ORA\Hardware\Documentation\Images\SparkFun_BNO086_IMU_Schematic.png)

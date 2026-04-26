@@ -5470,6 +5470,10 @@
 		(uuid "c20a034b-d642-40b5-8d27-53468fb00f5e")
 	)
 	(no_connect
+		(at 36.83 44.45)
+		(uuid "c3ca980c-481d-449e-954c-330ca3843fdd")
+	)
+	(no_connect
 		(at 38.1 57.15)
 		(uuid "c937b0ad-d443-41de-8bec-8020b1b92b40")
 	)
@@ -7309,30 +7313,6 @@
 	)
 	(global_label "~{IMU_BOOTN}"
 		(shape input)
-		(at 36.83 44.45 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "94275d6d-e520-4fe2-b527-d3fd03179d94")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 23.2614 44.45 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-	)
-	(global_label "~{IMU_BOOTN}"
-		(shape input)
 		(at 36.83 49.53 180)
 		(fields_autoplaced yes)
 		(effects
@@ -8168,7 +8148,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Connector_PinHeader_1.00mm:PinHeader_1x04_P1.00mm_Vertical"
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical"
 			(at 246.38 104.14 0)
 			(hide yes)
 			(show_name no)
@@ -9064,7 +9044,7 @@
 				)
 			)
 		)
-		(property "Footprint" "BNO086:BNO086"
+		(property "Footprint" "Sensor_Motion:IC_BNO086"
 			(at 227.33 55.88 0)
 			(hide yes)
 			(show_name no)
