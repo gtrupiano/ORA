@@ -7,3 +7,5 @@ log/
 src/
 .DS_Store
 .history/
+drill/
+gerber/
