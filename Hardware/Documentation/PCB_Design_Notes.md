@@ -52,11 +52,12 @@ For configuring the AMS1117-3.3, determining whether the generic part which can 
 
 For finding a MOSFET that would work for the 24V light that is being used as well as the limit of 3.3V logic required some research. The AO3400A seemed to be a good fit. 
 
+![Electrical Characteristics](./Images/AO3400A/Electrical_Characteristics.png)
+
 The main parameters that I looked into were the following:
 
 * VGS(th) Gate Threshold Voltage
-  
-  - Voltage required to conduct the MOSFET.
+  * Voltage required to conduct the MOSFET.
 
 * Voltage limit
 
@@ -65,19 +66,22 @@ The main parameters that I looked into were the following:
 This part fits these criteria with the following parameters:
 
 * VGS: Min = 0.65; Typical = 1.05V; Max = 1.45 V
+  * Since the source is connected to ground and the gate is the ESP32 GPIO pin (3.3V), the MOSFET will at the very least be on in a minimal capacity. The higher the voltage goes, the lower the resistance goes, but at a minimum, the ESP GPIO voltage will be enough to start to turn on the MOSFET.
 
 * BVDSS (Drain-Source Breakdown Voltage) = 30V
+  * The stack light is 24V so the signal is within range.
 
-* ID(ON)  (On state drain current) = 30A
-  
-  * This is VGS = 4.5V so it could be less than this.
-
+* RDS(ON) (Static Drain-Source On-Resistance)
+  * At 2.5V, the expected current draw is 3A. The resistance is Typical = 24mΩ; Max = 48mΩ. 
+  * This should be low enough to not draw a lot of power.
+    * Since the power dissipation is P = I<sup>2</sup> * R
+    * The worst case power dissipation is at 3A is:
+      * P = 0.432W which is less than the absolute rating of 0.9W
+![Absolute Maximum Rating](./Images/AO3400A/Absolute_Maximum_Ratings.png)
 
 
 # Irregularities
 
 In the [SparkFun BNO086 IMU Breakout Board Schematic](https://docs.sparkfun.com/SparkFun_VR_IMU_Breakout_BNO086_QWIIC/assets/board_files/SparkFun_VR_IMU_Breakout_BNO086_QWIIC_Schematic_v10.pdf) it has the environmental sensor I2C pins being pulled up to 3.3V with 4.7k resistors. While in the datasheet, (there is no direct schematic without it fully), when connecting to the sensors, it is using 2.2k.
 
-
-
-![](C:\Users\George\Documents\GitHub\ORA\Hardware\Documentation\Images\SparkFun_BNO086_IMU_Schematic.png)
+![SparkFun IMU Schematic](./Images/SparkFun_BNO086_IMU_Schematic.png)
