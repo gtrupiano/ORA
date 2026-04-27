@@ -1107,7 +1107,7 @@
 	(footprint "Logos:ORA_Logo"
 		(layer "F.Cu")
 		(uuid "194e18aa-0eb1-4077-8b0d-cc0f2600b9da")
-		(at 152.5 112.5)
+		(at 152.5 108)
 		(property "Reference" "G***"
 			(at 0 0 0)
 			(layer "F.SilkS")
@@ -10409,6 +10409,30 @@
 		(at 122 114.5 0)
 		(layer "F.SilkS")
 		(uuid "7ac00927-7132-4e89-93cf-89688805fbfe")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left)
+		)
+	)
+	(gr_text "Created by:\nGeorge Trupiano"
+		(at 146.5 115 0)
+		(layer "F.SilkS")
+		(uuid "907702f7-e579-4804-9e23-158446b8929d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left)
+		)
+	)
+	(gr_text "ORA_IMU_Board"
+		(at 147 101.265 0)
+		(layer "F.SilkS")
+		(uuid "6cd9ef2a-d335-4939-bc6f-9d2db8c6042e")
 		(effects
 			(font
 				(size 1 1)
