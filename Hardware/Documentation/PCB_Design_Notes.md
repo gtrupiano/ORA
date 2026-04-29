@@ -6,10 +6,14 @@ This document describes the design of the ESP IMU PCB. Questions I encountered, 
 
 ## ESP32-S3
 
-For configuring the ESP32-S3 and determining which pins should be used for the functionality needed, I refered to the datasheet. The big items that needed to be validated were the following:
+For configuring the ESP32-S3 and determining which pins should be used for the functionality needed, I refered to the datasheet. 
 
+Below is the standard configuration of the ESP32-S3 that was followed:
+![Typical_Schematic](./Images/ESP32/Typical_Schematic.png)
+
+
+The big items that needed to be validated were the following:
 * Which pins to avoid as to not interfere with the boot process
-
 * Which pins can be used for I2C
 
 The datasheet shows the strapping pins which for this board (since we aren't short on pins) we'll be avoiding. Below is the strapping pin table:
