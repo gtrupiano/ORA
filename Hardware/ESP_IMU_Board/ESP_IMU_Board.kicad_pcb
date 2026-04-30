@@ -3177,7 +3177,6 @@
 			)
 		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
-		(path "/70171189-7aed-4cfe-925f-e67786f3f1ee")
 		(sheetname "/")
 		(sheetfile "ESP_IMU_Board.kicad_sch")
 		(units
@@ -3842,7 +3841,6 @@
 			)
 		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
-		(path "/07fb121b-fb56-41fd-b4c5-dc301c2d13f9")
 		(sheetname "/")
 		(sheetfile "ESP_IMU_Board.kicad_sch")
 		(units
