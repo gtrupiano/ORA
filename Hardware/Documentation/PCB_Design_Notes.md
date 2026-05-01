@@ -38,17 +38,48 @@ Note: The datasheet referenced is [here](https://docs.sparkfun.com/SparkFun_VR_I
 
 ![I2C_Connection_Diagram](./Images/BNO086/I2C_Connection_Diagram.png)
 
+Note: Apparently, the BNO086 does not support polling mode over the I2C interface. If polling over I2C is
+required, CEVA recommends the BNO085. This shouldn't be an issue since the interrupt will be wired up and whever data is measured, it will be stored off. Then the reading of the data will come from the object the data was stored in not the chip itself right at that moment in time.
+
 2. Determining whether to use the internal or external clock. I opted to use the internal one. This means that the diagram that was implemented for I2C needs to be modified to include the following diagram.
 
 ![Internal_Clock_Selection](./Images/BNO086/Internal_Clock_Selection.png)
 
 ---
 
-## Voltage Regulator (AMS1117-3.3)
+## Voltage Regulator (TLV75733PDBVR)
 
-For configuring the AMS1117-3.3, determining whether the generic part which can be configured to or using the fixed voltage variant that is specifically for 3.3V. I decided it would be easier for the fixed voltage approach.
+For configuring the TLV75733PDBVR, determining whether the generic part which can be configured to or using the fixed voltage variant that is specifically for 3.3V. I decided it would be easier for the fixed voltage approach (which is a chip variant).
 
-![Fixed_Output_Voltage](./Images/AMS1117-3.3/Fixed_Output_Voltage.png)
+![Typical_Application](./Images/TLV75733PDBVR/Typical_Application.png)
+
+
+1. The capacitor values for the regulator were kind of unclear on what they should be. I found two diagrams that made me pretty certain that 1uF for both C<sub>in</sub> and C<sub>out</sub> is fine.
+
+  - In the recommended operating conditions table, it claims that C<sub>in</sub> is set to 1uF. While C<sub>out</sub> is less clear with C<sub>out</sub> being allowed to be between 1uF and 200uF. So C<sub>in</sub> is likely 1uF, but for C<sub>out</sub>, it may be linked to the input / output voltage. This is something I will show how I determined C<sub>out</sub> value.<br><br>
+  ![Recommended_Operating_Conditions](./Images/TLV75733PDBVR/Recommended_Operating_Conditions.png)
+  <br><br>
+
+  - Within the characteristics tables in the datasheets, it shows the IC's behavior with set operating conditions. In these, it has the exact same voltage configuration that I'm doing (3.3V). Both of the graphs show that the capacitor values are 1uF for both C<sub>in</sub> and C<sub>out</sub>.
+  ![Capacitor_Value_Proof](./Images/TLV75733PDBVR/Capacitor_Value_Proof.png)
+  <br>
+
+    So, that is the reason why C<sub>in</sub> = 1uF and C<sub>out</sub> = 1uF.
+  <br><br>
+  <br><br>
+
+
+2. There was an issue with the old voltage regulator where the difference between V<sub>out</sub> (3.3V) and V<sub>in</sub> (5V)  wasn't great enough (Dropout voltage). This could have caused the chips output to degrade (be something lower than 3.3V or not as stable). This issue was magnified by the use of the diodes on the input.
+
+  - Depending on the current, the dropout voltage changes. So for a worst case, I<sub>out</sub> = 1A, the dropout voltage is 500mV.
+  <br><br>
+  ![Voltage_Dropout](./Images/TLV75733PDBVR/Voltage_Dropout.png)
+
+  - With this, there is a schottky diode on the input (which has a lower voltage drop than a normal diode). Even assuming the worst of a 0.7V drop, the voltage delta (1.7V) - the diode voltage drop (1.7V - 0.7V) > the dropout voltage.
+  
+    Proof:
+    V<sub>dropout</sub> < V<sub>delta</sub> - V<sub>diode_drop</sub>
+  <br><br>
 
 ---
 

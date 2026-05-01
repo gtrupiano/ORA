@@ -2,4 +2,6 @@
 	(version 7)
 	(lib (name "Logos") (type "KiCad") (uri "${KIPRJMOD}/Logos.pretty") (options "") (descr ""))
 	(lib (name "footprints") (type "KiCad") (uri "${KIPRJMOD}/footprints") (options "") (descr ""))
+	(lib (name "footprints") (type "KiCad") (uri "${KIPRJMOD}/footprints.pretty") (options "") (descr ""))
+	(lib (name "TLV75733PDBVR_SOT95P280X145-5N") (type "KiCad") (uri "${KIPRJMOD}/footprints/TLV75733PDBVR_SOT95P280X145-5N.pretty") (options "") (descr ""))
 )

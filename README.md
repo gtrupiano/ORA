@@ -16,4 +16,4 @@ In the robots developement for the International Ground Vehicle Competition (IGV
 <br><br>
 
 ## 3D View
-![3D View](./Documentation/Model.png)
+![3D View](./Hardware/Documentation/Images/Model.png)
