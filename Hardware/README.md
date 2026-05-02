@@ -3,7 +3,7 @@
 **Custom PCB that implements the following features:**
    - ESP32 on board for running MicroROS framework
    - Use of external 9-DOF IMU
-   - BJT circuit for controlling 24V stack light
+   - MOSFET circuit for controlling 24V stack light
    - Powering over USB-C and Barrel Jack
    - UART Debugging
 
