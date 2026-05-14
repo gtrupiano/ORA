@@ -1,6 +1,6 @@
 /*
  ******************************************************************************
-      File Name  : ESP32_IMU.h
+      File Name  : ESP32_IMU.hpp
       Author     : George Trupiano
       Date       : 
       Description:
@@ -92,7 +92,7 @@ typedef struct
  */
 
 bool configureIMU();
-bool imuOutputDataConfig();
+void imuOutputDataConfig();
 void updateImuObject();
 void printImuData(bool accel, bool gyro, bool quat);
   

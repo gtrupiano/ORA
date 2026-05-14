@@ -57,8 +57,6 @@ void setup()
 {
     Serial.begin(115200);
 
-    while(!Serial) delay(10);
-
     pinMode(LED_PIN, OUTPUT);
 
     // Setting up IMU
@@ -89,7 +87,6 @@ void setup()
 
 void loop() 
 {
-    delay(10);
     /*
         Since IMU update needs to be called frequently so fusion filter 
         can be computed, other slower tasks need to be kept track of
@@ -110,8 +107,8 @@ void loop()
     if((currentTime - tasks.printImu.lastTime) >= tasks.printImu.period)
     {
         bool printAccel = true; 
-        bool printGyro = false;
-        bool printQuat = false;
+        bool printGyro = true;
+        bool printQuat = true;
 
         printImuData(printAccel, printGyro, printQuat);
         
@@ -142,10 +139,12 @@ void loop()
  * Description: 
 **************************************************/
 
-void configureIMU()
+bool configureIMU()
 {
     // Configuring communication over I2C
-    Wire.begin();//IMU_SDA_PIN, IMU_SCL_PIN);
+    Wire.begin(IMU_SDA_PIN, IMU_SCL_PIN);
+
+    // TODO: Add in a multi attempt to connect to the bno
 
     // Setting up IMU with proper interrupt and reset pins
     if(bno.begin(IMU_I2C_ADDRESS, Wire, IMU_INT_PIN, IMU_RST_PIN) == false) 
@@ -160,6 +159,8 @@ void configureIMU()
 
     // Configuring what data to report
     imuOutputDataConfig();
+
+    return true;
 }
 
 
@@ -168,43 +169,37 @@ void configureIMU()
  * Description: 
 **************************************************/
 
-bool imuOutputDataConfig()
+void imuOutputDataConfig()
 {
     // Accelerometer data
-    bno.enableAccelerometer();
-    if(bno.enableAccelerometer() == false)
+    if(bno.enableAccelerometer() == true)
     {
-        Serial.println("Could not enable accelerometer");
-        return false;
+        Serial.println("Accelerometer enabled");
     }
     else
     {
-        Serial.println(("Accelerometer enabled"));
+        Serial.println("Can't enable  accelerometer");
     }
 
     // Gyroscopic data
-    if(bno.enableGyro() == false)
-    {
-        Serial.println("Could not enable gyro");
-        return false;
-    }
-    else
+    if(bno.enableGyro() == true)
     {
         Serial.println("Gyro enabled");
     }
+    else
+    {
+        Serial.println("Can't enable  gyro");
+    }
 
     // Rotational vector data (used for quaternions)
-    if(bno.enableRotationVector() == false)
-    {
-        Serial.println("Could not enable rotation vector");
-        return false;
-    }
-    else
+    if(bno.enableRotationVector() == true)
     {
         Serial.println(("Rotation vector enabled"));
     }
-
-    return true;
+    else
+    {
+        Serial.println("Can't enable  rotation vector");
+    }
 }
 
 /**************************************************
@@ -217,23 +212,23 @@ void updateImuObject()
     // Checking whether an event occured
     if(bno.getSensorEvent() == true)
     {
-        ReportID_e sensorEvent = (ReportID_e)bno.getSensorEventID();
+        uint8_t sensorEvent = bno.getSensorEventID();
 
         switch(sensorEvent)
         {
-            case ACCELEROMETER_ID:
+            case SENSOR_REPORTID_ACCELEROMETER:
                 imu.accel.x = bno.getAccelX();
                 imu.accel.y = bno.getAccelY();
                 imu.accel.z = bno.getAccelZ();
             break;
 
-            case GYROSCOPE_ID:
+            case SENSOR_REPORTID_GYROSCOPE_CALIBRATED:
                 imu.gyro.x = bno.getGyroX();
                 imu.gyro.y = bno.getGyroY();
                 imu.gyro.z = bno.getGyroZ();
             break;
 
-            case ROTATIONAL_VECTOR_ID:
+            case SENSOR_REPORTID_ROTATION_VECTOR:
                 imu.quat.w = bno.getQuatReal();
                 imu.quat.x = bno.getQuatI();
                 imu.quat.y = bno.getQuatJ();
@@ -262,7 +257,8 @@ void printImuData(bool accel, bool gyro, bool quat)
     {
         Serial.print("[");
         Serial.print(imu.sampleTimeMS);
-        Serial.print("] X: ");
+        Serial.print("] Acceleration (x,y,z): ");
+        Serial.print("X: ");
         Serial.print(imu.accel.x);
         Serial.print(", Y: ");
         Serial.print(imu.accel.y);
@@ -277,7 +273,8 @@ void printImuData(bool accel, bool gyro, bool quat)
     {
         Serial.print("[");
         Serial.print(imu.sampleTimeMS);
-        Serial.print("] X: ");
+        Serial.print("] Gyroscope (x,y,z): ");
+        Serial.print("X: ");
         Serial.print(imu.gyro.x);
         Serial.print(", Y: ");
         Serial.print(imu.gyro.y);
@@ -292,7 +289,7 @@ void printImuData(bool accel, bool gyro, bool quat)
     {
         Serial.print("[");
         Serial.print(imu.sampleTimeMS);
-        Serial.print("] quat (w,x,y,z): ");
+        Serial.print("] Quaternion (w,x,y,z): ");
         Serial.print(imu.quat.w, 6); Serial.print(", ");
         Serial.print(imu.quat.x, 6); Serial.print(", ");
         Serial.print(imu.quat.y, 6); Serial.print(", ");
