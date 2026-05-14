@@ -16,8 +16,8 @@
  ******************************************************************************
  */
 
-#include "MPU9250.h"
 #include <Wire.h>
+#include "SparkFun_BNO08x_Arduino_Library.h"
 
 /*
  ******************************************************************************
@@ -25,11 +25,20 @@
  ******************************************************************************
  */
 
-#define LED_PIN 13
+#define LED_PIN 2
+#define IMU_RST_PIN 13
+#define IMU_INT_PIN 14
 #define IMU_SDA_PIN 21
 #define IMU_SCL_PIN 22
 
-#define MPU_ADDRESS 0x68
+#define IMU_I2C_ADDRESS 0x4B // Alternative address is 0x4A
+
+typedef enum
+{
+    ACCELEROMETER_ID = SENSOR_REPORTID_ACCELEROMETER,
+    GYROSCOPE_ID = SENSOR_REPORTID_GYROSCOPE_CALIBRATED,
+    ROTATIONAL_VECTOR_ID = SENSOR_REPORTID_ROTATION_VECTOR,
+} ReportID_e;
 
 typedef struct
 {
@@ -82,7 +91,9 @@ typedef struct
  ******************************************************************************
  */
 
-bool updateImuObject();
-void printImuData(bool accel, bool gyro, bool quat, bool temp);
+bool configureIMU();
+bool imuOutputDataConfig();
+void updateImuObject();
+void printImuData(bool accel, bool gyro, bool quat);
   
 #endif // ESP32_IMU_H

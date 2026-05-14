@@ -4,19 +4,13 @@
  **********************************************************************
 */
 
-#include "ESP32_IMU.h"
+#include "ESP32_IMU.hpp"
 
 /*
  **********************************************************************
  * DEFINES and CONSTANTS
  **********************************************************************
 */
-
-// IMU Calibration bias values bias values for calibration (X,Y,Z)
-static const Vector_t ACCEL_BIAS = {-1558.80f, 64.50f, -890.80f};
-static const Vector_t GYRO_BIAS = {-764.85f, -37.55f, -66.93f};
-static const Vector_t MAG_BIAS = {214.03f, 184.00f, 114.59f};
-static const Vector_t MAG_SCALE = {0.86f, 0.89f, 01.39f};
 
 /*
  **********************************************************************
@@ -32,7 +26,7 @@ TaskTime_t tasks =
 };
 
 IMU_t imu = {};
-MPU9250 mpu;
+BNO08x bno;
 
 /*
  **********************************************************************
@@ -63,38 +57,39 @@ void setup()
 {
     Serial.begin(115200);
 
+    while(!Serial) delay(10);
+
     pinMode(LED_PIN, OUTPUT);
 
-    Wire.begin(IMU_SDA_PIN, IMU_SCL_PIN);
+    // Setting up IMU
+    bool imuConfigSuccessful = configureIMU();
 
-    if(!mpu.setup(MPU_ADDRESS)) 
+    if(imuConfigSuccessful == false)
     {
-        while(1) 
+        while(1)
         {
-            Serial.println("MPU connection failed. Please check your connection with `connection_check` example.");
+            Serial.println("An issue occured during configuration. Please look at serial logs to determine error and then try again.");
             delay(5000);
         }
     }
-
-    mpu.selectFilter(QuatFilterSel::MADGWICK);
-
-    // Apply saved calibration values
-    mpu.setAccBias(ACCEL_BIAS.x,  ACCEL_BIAS.y,  ACCEL_BIAS.z);
-    mpu.setGyroBias(GYRO_BIAS.x, GYRO_BIAS.y, GYRO_BIAS.z);
-    mpu.setMagBias(MAG_BIAS.x, MAG_BIAS.y, MAG_BIAS.z);
-    mpu.setMagScale(MAG_SCALE.x, MAG_SCALE.y, MAG_SCALE.z);
-
-    Serial.println("MPU9250 ready!");
+    else
+    {
+        Serial.println("IMU ready!");
+    }
+    
+    delay(100);
 
     // Configuring all tasks last updated time
     unsigned long currTime = millis();
     tasks.printImu.lastTime = currTime;
     tasks.led.lastTime = currTime;
+
 }
 
 
 void loop() 
 {
+    delay(10);
     /*
         Since IMU update needs to be called frequently so fusion filter 
         can be computed, other slower tasks need to be kept track of
@@ -102,25 +97,26 @@ void loop()
     */
     unsigned long currentTime = millis();
 
+    if (bno.wasReset()) 
+    {
+        Serial.print("Sensor was reset ");
+        imuOutputDataConfig();
+    }
+
     // Fetching data from IMU and updating IMU struct
-    bool imuDataPresent = updateImuObject();
+    updateImuObject();
 
     // Only print data when time proper amount of time has elapsed
     if((currentTime - tasks.printImu.lastTime) >= tasks.printImu.period)
     {
-        // Printing acceleration data only if imu data is present
-        if(imuDataPresent)
-        {
-            bool printAccel = true; 
-            bool printGyro = true;
-            bool printQuat = true;
-            bool printTemp = false;
+        bool printAccel = true; 
+        bool printGyro = false;
+        bool printQuat = false;
 
-            printImuData(printAccel, printGyro, printQuat, printTemp);
-            
-            // Updating time here since it is possible that when it's time to print data, that the IMU wasn't ready to update.
-            tasks.printImu.lastTime = currentTime;
-        }
+        printImuData(printAccel, printGyro, printQuat);
+        
+        // Updating time here since it is possible that when it's time to print data, that the IMU wasn't ready to update.
+        tasks.printImu.lastTime = currentTime;
     }
 
     if((currentTime - tasks.led.lastTime) >= tasks.led.period)
@@ -135,38 +131,122 @@ void loop()
 }
 
 
+/*
+ **********************************************************************
+ * LOCAL FUNCTIONS
+ **********************************************************************
+*/
+
+/**************************************************
+ * Function Name: configureIMU
+ * Description: 
+**************************************************/
+
+void configureIMU()
+{
+    // Configuring communication over I2C
+    Wire.begin();//IMU_SDA_PIN, IMU_SCL_PIN);
+
+    // Setting up IMU with proper interrupt and reset pins
+    if(bno.begin(IMU_I2C_ADDRESS, Wire, IMU_INT_PIN, IMU_RST_PIN) == false) 
+    {
+        Serial.println("IMU connection failed. Please check connection with examples.");
+        return false;
+    }
+    else
+    {
+        Serial.println("IMU connection successful");
+    }
+
+    // Configuring what data to report
+    imuOutputDataConfig();
+}
+
+
+/**************************************************
+ * Function Name: imuOutputDataConfig
+ * Description: 
+**************************************************/
+
+bool imuOutputDataConfig()
+{
+    // Accelerometer data
+    bno.enableAccelerometer();
+    if(bno.enableAccelerometer() == false)
+    {
+        Serial.println("Could not enable accelerometer");
+        return false;
+    }
+    else
+    {
+        Serial.println(("Accelerometer enabled"));
+    }
+
+    // Gyroscopic data
+    if(bno.enableGyro() == false)
+    {
+        Serial.println("Could not enable gyro");
+        return false;
+    }
+    else
+    {
+        Serial.println("Gyro enabled");
+    }
+
+    // Rotational vector data (used for quaternions)
+    if(bno.enableRotationVector() == false)
+    {
+        Serial.println("Could not enable rotation vector");
+        return false;
+    }
+    else
+    {
+        Serial.println(("Rotation vector enabled"));
+    }
+
+    return true;
+}
+
 /**************************************************
  * Function Name: updateImuObject
  * Description: 
 **************************************************/
 
-bool updateImuObject()
+void updateImuObject()
 {
-    bool imuDataPresent = false;
-    if (mpu.update())
+    // Checking whether an event occured
+    if(bno.getSensorEvent() == true)
     {
-        // Copying data to IMU structure
-        imu.accel.x = mpu.getAccX();
-        imu.accel.y = mpu.getAccY();
-        imu.accel.z = mpu.getAccZ();
+        ReportID_e sensorEvent = (ReportID_e)bno.getSensorEventID();
 
-        imu.gyro.x = mpu.getGyroX();
-        imu.gyro.y = mpu.getGyroY();
-        imu.gyro.z = mpu.getGyroZ();
+        switch(sensorEvent)
+        {
+            case ACCELEROMETER_ID:
+                imu.accel.x = bno.getAccelX();
+                imu.accel.y = bno.getAccelY();
+                imu.accel.z = bno.getAccelZ();
+            break;
 
-        imu.quat.w = mpu.getQuaternionW();
-        imu.quat.x = mpu.getQuaternionX();
-        imu.quat.y = mpu.getQuaternionY();
-        imu.quat.z = mpu.getQuaternionZ();
+            case GYROSCOPE_ID:
+                imu.gyro.x = bno.getGyroX();
+                imu.gyro.y = bno.getGyroY();
+                imu.gyro.z = bno.getGyroZ();
+            break;
 
-        imu.temp = mpu.getTemperature();
+            case ROTATIONAL_VECTOR_ID:
+                imu.quat.w = bno.getQuatReal();
+                imu.quat.x = bno.getQuatI();
+                imu.quat.y = bno.getQuatJ();
+                imu.quat.z = bno.getQuatK();
+                // there is a getQuatRadianAccuracy() but not sure if needed?
+            break;
 
-        imu.sampleTime = millis();
+            default:
+            break;
+        }
 
-        imuDataPresent = true;
+        imu.sampleTimeMS = millis();
     }
-
-    return imuDataPresent;
 }
 
 
@@ -175,13 +255,13 @@ bool updateImuObject()
  * Description: 
 **************************************************/
 
-void printImuData(bool accel, bool gyro, bool quat, bool temp)
+void printImuData(bool accel, bool gyro, bool quat)
     {
     // Printing acceleration data
     if(accel)
     {
         Serial.print("[");
-        Serial.print(imu.sampleTime);
+        Serial.print(imu.sampleTimeMS);
         Serial.print("] X: ");
         Serial.print(imu.accel.x);
         Serial.print(", Y: ");
@@ -196,7 +276,7 @@ void printImuData(bool accel, bool gyro, bool quat, bool temp)
     if(gyro)
     {
         Serial.print("[");
-        Serial.print(imu.sampleTime);
+        Serial.print(imu.sampleTimeMS);
         Serial.print("] X: ");
         Serial.print(imu.gyro.x);
         Serial.print(", Y: ");
@@ -211,7 +291,7 @@ void printImuData(bool accel, bool gyro, bool quat, bool temp)
     if(quat)
     {
         Serial.print("[");
-        Serial.print(imu.sampleTime);
+        Serial.print(imu.sampleTimeMS);
         Serial.print("] quat (w,x,y,z): ");
         Serial.print(imu.quat.w, 6); Serial.print(", ");
         Serial.print(imu.quat.x, 6); Serial.print(", ");
@@ -219,20 +299,9 @@ void printImuData(bool accel, bool gyro, bool quat, bool temp)
         Serial.println(imu.quat.z, 6);
         Serial.println();
     }
-
-    // Printing temperature data
-    if(temp)
-    {
-        Serial.print("[");
-        Serial.print(imu.sampleTime);
-        Serial.print("] Temperature: ");
-        Serial.print(imu.temp);
-        Serial.println(" c");
-        Serial.println();
-    }
     
     // Ending line if any value are requested
-    if(accel || gyro || quat || temp)
+    if(accel || gyro || quat)
     {
         Serial.println("--------------------------");
         Serial.println();
