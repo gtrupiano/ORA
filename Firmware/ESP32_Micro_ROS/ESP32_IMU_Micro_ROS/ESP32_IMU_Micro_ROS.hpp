@@ -17,7 +17,7 @@
  */
 
 // IMU Specific Headers
-#include "MPU9250.h"
+#include "SparkFun_BNO08x_Arduino_Library.h"
 
 // MicroROS Specific Headers
 #include <micro_ros_arduino.h>
@@ -38,15 +38,19 @@
  ******************************************************************************
  */
 
+// List of pins
 #define HEARTBEAT_LED_PIN 2
-#define AUTONOMOUS_LED_PIN 0
+#define AUTONOMOUS_LED_PIN 4
+#define IMU_RST_PIN 13
+#define IMU_INT_PIN 14
 #define IMU_SDA_PIN 21
 #define IMU_SCL_PIN 22
 
-
 // This is the I2C address of the IMU chip itself.
-// May change with chip variant so run the example program connection_check.ino
-#define IMU_I2C_ADDRESS 0x68
+#define IMU_I2C_ADDRESS 0x4B // Alternative address is 0x4A
+
+// Number of times IMU would try to connect
+#define IMU_CONNECT_RETRY_NUM 8
 
 // Represents the 3x3 matrix for the covariances but as a 1D array
 #define COVARIANCE_1D_ARRAY_SIZE 9
@@ -94,7 +98,8 @@ typedef struct
  ******************************************************************************
  */
 
-void initIMU();
+bool configureIMU();
+void imuOutputDataConfig();
 void initMicroRos();
 void imuTimerCallback(rcl_timer_t * timer, int64_t last_call_time);
 void ledTimerCallback(rcl_timer_t * timer, int64_t last_call_time);
@@ -102,7 +107,7 @@ void autonomousLedStateServiceCallback(const void * request_msg, void * response
 void setDiagonalCovariance();
 void updateImuObject();
 void fillImuMsgFromImuStruct();
-void printImuData(bool accel, bool gyro, bool quat, bool temp);
+void printImuData(bool accel, bool gyro, bool quat);
 void restartSystem();
   
 #endif // ESP32_IMU_MICRO_ROS_H
