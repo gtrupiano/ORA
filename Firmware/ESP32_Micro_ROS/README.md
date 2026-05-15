@@ -4,7 +4,7 @@
 
 ## Hardware
 * [ESP32 WROOM-DA](https://www.microcenter.com/product/704603/ESP-32_Development_Board_-_3_Pack?storeID=055)
-* [MPU9250](https://www.amazon.com/HiLetgo-Gyroscope-Acceleration-Accelerator-Magnetometer/dp/B01I1J0Z7Y?dib=eyJ2IjoiMSJ9.fUaDsdk9ALrJjJHvWeki0O9GjuGqYNZpqKBl81hCfjrQNqjzhNDUq1RNpm8rT9O7ETkksLc-OUFAHWUG6UER13_GUlZHZLweY_9Gijs-JfzXlsn2y1giVg0dFD-7S6LW5TRDGy6bEcKNemPhx6fER4URHJL7QZk2WkVwgJ6FGKfJQLmjTvgKUMAkU_VSja3Z32x_kFzfT6Dahr_WVAwooN9XndEO6EtxI_cVUy90W6E.O6vUDc74jMMQvZnDRfpBdqee4oCUenk58OZWEF1Ffy8&dib_tag=se&keywords=mpu9250&qid=1773161136&sr=8-5&th=1)
+* [BNO086](https://www.sparkfun.com/sparkfun-vr-imu-breakout-bno086-qwiic.html)
 
 ## Software setup
 
@@ -23,13 +23,21 @@ When the building process has finished, the host computer is setup to run the mi
 <br><br>
 
 
-### Installing micro ROS arduino library
+### Installing proper ESP32 libraries
+There are two libraries that need to be installed. One for the BNO086 and the other for the micro-ROS implementation on the ESP32.
+
+#### BNO086 Library
+In the Arduino IDE library manager, search for `SparkFun BNO08x Cortex Based IMU`. It should show the following:
+![BNO_Lib_Image](./Documentation/BNO086_ESP_Library.png)
+
+
+#### micro-ROS Library
 In the Arduino IDE library manager, search for `micro_ros_arduino`. It should show the following:
 
 ![Library_Image](./Documentation/micro_ros_arduino_library.png)
 <br><br>
 
-
+---
 
 ### Using proper ESP32 board library version
 
