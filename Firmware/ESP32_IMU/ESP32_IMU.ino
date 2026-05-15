@@ -144,23 +144,33 @@ bool configureIMU()
     // Configuring communication over I2C
     Wire.begin(IMU_SDA_PIN, IMU_SCL_PIN);
 
+    delay(250);
     // TODO: Add in a multi attempt to connect to the bno
+    
+    uint8_t imuConnectAttempts = 0;
+    bool imuConnected = false;
 
-    // Setting up IMU with proper interrupt and reset pins
-    if(bno.begin(IMU_I2C_ADDRESS, Wire, IMU_INT_PIN, IMU_RST_PIN) == false) 
+    while(imuConnectAttempts < IMU_CONNECT_RETRY_NUM)
     {
-        Serial.println("IMU connection failed. Please check connection with examples.");
-        return false;
-    }
-    else
-    {
-        Serial.println("IMU connection successful");
+        // Setting up IMU with proper interrupt and reset pins
+        if(bno.begin(IMU_I2C_ADDRESS, Wire, IMU_INT_PIN, IMU_RST_PIN) == false) 
+        {
+            Serial.println("IMU connection failed. Please check connection with examples.");
+        }
+        else
+        {
+            Serial.println("IMU connection successful");
+            imuConnected = true;
+            break;
+        }
+
+        imuConnectAttempts++;
     }
 
     // Configuring what data to report
     imuOutputDataConfig();
 
-    return true;
+    return imuConnected;
 }
 
 
