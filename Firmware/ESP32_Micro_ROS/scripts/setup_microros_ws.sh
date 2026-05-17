@@ -37,10 +37,10 @@ colcon build
 source install/local_setup.bash
 
 # ---- Create firmware workspace ----
-ros2 run micro_ros_setup create_firmware_ws.sh host
+#ros2 run micro_ros_setup create_firmware_ws.sh host
 
 # ---- Build firmware tools ----
-ros2 run micro_ros_setup build_firmware.sh
+#ros2 run micro_ros_setup build_firmware.sh
 
 # ---- Create micro-ROS agent workspace ----
 ros2 run micro_ros_setup create_agent_ws.sh

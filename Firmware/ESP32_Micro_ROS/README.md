@@ -63,7 +63,7 @@ The ESP will continue to retry the connection while the agent is inactive.
 ### Viewing IMU Data on ROS Topic
 To view the data that is being published to the ROS topic, execute the following command
 ```
-ros2 topic echo imu
+ros2 topic echo /imu --no-arr
 ```
 IMU data should be updating in the echo terminal window.<br><br>
 

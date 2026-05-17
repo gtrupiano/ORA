@@ -14,17 +14,42 @@
 
 // Checks return value of RCLC function. If the function failed, then either send to error state
 // or (in soft checks case) ignore.
-#define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){restartSystem();}}
-#define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){}}
+#define RCCHECK(fn)             \
+{                               \
+    rcl_ret_t temp_rc = fn;     \
+                                \
+    if(temp_rc != RCL_RET_OK)   \
+    {                           \
+        restartSystem();        \
+    }                           \
+}                               
+
+#define RCSOFTCHECK(fn)         \
+{                               \
+    rcl_ret_t temp_rc = fn;     \
+                                \
+    if(temp_rc != RCL_RET_OK)   \
+    {                           \
+        /* Ignore for now */    \
+    }                           \
+}                               
+
+// Timer Interrupt timeout
+const unsigned int IMU_PUBLISH_TASK_TIME_MS = 100;
+const unsigned int LED_TASK_TIME_MS = 500;
 
 // IMU measurement covariance (accuracy)
 static const Vector_t ACCEL_COV_DIAG = {0.02f, 0.02f, 0.02f};
 static const Vector_t GYRO_COV_DIAG = {0.0001f, 0.000144f, 0.000081f};
 static const Vector_t ORIENT_COV_DIAG = {0.01f, 0.01f, 0.01f};
 
-// Timer Interrupt timeout
-const unsigned int IMU_PUBLISH_TASK_TIME_MS = 100;
-const unsigned int LED_TASK_TIME_MS = 500;
+// IMU Report Values
+static const uint8_t BNO_REPORT_SETS_PER_PUBLISH = 2;
+static const uint16_t BNO_REPORT_INTERVAL_MS = (IMU_PUBLISH_TASK_TIME_MS + BNO_REPORT_SETS_PER_PUBLISH - 1) / BNO_REPORT_SETS_PER_PUBLISH; // Integer based rounding but it's basically IMU_PUBLISH_TASK_TIME_MS / BNO_REPORT_SETS_PER_PUBLISH
+static const uint8_t BNO_MAX_REPORTS_PER_LOOP = 6;
+
+// Micro-ROS Values
+static const unsigned long AGENT_CHECK_PERIOD_MS = 1000;
 
 /*
  **********************************************************************
@@ -42,7 +67,7 @@ rcl_timer_t ledTimer;
 rcl_service_t autonomousLedStateService;
 std_srvs__srv__SetBool_Request autonomousLedStateRequest;
 std_srvs__srv__SetBool_Response autonomousLedStateResponse;
-
+unsigned long lastAgentPingMS = 0;
 
 // ROS Client Library for C (RCLC)
 // Helper functions for easier use of RCL
@@ -87,6 +112,8 @@ void setup()
 {
     Serial.begin(115200);
 
+    delay(500);
+
     pinMode(HEARTBEAT_LED_PIN, OUTPUT);
     pinMode(AUTONOMOUS_LED_PIN, OUTPUT);
 
@@ -99,11 +126,7 @@ void setup()
     // Will freeze program if multiple connections to IMU don't work
     if(imuConfigSuccessful == false)
     {
-        while(true)
-        {
-            Serial.println("An issue occured during configuration. Please look at serial logs to determine error and then try again.");
-            delay(5000);
-        }
+        restartSystem();
     }
     else
     {
@@ -118,16 +141,17 @@ void setup()
 
 void loop() 
 {
+    // Check whether agent is still connected
+    checkMicroRosAgent();
+
+    // Run timer callback(s)
+    RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(1)));
+    
     /*
         Keep IMU update running as often as possible so the fusion filter
         can continue computing quaternion values properly.
     */
     updateImuObject();
-
-    // Run timer callback(s)
-    RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(5)));
-
-    delay(1);
 }
 
 
@@ -140,6 +164,8 @@ bool configureIMU()
 {
     // Configuring communication over I2C
     Wire.begin(IMU_SDA_PIN, IMU_SCL_PIN);
+    Wire.setClock(400000);   // 400 kHz I2C fast mode
+    Wire.setTimeOut(50);     // prevent long I2C blocking/hanging
 
     delay(250);
     // TODO: Add in a multi attempt to connect to the bno
@@ -162,12 +188,20 @@ bool configureIMU()
         }
 
         imuConnectAttempts++;
+        delay(500);
     }
 
-    // Configuring what data to report
-    imuOutputDataConfig();
-
-    return imuConnected;
+    // Set the IMU output data configs only if the IMU is connected
+    if(imuConnected == false)
+    {
+        return false;
+    }
+    else
+    {
+        // Configuring what data to report
+        imuOutputDataConfig();
+        return true;
+    }
 }
 
 
@@ -179,34 +213,13 @@ bool configureIMU()
 void imuOutputDataConfig()
 {
     // Accelerometer data
-    if(bno.enableAccelerometer() == true)
-    {
-        Serial.println("Accelerometer enabled");
-    }
-    else
-    {
-        Serial.println("Can't enable  accelerometer");
-    }
+    bno.enableAccelerometer(BNO_REPORT_INTERVAL_MS);
 
     // Gyroscopic data
-    if(bno.enableGyro() == true)
-    {
-        Serial.println("Gyro enabled");
-    }
-    else
-    {
-        Serial.println("Can't enable  gyro");
-    }
+    bno.enableGyro(BNO_REPORT_INTERVAL_MS);
 
     // Rotational vector data (used for quaternions)
-    if(bno.enableRotationVector() == true)
-    {
-        Serial.println(("Rotation vector enabled"));
-    }
-    else
-    {
-        Serial.println("Can't enable  rotation vector");
-    }
+    bno.enableRotationVector(BNO_REPORT_INTERVAL_MS);
 }
 
 
@@ -219,7 +232,7 @@ void initMicroRos()
 {
     // Configures how ESP talks to micro ROS agent (serial, wifi, etc)
     set_microros_transports();
-    
+
     delay(2000);
 
     allocator = rcl_get_default_allocator();
@@ -289,6 +302,27 @@ void initMicroRos()
 
     // Sychronize timing for the microROS agent
     rmw_uros_sync_session(SYNC_SESSION_TIMEOUT_MS);
+}
+
+
+/**************************************************
+ * Function Name: checkMicroRosAgent
+ * Description: 
+**************************************************/
+
+void checkMicroRosAgent()
+{
+    unsigned long currentTimeMS = millis();
+
+    if((currentTimeMS - lastAgentPingMS) >= AGENT_CHECK_PERIOD_MS)
+    {
+        lastAgentPingMS = currentTimeMS;
+
+        if(rmw_uros_ping_agent(AGENT_PING_TIMEOUT_MS, AGENT_PING_ATTEMPTS_PER_TRY) != RMW_RET_OK)
+        {
+            restartSystem();
+        }
+    }
 }
 
 
@@ -402,6 +436,12 @@ void setDiagonalCovariance()
 
 void updateImuObject()
 {
+    // Reconfigure data output from BNO if chip was reset.
+    if(bno.wasReset())
+    {
+        imuOutputDataConfig();
+    }
+    
     // Checking whether an event occured
     if(bno.getSensorEvent() == true)
     {
@@ -426,13 +466,11 @@ void updateImuObject()
                 imu.quat.x = bno.getQuatI();
                 imu.quat.y = bno.getQuatJ();
                 imu.quat.z = bno.getQuatK();
-                // there is a getQuatRadianAccuracy() but not sure if needed?
             break;
 
             default:
             break;
         }
-
         imu.sampleTimeMS = millis();
     }
 }
@@ -448,8 +486,10 @@ void fillImuMsgFromImuStruct()
     // Message Header
     if(rmw_uros_epoch_synchronized())
     {
-        ImuMsg.header.stamp.sec = rmw_uros_epoch_millis() / 1000;
-        ImuMsg.header.stamp.nanosec = rmw_uros_epoch_nanos();
+        int64_t time_ns = rmw_uros_epoch_nanos();
+
+        ImuMsg.header.stamp.sec = time_ns / 1000000000;
+        ImuMsg.header.stamp.nanosec = time_ns % 1000000000;
     }
 
     // Linear acceleration (m/s^2)
