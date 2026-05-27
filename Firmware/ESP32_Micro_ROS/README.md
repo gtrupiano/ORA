@@ -74,12 +74,12 @@ In order to control the Autonomous LED pin, a service message needs to be sent. 
 
 **LED On**
 ```
-ros2 service call /set_autonomous_led_state std_srvs/srv/SetBool "{data: true}"
+ros2 service call /navigation/set_auton std_srvs/srv/SetBool "{data: true}"
 ```
 
 **LED Off**
 ```
-ros2 service call /set_autonomous_led_state std_srvs/srv/SetBool "{data: false}"
+ros2 service call /navigation/set_auton std_srvs/srv/SetBool "{data: false}"
 ```
 
 A response message should be sent back and show in the terminal verifying the LED is in the set state.
