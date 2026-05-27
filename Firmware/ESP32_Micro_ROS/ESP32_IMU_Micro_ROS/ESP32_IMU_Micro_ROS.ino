@@ -63,7 +63,7 @@ rcl_publisher_t imuPublisher;
 rcl_allocator_t allocator;
 rcl_node_t node;
 rcl_timer_t imuPublishTimer;
-rcl_timer_t ledTimer;
+rcl_timer_t heartbeatLedTimer;
 rcl_service_t autonomousLedStateService;
 std_srvs__srv__SetBool_Request autonomousLedStateRequest;
 std_srvs__srv__SetBool_Response autonomousLedStateResponse;
@@ -262,10 +262,10 @@ void initMicroRos()
 
     // Blinking LED timer
     RCCHECK(rclc_timer_init_default(
-        &ledTimer,
+        &heartbeatLedTimer,
         &support,
         RCL_MS_TO_NS(LED_TASK_TIME_MS),
-        ledTimerCallback)
+        heartbeatLedTimerCallback)
     );
 
     // Creating Services
@@ -280,7 +280,7 @@ void initMicroRos()
     // Create executor
     RCCHECK(rclc_executor_init(&executor, &support.context, 3, &allocator));
     RCCHECK(rclc_executor_add_timer(&executor, &imuPublishTimer));
-    RCCHECK(rclc_executor_add_timer(&executor, &ledTimer));
+    RCCHECK(rclc_executor_add_timer(&executor, &heartbeatLedTimer));
 
     // Adding Services with callback and request / response variables
     RCCHECK(rclc_executor_add_service(
@@ -344,11 +344,11 @@ void imuTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
 
 
 /**************************************************
- * Function Name: ledTimerCallback
+ * Function Name: heartbeatLedTimerCallback
  * Description: 
 **************************************************/
 
-void ledTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
+void heartbeatLedTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
 {  
   RCLC_UNUSED(last_call_time);
 

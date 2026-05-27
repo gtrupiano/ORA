@@ -106,7 +106,7 @@ bool configureIMU();
 void imuOutputDataConfig();
 void initMicroRos();
 void imuTimerCallback(rcl_timer_t * timer, int64_t last_call_time);
-void ledTimerCallback(rcl_timer_t * timer, int64_t last_call_time);
+void heartbeatLedTimerCallback(rcl_timer_t * timer, int64_t last_call_time);
 void autonomousLedStateServiceCallback(const void * request_msg, void * response_msg);
 void setDiagonalCovariance();
 void updateImuObject();
