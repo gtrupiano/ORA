@@ -248,7 +248,7 @@ void initMicroRos()
         &imuPublisher,
         &node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Imu),
-        "imu")
+        "/esp/imu")
     );
 
     // Create timers
@@ -274,7 +274,7 @@ void initMicroRos()
         &autonomousLedStateService,
         &node,
         ROSIDL_GET_SRV_TYPE_SUPPORT(std_srvs, srv, SetBool),
-        "/set_autonomous_led_state")
+        "/navigation/set_auton")
     );
 
     // Create executor

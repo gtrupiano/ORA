@@ -143,7 +143,9 @@ bool configureIMU()
 {
     // Configuring communication over I2C
     Wire.begin(IMU_SDA_PIN, IMU_SCL_PIN);
-
+    Wire.setClock(400000);   // 400 kHz I2C fast mode
+    Wire.setTimeOut(50);     // prevent long I2C blocking/hanging
+    
     delay(250);
     // TODO: Add in a multi attempt to connect to the bno
     

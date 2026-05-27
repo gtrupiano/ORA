@@ -26,10 +26,10 @@
  */
 
 #define LED_PIN 2
-#define IMU_RST_PIN 13
-#define IMU_INT_PIN 14
-#define IMU_SDA_PIN 21
-#define IMU_SCL_PIN 22
+#define IMU_RST_PIN 1
+#define IMU_INT_PIN 5
+#define IMU_SDA_PIN 8
+#define IMU_SCL_PIN 9
 
 #define IMU_I2C_ADDRESS 0x4B // Alternative address is 0x4A
 
