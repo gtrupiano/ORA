@@ -84,8 +84,8 @@ IMU_t imu = {};
 BNO08x bno;
 
 // Application Variables
+bool autonomousLedEnabled = false;
 bool autonomousLedState = false;
-bool lightThing = false;
 
 long autonTime = 0;
 
@@ -158,17 +158,17 @@ void loop()
     {
         autonTime = currentTime;
 
-        if(autonomousLedState)
+        if(autonomousLedEnabled)
         {
-            if(lightThing)
+            if(autonomousLedState)
             {
                 digitalWrite(AUTONOMOUS_LED_PIN, HIGH);
-                lightThing = false;
+                autonomousLedState = false;
             }
             else
             {
                 digitalWrite(AUTONOMOUS_LED_PIN, LOW);
-                lightThing = true;
+                autonomousLedState = true;
             }
         }
         else
@@ -400,17 +400,17 @@ void autonomousLedTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
 
     if (timer != NULL) 
     {
-        if(autonomousLedState)
+        if(autonomousLedEnabled)
         {
-            if(lightThing)
+            if(autonomousLedState)
             {
                 digitalWrite(AUTONOMOUS_LED_PIN, HIGH);
-                lightThing = false;
+                autonomousLedState = false;
             }
             else
             {
                 digitalWrite(AUTONOMOUS_LED_PIN, LOW);
-                lightThing = true;
+                autonomousLedState = true;
             }
         }
         else
@@ -436,14 +436,14 @@ void autonomousLedStateServiceCallback(const void * request_msg, void * response
     std_srvs__srv__SetBool_Response * res = (std_srvs__srv__SetBool_Response *)response_msg;
 
     // Update your firmware/application state
-    autonomousLedState = req->data;
+    autonomousLedEnabled = req->data;
 
     // Fill response
     res->success = true;
 
     // Populating the response message going back to the client based on the state
     // In addition, changing the AUTONOMOUS_LED_PIN to match up with the incoming service
-    if(autonomousLedState)
+    if(autonomousLedEnabled)
     {
         const char * msg = "Autonomous LED enabled";
         res->message.data = (char *)msg;
@@ -640,6 +640,7 @@ void printImuData(bool accel, bool gyro, bool quat)
 void restartSystem()
 {
     digitalWrite(HEARTBEAT_LED_PIN, LOW);
+    digitalWrite(AUTONOMOUS_LED_PIN, LOW);
     delay(500);
 
     ESP.restart();
