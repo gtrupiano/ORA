@@ -37,7 +37,7 @@
 // Timer Interrupt timeout
 const unsigned int IMU_PUBLISH_TASK_TIME_MS = 100;
 const unsigned int HEARTBEAT_LED_TASK_TIME_MS = 500;
-const unsigned int AUTONOMOUS_LED_TASK_TIME_MS = 500;
+const unsigned int AUTONOMOUS_LED_TASK_TIME_MS = 1000;
 
 // IMU measurement covariance (accuracy)
 static const Vector_t ACCEL_COV_DIAG = {0.02f, 0.02f, 0.02f};
@@ -151,31 +151,8 @@ void loop()
 
     // Run timer callback(s)
     RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(5)));
-    
-    long currentTime = millis();
 
-    if(currentTime - autonTime >= AUTONOMOUS_LED_TASK_TIME_MS)
-    {
-        autonTime = currentTime;
-
-        if(autonomousLedEnabled)
-        {
-            if(autonomousLedState)
-            {
-                digitalWrite(AUTONOMOUS_LED_PIN, HIGH);
-                autonomousLedState = false;
-            }
-            else
-            {
-                digitalWrite(AUTONOMOUS_LED_PIN, LOW);
-                autonomousLedState = true;
-            }
-        }
-        else
-        {
-            digitalWrite(AUTONOMOUS_LED_PIN, LOW);
-        }
-    }
+    autonomousLedToggleOnService();
 
     /*
         Keep IMU update running as often as possible so the fusion filter
@@ -198,8 +175,7 @@ bool configureIMU()
     Wire.setTimeOut(50);     // prevent long I2C blocking/hanging
 
     delay(250);
-    // TODO: Add in a multi attempt to connect to the bno
-    
+
     uint8_t imuConnectAttempts = 0;
     bool imuConnected = false;
 
@@ -389,39 +365,6 @@ void heartbeatLedTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
 }
 
 
-/**************************************************
- * Function Name: autonomousLedTimerCallback
- * Description: 
-**************************************************/
-
-void autonomousLedTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
-{
-    RCLC_UNUSED(last_call_time);
-
-    if (timer != NULL) 
-    {
-        if(autonomousLedEnabled)
-        {
-            if(autonomousLedState)
-            {
-                digitalWrite(AUTONOMOUS_LED_PIN, HIGH);
-                autonomousLedState = false;
-            }
-            else
-            {
-                digitalWrite(AUTONOMOUS_LED_PIN, LOW);
-                autonomousLedState = true;
-            }
-        }
-        else
-        {
-            digitalWrite(AUTONOMOUS_LED_PIN, LOW);
-        }
-    }
-}
-
-
-
 /*************************************************************************
  * Function Name: autonomousLedStateServiceCallback
  * Description: Service for autonomous LED state. This is called whenever
@@ -459,6 +402,39 @@ void autonomousLedStateServiceCallback(const void * request_msg, void * response
     }
 }
 
+
+/**************************************************
+ * Function Name: autonomousLedToggle
+ * Description: 
+**************************************************/
+
+void autonomousLedToggleOnService()
+{
+    long currentTime = millis();
+
+    if(currentTime - autonTime >= AUTONOMOUS_LED_TASK_TIME_MS)
+    {
+        if(autonomousLedEnabled)
+        {
+            if(autonomousLedState)
+            {
+                digitalWrite(AUTONOMOUS_LED_PIN, HIGH);
+                autonomousLedState = false;
+            }
+            else
+            {
+                digitalWrite(AUTONOMOUS_LED_PIN, LOW);
+                autonomousLedState = true;
+            }
+        }
+        else
+        {
+            digitalWrite(AUTONOMOUS_LED_PIN, LOW);
+        }
+
+        autonTime = currentTime;
+    }
+}
 
 /**************************************************
  * Function Name: setDiagonalCovariance
