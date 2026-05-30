@@ -85,6 +85,9 @@ BNO08x bno;
 
 // Application Variables
 bool autonomousLedState = false;
+bool lightThing = false;
+
+long autonTime = 0;
 
 /*
  **********************************************************************
@@ -147,8 +150,33 @@ void loop()
     checkMicroRosAgent();
 
     // Run timer callback(s)
-    RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(1)));
+    RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(5)));
     
+    long currentTime = millis();
+
+    if(currentTime - autonTime >= AUTONOMOUS_LED_TASK_TIME_MS)
+    {
+        autonTime = currentTime;
+
+        if(autonomousLedState)
+        {
+            if(lightThing)
+            {
+                digitalWrite(AUTONOMOUS_LED_PIN, HIGH);
+                lightThing = false;
+            }
+            else
+            {
+                digitalWrite(AUTONOMOUS_LED_PIN, LOW);
+                lightThing = true;
+            }
+        }
+        else
+        {
+            digitalWrite(AUTONOMOUS_LED_PIN, LOW);
+        }
+    }
+
     /*
         Keep IMU update running as often as possible so the fusion filter
         can continue computing quaternion values properly.
@@ -270,14 +298,6 @@ void initMicroRos()
         heartbeatLedTimerCallback)
     );
 
-    // Autonomous LED timer
-    RCCHECK(rclc_timer_init_default(
-        &autonomousLedTimer,
-        &support,
-        RCL_MS_TO_NS(AUTONOMOUS_LED_TASK_TIME_MS),
-        autonomousLedTimerCallback)
-    );
-
     // Creating Services
     // Autonomous LED State service
     RCCHECK(rclc_service_init_default(
@@ -288,10 +308,9 @@ void initMicroRos()
     );
 
     // Create executor
-    RCCHECK(rclc_executor_init(&executor, &support.context, 4, &allocator));
+    RCCHECK(rclc_executor_init(&executor, &support.context, 3, &allocator));
     RCCHECK(rclc_executor_add_timer(&executor, &imuPublishTimer));
     RCCHECK(rclc_executor_add_timer(&executor, &heartbeatLedTimer));
-    RCCHECK(rclc_executor_add_timer(&executor, &autonomousLedTimer));
 
     // Adding Services with callback and request / response variables
     RCCHECK(rclc_executor_add_service(
@@ -383,7 +402,16 @@ void autonomousLedTimerCallback(rcl_timer_t * timer, int64_t last_call_time)
     {
         if(autonomousLedState)
         {
-            digitalWrite(AUTONOMOUS_LED_PIN, !digitalRead(AUTONOMOUS_LED_PIN));
+            if(lightThing)
+            {
+                digitalWrite(AUTONOMOUS_LED_PIN, HIGH);
+                lightThing = false;
+            }
+            else
+            {
+                digitalWrite(AUTONOMOUS_LED_PIN, LOW);
+                lightThing = true;
+            }
         }
         else
         {
@@ -421,7 +449,6 @@ void autonomousLedStateServiceCallback(const void * request_msg, void * response
         res->message.data = (char *)msg;
         res->message.size = strlen(msg);
         res->message.capacity = res->message.size + 1;
-        digitalWrite(AUTONOMOUS_LED_PIN, HIGH);
     }
     else
     {
@@ -429,7 +456,6 @@ void autonomousLedStateServiceCallback(const void * request_msg, void * response
         res->message.data = (char *)msg;
         res->message.size = strlen(msg);
         res->message.capacity = res->message.size + 1;
-        digitalWrite(AUTONOMOUS_LED_PIN, LOW);
     }
 }
 
