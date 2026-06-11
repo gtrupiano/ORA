@@ -83,3 +83,23 @@ ros2 service call /navigation/set_auton std_srvs/srv/SetBool "{data: false}"
 ```
 
 A response message should be sent back and show in the terminal verifying the LED is in the set state.
+
+
+### Modifying Baud Rate For MicroROS Agent
+For some reason, the MicroROS library hardcodes the baud rate to `115200`. If you want to change it, the library files need to be changed. Specifically the `default_transport.cpp`. 
+
+In order to modify the baud rate, do the following:
+
+```bash
+nano ~/Arduino/libraries/micro_ros_arduino/src/default_transport.cpp
+```
+
+Change the `Serial.begin()` line in the `arduino_transport_open` function to the desired baud rate.
+
+```bash
+  bool arduino_transport_open(struct uxrCustomTransport *transport)
+  {
+    Serial.begin(your_baud_rate);
+    return true;
+  }
+```

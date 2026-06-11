@@ -8,7 +8,7 @@ source /opt/ros/jazzy/setup.bash
 source "$WS_DIR/install/local_setup.bash"
 
 DEV="${1:-/dev/ttyUSB0}"
-BAUD="${2:-115200}"
+BAUD="${2:-921600}"
 
 while true; do
     echo "Starting micro-ROS agent on $DEV at $BAUD baud..."

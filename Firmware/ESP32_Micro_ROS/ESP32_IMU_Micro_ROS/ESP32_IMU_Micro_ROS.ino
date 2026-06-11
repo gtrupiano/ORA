@@ -35,7 +35,7 @@
 }                               
 
 // Timer Interrupt timeout
-const unsigned int IMU_PUBLISH_TASK_TIME_MS = 100;
+const unsigned int IMU_PUBLISH_TASK_TIME_MS = 10;
 const unsigned int HEARTBEAT_LED_TASK_TIME_MS = 500;
 const unsigned int AUTONOMOUS_LED_TASK_TIME_MS = 1000;
 
@@ -46,8 +46,8 @@ static const Vector_t ORIENT_COV_DIAG = {0.01f, 0.01f, 0.01f};
 
 // IMU Report Values
 static const uint8_t BNO_REPORT_SETS_PER_PUBLISH = 2;
-static const uint16_t BNO_REPORT_INTERVAL_MS = (IMU_PUBLISH_TASK_TIME_MS + BNO_REPORT_SETS_PER_PUBLISH - 1) / BNO_REPORT_SETS_PER_PUBLISH; // Integer based rounding but it's basically IMU_PUBLISH_TASK_TIME_MS / BNO_REPORT_SETS_PER_PUBLISH
-static const uint8_t BNO_MAX_REPORTS_PER_LOOP = 6;
+static const uint16_t BNO_REPORT_INTERVAL_MS = 10;//(IMU_PUBLISH_TASK_TIME_MS + BNO_REPORT_SETS_PER_PUBLISH - 1) / BNO_REPORT_SETS_PER_PUBLISH; // Integer based rounding but it's basically IMU_PUBLISH_TASK_TIME_MS / BNO_REPORT_SETS_PER_PUBLISH
+static const uint8_t BNO_MAX_REPORTS_PER_LOOP = 1;
 
 // Micro-ROS Values
 static const unsigned long AGENT_CHECK_PERIOD_MS = 1000;
@@ -115,7 +115,7 @@ long autonTime = 0;
 
 void setup() 
 {
-    Serial.begin(115200);
+    Serial.begin(921600);
 
     delay(500);
 
@@ -150,7 +150,7 @@ void loop()
     checkMicroRosAgent();
 
     // Run timer callback(s)
-    RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(5)));
+    RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(1)));
 
     autonomousLedToggleOnService();
 
@@ -172,7 +172,7 @@ bool configureIMU()
     // Configuring communication over I2C
     Wire.begin(IMU_SDA_PIN, IMU_SCL_PIN);
     Wire.setClock(400000);   // 400 kHz I2C fast mode
-    Wire.setTimeOut(50);     // prevent long I2C blocking/hanging
+    Wire.setTimeOut(5);     // prevent long I2C blocking/hanging
 
     delay(250);
 
