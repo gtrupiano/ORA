@@ -1,10 +1,50 @@
+##################################################
+# General
+##################################################
+
 .vscode/
 .DS_Store
-build/
-firmware/
-install/
-log/
-src/
-.DS_Store
-.history/
-fabrication_files/
+
+
+##################################################
+# Micro ROS Generated Files
+##################################################
+
+/Firmware/ESP32_Micro_ROS/microros_ws/
+
+
+##################################################
+# KiCad Generated / Local Files
+##################################################
+
+# Project Backup 
+/Hardware/ESP_IMU_Board/ESP_IMU_Board-backups/
+
+
+# File Backup
+/Hardware/ESP_IMU_Board/ESP_IMU_Board.kicad_sch-bak
+/Hardware/ESP_IMU_Board/ESP_IMU_Board.kicad_pcb-bak
+
+# Symbol Backup
+/Hardware/ESP_IMU_Board/symbols/TLV75733PDBVR_Real.bak
+
+
+# Local Project References
+/Hardware/ESP_IMU_Board/ESP_IMU_Board.kicad_prl
+
+
+# KiCad temporary/autosave files
+/Hardware/ESP_IMU_Board/_autosave-*
+/Hardware/ESP_IMU_Board/~*.lck
+
+
+# KiCad local history
+/Hardware/ESP_IMU_Board/.history/
+
+
+##################################################
+# Generated fabrication outputs
+##################################################
+
+/Hardware/ESP_IMU_Board/fabrication_files/*
+!/Hardware/ESP_IMU_Board/fabrication_files/.gitkeep
