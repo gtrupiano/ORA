@@ -51,7 +51,7 @@ typedef struct
 ****************************************************************/
 
 bool CAN_Driver_Init(void);
-bool CAN_Driver_SendMsg(CAN_Msg_t *outgoingMsg);
+bool CAN_Driver_SendMsg(uint32_t msgId, uint8_t dlc, const uint8_t *outgoingMsgData);
 bool CAN_Driver_ReceiveMsg(CAN_Msg_t *incomingMsg);
 
 #endif // CAN_DRIVER_HPP

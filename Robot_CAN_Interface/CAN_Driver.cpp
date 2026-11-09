@@ -22,6 +22,7 @@ const uint8_t CAN_INT_PIN = 2;
 const uint8_t CAN_CS_PIN = 4;
 
 // CAN Parameters
+const uint16_t MAX_CAN_ID = 0x7FF; // Based on CAN Standard 11 bit identifier limit
 
 // Uses built in enums for valid baud rates and clock frequencies
 const CAN_SPEED BAUD_RATE = CAN_500KBPS;
@@ -41,7 +42,7 @@ static MCP2515 mcp(CAN_CS_PIN);
 *   LOCAL FUNCTION PROTOTYPES (declare as static)
 ****************************************************************/
 
-bool configureMCP(void);
+static bool configureMCP(void);
 
 /****************************************************************
 *   GLOBAL FUNCTIONS
@@ -74,27 +75,27 @@ bool CAN_Driver_Init(void)
 *   Description:
 **************************************************/
 
-bool CAN_Driver_SendMsg(CAN_Msg_t *outgoingMsg)
+bool CAN_Driver_SendMsg(uint32_t msgId, uint8_t dlc, const uint8_t *outgoingMsgData)
 {
-    // Checking to see if outgoing message is valid
-    if(outgoingMsg == nullptr || outgoingMsg->dlc > 8)
+    // Checking to see if outgoing message parameters are valid
+    if(msgId > MAX_CAN_ID || dlc > MAX_BYTES_OF_DATA_IN_MSG || outgoingMsgData == nullptr)
     {
         return false;
     }
 
     // Creating library specific frame to interface correctly with library functions
-    struct can_frame libOutgoingMsg;
+    struct can_frame libOutgoingMsg = {};
 
     // Converting generic frame to library frame
-    libOutgoingMsg.can_id = outgoingMsg->msgId;
-    libOutgoingMsg.can_dlc = outgoingMsg->dlc;
-    memcpy(libOutgoingMsg.data, outgoingMsg->data, libOutgoingMsg.can_dlc);
+    libOutgoingMsg.can_id = msgId;
+    libOutgoingMsg.can_dlc = dlc;
+    memcpy(libOutgoingMsg.data, outgoingMsgData, libOutgoingMsg.can_dlc);
 
     // Sending message
     MCP2515::ERROR sendMsgStatus = mcp.sendMessage(&libOutgoingMsg);
     if(sendMsgStatus != MCP2515::ERROR_OK)
     {
-        Serial.printf("Error sending message: Code %dr\n", (int)sendMsgStatus);
+        Serial.printf("Error sending message: Code %d\r\n", (int)sendMsgStatus);
         return false;
     }
 
@@ -109,7 +110,7 @@ bool CAN_Driver_SendMsg(CAN_Msg_t *outgoingMsg)
 
 bool CAN_Driver_ReceiveMsg(CAN_Msg_t *incomingMsg)
 {
-    // Checking to see if incoming message is valid
+    // Checking to see if incoming message struct is valid
     if(incomingMsg == nullptr)
     {
         return false;
@@ -126,7 +127,13 @@ bool CAN_Driver_ReceiveMsg(CAN_Msg_t *incomingMsg)
     }
     else if(receiveMsgStatus != MCP2515::ERROR_OK)
     {
-        Serial.printf("Error receiveing message: Code %dr\n", (int)receiveMsgStatus);
+        Serial.printf("Error receiveing message: Code %d\r\n", (int)receiveMsgStatus);
+        return false;
+    }
+    
+    // Checking to see whether received data is valid
+    if(libIncomingMsg.can_id > MAX_CAN_ID || libIncomingMsg.can_dlc > MAX_BYTES_OF_DATA_IN_MSG)
+    {
         return false;
     }
 
@@ -159,7 +166,7 @@ bool configureMCP(void)
     returnCode = mcp.reset();
     if(returnCode != MCP2515::ERROR_OK)
     {
-        Serial.printf("MCP Reset Error: Return Code %dr\n", (int)returnCode);
+        Serial.printf("MCP Reset Error: Return Code %d\r\n", (int)returnCode);
         return false;
     }
 
@@ -167,7 +174,7 @@ bool configureMCP(void)
     returnCode = mcp.setBitrate(BAUD_RATE, MCP_CLOCK_FREQ);
     if(returnCode != MCP2515::ERROR_OK)
     {
-        Serial.printf("MCP Set Bitrate Error: Code %dr\n", (int)returnCode);
+        Serial.printf("MCP Set Bitrate Error: Code %d\r\n", (int)returnCode);
         return false;
     }
 
