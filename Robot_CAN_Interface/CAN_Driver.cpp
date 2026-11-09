@@ -19,13 +19,13 @@
 
 // Pin Definitions
 const uint8_t CAN_INT_PIN = 2;
-const uint8_t CAN_CS_PIN = 10;
+const uint8_t CAN_CS_PIN = 4;
 
 // CAN Parameters
 
 // Uses built in enums for valid baud rates and clock frequencies
 const CAN_SPEED BAUD_RATE = CAN_500KBPS;
-const CAN_CLOCK MCP_CLOCK_FREQ = MCP_16MHZ;
+const CAN_CLOCK MCP_CLOCK_FREQ = MCP_8MHZ;
 
 /****************************************************************
 *   GLOBAL VARIABLES
@@ -120,7 +120,11 @@ bool CAN_Driver_ReceiveMsg(CAN_Msg_t *incomingMsg)
 
     // Receive message
     MCP2515::ERROR receiveMsgStatus = mcp.readMessage(&libIncomingMsg);
-    if(receiveMsgStatus != MCP2515::ERROR_OK)
+    if(receiveMsgStatus == MCP2515::ERROR_NOMSG)
+    {
+        return false;
+    }
+    else if(receiveMsgStatus != MCP2515::ERROR_OK)
     {
         Serial.printf("Error receiveing message: Code %dr\n", (int)receiveMsgStatus);
         return false;

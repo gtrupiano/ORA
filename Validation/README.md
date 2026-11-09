@@ -1,0 +1,2 @@
+# How to run programs
+You will have to drag the needed source files from the main `Robot_CAN_Interface` folder into the desired validation program in order for the arudino project to have the proper dependencies.
