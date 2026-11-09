@@ -39,8 +39,17 @@ void setup()
 
 void loop()
 {
-    CAN_Driver_SendMsg(&test1);
+    bool msg1SendSuccessful = CAN_Driver_SendMsg(test1.msgId, test1.dlc, &test1.data[0]);
+    if(msg1SendSuccessful == false)
+    {
+        Serial.println("Failed to send Test 1");
+    }
     delay(10);
-    CAN_Driver_SendMsg(&test2);
+
+    bool msg2SendSuccessful = CAN_Driver_SendMsg(test2.msgId, test2.dlc, &test2.data[0]);
+    if(msg2SendSuccessful == false)
+    {
+        Serial.println("Failed to send Test 2");
+    }
     delay(10);
 }

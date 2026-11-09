@@ -12,8 +12,6 @@ void setup()
         delay(2000);
         ESP.restart(); 
     }
-
-   
 }
 
 void loop()
@@ -33,6 +31,6 @@ void loop()
             Serial.print(" "); 
         }
         
-        Serial.println();      
+        Serial.println();
     }
 }
