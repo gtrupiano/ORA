@@ -1,12 +1,11 @@
 /****************************************************************
-File Name  : CAN_Driver.hpp
+File Name  : ORA_IMU.hpp
 Description:
 ****************************************************************/
 
-#ifndef CAN_DRIVER_HPP
-#define CAN_DRIVER_HPP
-
-
+#ifndef ORA_IMU_H
+#define ORA_IMU_H
+  
 /****************************************************************
 *   INCLUDES
 ****************************************************************/
@@ -14,20 +13,12 @@ Description:
 #include <Arduino.h>
 #include <cstring>
 #include <stdint.h>
+#include <Wire.h>
+#include "SparkFun_BNO08x_Arduino_Library.h"
 
 /****************************************************************
 *   DEFINES, CONSTANTS, ENUMS, STRUCTS
 ****************************************************************/
-
-/*******************************
-*   Constants
-*******************************/
-
-// CAN Parameters
-
-// Defines what the number of bytes of data the CAN message can have
-const uint8_t MAX_BYTES_OF_DATA_IN_MSG = 8;
-
 
 /*******************************
 *   Structures
@@ -35,12 +26,27 @@ const uint8_t MAX_BYTES_OF_DATA_IN_MSG = 8;
 
 typedef struct
 {
-    uint32_t msgId;
-    uint8_t dlc;
-    uint8_t data[MAX_BYTES_OF_DATA_IN_MSG];
+    float x;
+    float y;
+    float z;
+} Vector_t;
 
-} CAN_Msg_t;
+typedef struct
+{
+    float x;
+    float y;
+    float z;
+    float w;
+} Quaternion_t;
 
+typedef struct
+{
+    Vector_t accel;
+    Vector_t gyro;
+    Quaternion_t quat;
+    float temp;
+    unsigned long sampleTimeMS;
+} IMU_t;
 
 /****************************************************************
 *   GLOBAL VARIABLES
@@ -50,8 +56,10 @@ typedef struct
 *   GLOBAL FUNCTION PROTOTYPES
 ****************************************************************/
 
-bool CAN_Driver_Init(void);
-bool CAN_Driver_SendMsg(uint32_t msgId, uint8_t dlc, const uint8_t *outgoingMsgData);
-bool CAN_Driver_ReceiveMsg(CAN_Msg_t *incomingMsg);
-
-#endif // CAN_DRIVER_HPP
+bool ORA_IMU_Init(void);
+void ORA_IMU_Loop(void);
+Vector_t ORA_IMU_GetAccelerationData(void);
+Vector_t ORA_IMU_GetGyroscopicData(void);
+Quaternion_t ORA_IMU_GetQuaternionData(void);
+  
+#endif // ORA_IMU_H
