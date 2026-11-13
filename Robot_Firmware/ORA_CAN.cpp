@@ -163,7 +163,7 @@ void canRxMsgs(void)
     uint8_t rxCount = 0;
 
     // Fetching CAN data and validity from driver while data is present or until N messages were received
-    while(CAN_Driver_ReceiveMsg(&rxMsg) && rxCount < MAX_CAN_RX_PER_LOOP)
+    while(rxCount < MAX_CAN_RX_PER_LOOP && CAN_Driver_ReceiveMsg(&rxMsg))
     {
         // Incrementing based on how many messages were received
         rxCount++;

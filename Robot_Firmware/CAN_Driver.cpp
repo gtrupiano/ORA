@@ -23,6 +23,8 @@ const uint8_t CAN_CS_PIN = 4;
 
 // CAN Parameters
 const uint16_t MAX_CAN_ID = 0x7FF; // Based on CAN Standard 11 bit identifier limit
+const uint16_t MAX_TX_RESEND_NUM = 8; // Amount of retries TX message will do before exiting
+const uint16_t TX_RESEND_DELAY_US = 100; // Amount of time between TX message resends
 
 // Uses built in enums for valid baud rates and clock frequencies
 const CAN_SPEED BAUD_RATE = CAN_500KBPS;
@@ -92,10 +94,29 @@ bool CAN_Driver_SendMsg(uint32_t msgId, uint8_t dlc, const uint8_t *outgoingMsgD
     memcpy(libOutgoingMsg.data, outgoingMsgData, libOutgoingMsg.can_dlc);
 
     // Sending message
+    
+    // Trying to send message. If TX buffer is full, wait briefly, then try to send again.
     MCP2515::ERROR sendMsgStatus = mcp.sendMessage(&libOutgoingMsg);
+
+    // Try to resend message for MAX_TX_RESEND_NUM times while waiting Xus inbetween each transmit to allow for TX buffer to free up space
+    for(uint8_t txResendNum = 0; txResendNum < MAX_TX_RESEND_NUM; txResendNum++)
+    {
+        if(sendMsgStatus != MCP2515::ERROR_ALLTXBUSY)
+        {
+            // Since TX buffer has space for message and it will be transmit, exit resend loop
+            break;
+        }
+
+        // Delay for a short period to allow for TX buffer to clear up
+        delayMicroseconds(TX_RESEND_DELAY_US);
+
+        // Try to send message again to see if there is space in TX buffer
+        sendMsgStatus = mcp.sendMessage(&libOutgoingMsg);
+    }
+
     if(sendMsgStatus != MCP2515::ERROR_OK)
     {
-        Serial.printf("Error sending message: Code %d\r\n", (int)sendMsgStatus);
+        Serial.printf("CAN TX Error: ID 0x%3lX, Code %d\r\n", (uint32_t) msgId, (int)sendMsgStatus);
         return false;
     }
 
