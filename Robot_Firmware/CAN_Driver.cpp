@@ -23,6 +23,8 @@ const uint8_t CAN_CS_PIN = 4;
 
 // CAN Parameters
 const uint16_t MAX_CAN_ID = 0x7FF; // Based on CAN Standard 11 bit identifier limit
+const uint16_t MAX_TX_RETRY_DURATION_US = 2000; // Amount of time TX message will retry for before exiting and throwing error
+const uint16_t TX_RETRY_DELAY_US = 100; // Amount of time between TX message retries
 
 // Uses built in enums for valid baud rates and clock frequencies
 const CAN_SPEED BAUD_RATE = CAN_500KBPS;
@@ -92,11 +94,39 @@ bool CAN_Driver_SendMsg(uint32_t msgId, uint8_t dlc, const uint8_t *outgoingMsgD
     memcpy(libOutgoingMsg.data, outgoingMsgData, libOutgoingMsg.can_dlc);
 
     // Sending message
+
+    // Trying to send message. If TX buffer is full, wait briefly, then try again.
     MCP2515::ERROR sendMsgStatus = mcp.sendMessage(&libOutgoingMsg);
+
+    // Gets time in microseconds
+    unsigned long transmitTime = micros();
+    
+    // Retyring message transmit for a certain duration and delaying a certain amount inbetween each transmit
+    while((micros() - transmitTime) < MAX_TX_RETRY_DURATION_US)
+    {
+        if(sendMsgStatus != MCP2515::ERROR_ALLTXBUSY)
+        {
+            // Since error isn't TX busy exit retry and either successful message or real error
+            break;
+        }
+
+        // Delay for a short period to allow for TX buffer to clear up
+        delayMicroseconds(TX_RETRY_DELAY_US);
+
+        // Try to resend message again to see if it went through this time.
+        sendMsgStatus = mcp.sendMessage(&libOutgoingMsg);
+    }
+
+    // Whether message went through 
     if(sendMsgStatus != MCP2515::ERROR_OK)
     {
-        Serial.printf("CAN TX Error: ID 0x%03lX, Code %d\r\n", (unsigned long) msgId, (int)sendMsgStatus);
-        
+        Serial.printf("CAN TX Error: ID 0x%03lX, Code %d\r\n",
+                    (unsigned long)msgId, (int)sendMsgStatus);
+
+        Serial.printf("TX Error Count: %d\r\n", mcp.errorCountTX());
+        Serial.printf("RX Error Count: %d\r\n", mcp.errorCountRX());
+        Serial.printf("Error Flags: 0x%02X\r\n", mcp.getErrorFlags());
+
         return false;
     }
 
