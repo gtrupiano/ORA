@@ -9,6 +9,7 @@
 
 #include "ORA_CAN.hpp"
 #include "ORA_IMU.hpp"
+#include "flags.hpp"
 
 /****************************************************************
 *   DEFINES, CONSTANTS
@@ -48,6 +49,12 @@ void canRxMsgs(void);
 void rxTargetSpeed(CAN_Msg_t *msg);
 void rxRobotState(CAN_Msg_t *msg);
 
+#if DEBUG
+Vector_t dummyAccel = {};
+Vector_t dummyGyro = {};
+Quaternion_t dummyQuat = {};
+#endif
+
 /****************************************************************
 *   GLOBAL FUNCTIONS
 ****************************************************************/
@@ -72,6 +79,21 @@ bool ORA_CAN_Init(void)
     {
         return true;
     }
+
+    #if DEBUG
+    dummyAccel.x = 1;
+    dummyAccel.y = 2;
+    dummyAccel.z = 3;
+
+    dummyGyro.x = 4;
+    dummyGyro.y = 5;
+    dummyGyro.z = 6;
+
+    dummyQuat.w = 7;
+    dummyQuat.x = 8;
+    dummyQuat.y = 9;
+    dummyQuat.z = 10;
+    #endif
 }
 
 
@@ -102,9 +124,19 @@ void canTxMsgs(void)
     // Transmit all TX CAN messages with the proper API data from other ORA_ files
     // NOTE: Some interfaces aren't implemented (commented ones) but I wrote what they might look like just to give examples
     //txActualSpeed(ORA_Control_Get_Left_Wheel_Speed(), ORA_Control_Get_Right_Wheel_Speed());
+    #if DEBUG
+    txImuAccelerationMsgs(dummyAccel);
+    txImuGyroscopicMsgs(dummyGyro);
+    txImuQuaternionMsgs(dummyQuat);
+    txActualSpeed(127, 128);
+    txEncoderData(149, 150);
+    txRobotState(0, 1);
+    #else
     txImuAccelerationMsgs(ORA_IMU_GetAccelerationData());
     txImuGyroscopicMsgs(ORA_IMU_GetGyroscopicData());
     txImuQuaternionMsgs(ORA_IMU_GetQuaternionData());
+    #endif
+
     //txEncoderData(ORA_Control_Get_Left_Wheel_Encoder_Ticks(), ORA_Control_Get_Right_Wheel_Encoder_Ticks());
     //txRobotState(ORA_Control_Get_Auton_State(), ORA_Control_Get_EStop_State()); // Interface not written yet
 }
@@ -163,7 +195,7 @@ void canRxMsgs(void)
     uint8_t rxCount = 0;
 
     // Fetching CAN data and validity from driver while data is present or until N messages were received
-    while(CAN_Driver_ReceiveMsg(&rxMsg) && rxCount < MAX_CAN_RX_PER_LOOP)
+    while(rxCount < MAX_CAN_RX_PER_LOOP && CAN_Driver_ReceiveMsg(&rxMsg))
     {
         // Incrementing based on how many messages were received
         rxCount++;
@@ -391,8 +423,13 @@ void rxTargetSpeed(CAN_Msg_t *msg)
 
     // Using the data captured from the received message, interfacing with the proper API to drive wheels
     // NOTE: Interfaces aren't implemented (commented ones) but I wrote what they might look like just to give examples
+    #if DEBUG
+        Serial.printf("Target Speed Msg Left wheel speed %d\r\n", 399);
+        Serial.printf("Target Speed Msg Right wheel speed %d\r\n", 400);
+    #endif
     // ORA_Control_Set_Left_Wheel_Speed(rxMsg.targetWheelSpeeds.targetWheelSpeedLeft);
-    // ORA_Control_Set_Right_Wheel_Speed(rxMsg.targetWheelSpeeds.targetWheelSpeedRight);}
+    // ORA_Control_Set_Right_Wheel_Speed(rxMsg.targetWheelSpeeds.targetWheelSpeedRight);
+
 }
 
 
@@ -412,6 +449,10 @@ void rxRobotState(CAN_Msg_t *msg)
     // Using the data captured from the received message, interfacing with the proper API to set robot state
     // Controller function calls to set robot state (both Auton and EStop)
     // NOTE: Interfaces aren't implemented (commented ones) but I wrote what they might look like just to give examples
+    #if DEBUG
+        Serial.printf("Robot State msg estop %d\r\n", 0);
+        Serial.printf("Robot State msg auton %d\r\n", 1);
+    #endif
     // ORA_Control_Set_Auton_State(rxMsg.robotStateMicro.autonomousState);
     // ORA_Control_Set_EStop_State(rxMsg.robotStateMicro.estopState);
 }

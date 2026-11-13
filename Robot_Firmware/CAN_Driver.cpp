@@ -95,7 +95,8 @@ bool CAN_Driver_SendMsg(uint32_t msgId, uint8_t dlc, const uint8_t *outgoingMsgD
     MCP2515::ERROR sendMsgStatus = mcp.sendMessage(&libOutgoingMsg);
     if(sendMsgStatus != MCP2515::ERROR_OK)
     {
-        Serial.printf("Error sending message: Code %d\r\n", (int)sendMsgStatus);
+        Serial.printf("CAN TX Error: ID 0x%03lX, Code %d\r\n", (unsigned long) msgId, (int)sendMsgStatus);
+        
         return false;
     }
 

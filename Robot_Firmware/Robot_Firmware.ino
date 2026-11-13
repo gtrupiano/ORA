@@ -25,14 +25,14 @@ void setup()
     }
 
     // Initialize IMU
-    if(ORA_IMU_Init() == false)
-    {
-        while(1)
-        {
-            Serial.println("IMU Initialization Failed");
-            delay(5000);
-        }
-    }
+    // if(ORA_IMU_Init() == false)
+    // {
+    //     while(1)
+    //     {
+    //         Serial.println("IMU Initialization Failed");
+    //         delay(5000);
+    //     }
+    // }
 
     Serial.println("All Initialization Passed");
     
@@ -55,12 +55,12 @@ void loop()
     }
 
     // If elapsed time is greater than IMU task time, then execute main IMU loop
-    if((currentTime - tasks[IMU_TASK].lastTime) >= tasks[IMU_TASK].period)
-    {
-        // Main IMU loop
-        ORA_IMU_Loop();
+    // if((currentTime - tasks[IMU_TASK].lastTime) >= tasks[IMU_TASK].period)
+    // {
+    //     // Main IMU loop
+    //     ORA_IMU_Loop();
 
-        // Updating time since last IMU loop
-        tasks[IMU_TASK].lastTime = currentTime;
-    }
+    //     // Updating time since last IMU loop
+    //     tasks[IMU_TASK].lastTime = currentTime;
+    // }
 }

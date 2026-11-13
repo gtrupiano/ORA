@@ -23,7 +23,7 @@ Description:
 *******************************/
 
 // Set to 1 if printing data is wanted or features only needed for debugging
-#define DEBUG 0
+#define DEBUG 1
 
 #define IMU_PRINT_ACCEL 1
 #define IMU_PRINT_GYRO 1
